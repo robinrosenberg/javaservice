@@ -86,6 +86,7 @@ char *pathExt = NULL;
 char *currentDirectory = NULL;
 
 //////// This section added by John Rutter, Multiplan Consultants Ltd, 2002-11-03 (V1.2.1)
+
 // NT service dependency
 const char* dependsOn = NULL;
 
@@ -96,6 +97,14 @@ static const long SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
 static const long EXIT_HANDLER_TIMEOUT_MSECS = 90000; // 90 seconds
 
 ///////// End of added section (John Rutter, john@multiplan.co.uk)
+
+//////// This section added by John Rutter, Multiplan Consultants Ltd, 2003-05-14 (V1.2.2)
+
+// Automatic (default) or manual service startup
+bool autoStart = true;
+
+///////// End of added section (John Rutter, john@multiplan.co.uk)
+
 
 //
 // function prototypes
@@ -134,7 +143,7 @@ int main(int argc, char* argv[])
 		}
 
 		//Make sure we have all of the necessary arguments.
-		if (serviceName == NULL ||jvmLibrary == NULL || startClass == NULL)
+		if (serviceName == NULL || jvmLibrary == NULL || startClass == NULL)
 		{
 			PrintUsage();
 			FreeGlobals();
@@ -147,14 +156,14 @@ int main(int argc, char* argv[])
 		{
 			LPVOID lpMsgBuf;
 			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
-			printf("Error while checking to see if service is installed: %s\n", lpMsgBuf);
+			printf("Error while checking to see if %s service is installed: %s\n", serviceName, lpMsgBuf); //// service name added by John Rutter (V1.2.2)
 			LocalFree(lpMsgBuf);
 			FreeGlobals();
 			return -1;
 		}
 		if (ret)
 		{
-			printf("The service is already installed.\n"); //// newline added by John Rutter (V1.2.1)
+			printf("The %s service is already installed.\n", serviceName ); //// newline and service name added by John Rutter (V1.2.1 / V1.2.2)
 			FreeGlobals();
 			return -1;
 		}
@@ -164,18 +173,24 @@ int main(int argc, char* argv[])
 		{
 			LPVOID lpMsgBuf;
 			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
-			printf("Error while installing the service: %s\n", lpMsgBuf);
+			printf("Error while installing the %s service: %s\n", serviceName, lpMsgBuf); //// service name added by John Rutter (V1.2.2)
 			LocalFree(lpMsgBuf);
 			FreeGlobals();
 			return -1;
 		}
 
-		printf("The service was successfully installed.\n"); //// newline added by John Rutter (V1.2.1)
-		//// extra information report added by John Rutter (V1.2.1)
-		if (dependsOn != NULL)
+		//// status report message text updated by John Rutter (V1.2.1 / V1.2.2) to add dependency and other info
+		if (dependsOn == NULL)
 		{
-			printf("(With startup dependency on '%s' service)", dependsOn);
+			printf("The %s %s service was successfully installed.\n",
+				   serviceName, (autoStart ? "automatic" : "manual"));
 		}
+		else
+		{
+			printf("The %s %s service was successfully installed, depends on %s service.\n",
+				   serviceName, (autoStart ? "automatic" : "manual"), dependsOn);
+		}
+
 
 		FreeGlobals();
 		return 0;
@@ -205,13 +220,13 @@ int main(int argc, char* argv[])
 		{
 			LPVOID lpMsgBuf;
 			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
-			printf("Error while uninstalling the service: %s\n", lpMsgBuf);
+			printf("Error while uninstalling the %s service: %s\n", serviceName, lpMsgBuf); //// service name added by John Rutter (V1.2.2)
 			LocalFree(lpMsgBuf);
 			FreeGlobals();
 			return -1;
 		}
 
-		printf("The service was successfully uninstalled.\n"); //// newline added by John Rutter (V1.2.1)
+		printf("The %s service was successfully uninstalled.\n", serviceName); //// newline and service name added by John Rutter (V1.2.1 / V1.2.2)
 		FreeGlobals();
 		return 0;
 	}
@@ -235,7 +250,7 @@ int main(int argc, char* argv[])
 	if (StartServiceCtrlDispatcher(st) == 0)
 	{
 		//Register An event source to log this error using JavaService, since we don't yet have the service name.
-		HANDLE hJavaServiceEventSource = RegisterEventSource(NULL,  "JavaService");
+		HANDLE hJavaServiceEventSource = RegisterEventSource(NULL,  "JavaService"); //NOTE - conflicts with multiple Java Services? (J.R.)
 		if (hJavaServiceEventSource != NULL)
 		{
 			//Log the error to the event log.
@@ -473,6 +488,22 @@ bool ParseArguments(int argc, char* argv[])
 			}
 			///////// End of added section (John Rutter, john@multiplan.co.uk)
 
+			//////// This section added by John Rutter, Multiplan Consultants Ltd, 2003-05-14 (V1.2.2)
+			//See if automatic or manual service startup is specified (defaults to auto mode)
+			if (nextArg < argc && strcmp(argv[nextArg], "-auto") == 0)
+			{
+				//Skip the -auto parameter
+				nextArg++;
+				autoStart = true; // set the flag, although this is default anyway
+			}
+			else if (nextArg < argc && strcmp(argv[nextArg], "-manual") == 0)
+			{
+				//Skip the -manual parameter
+				nextArg++;
+				autoStart = false; // clear the flag, overriding the default
+			}
+			///////// End of added section (John Rutter, john@multiplan.co.uk)
+
 			//If there are extra parameters, return false.
 			if (nextArg < argc) return false;
 
@@ -517,6 +548,7 @@ void PrintUsage()
 	printf("\t[-current current_dir]\n");
 	printf("\t[-path extra_path]\n");	 // Modified by Lars Johanson IVF 2001-02-26
 	printf("\t[-depends other_service]\n");	 // Added by John Rutter (V1.2.1)
+	printf("\t[-auto | -manual]\n");	 // Added by John Rutter (V1.2.2)
 	printf("\n");
 	printf("To uninstall a service:\n");
 	printf("\t-uninstall service_name\n");
@@ -537,6 +569,7 @@ void PrintUsage()
 	printf("\t\tRelative paths will be relative to this directory.\n");
 	printf("extra_path:\tPath additions, for native DLLs etc.\n");	 // Modified by Lars Johanson IVF 2001-02-26
 	printf("other_service:\tSingle service name dependency, must start first.\n");	 // Added by John Rutter (V1.2.1)
+	printf("auto / manual:\tStartup automatic (default) or manual mode.\n");	 // Added by John Rutter (V1.2.2)
 }
 
 void FreeGlobals()
@@ -608,13 +641,20 @@ int InstallService()
 		strcpy( dependency, dependsOn );
 	}
 
+	//// Further modifications to include auto/manual option by John Rutter (V1.2.2)
+
+	// Set up automatic or manual service startup mode
+
+	DWORD dwStartType = autoStart ? SERVICE_AUTO_START : SERVICE_DEMAND_START;
+
+
 	// Create the service
 	SC_HANDLE hService = CreateService(hSCM,						// hSCManager
                                        serviceName,					// lpServiceName
                                        serviceName,					// lpDisplayName
                                        SERVICE_ALL_ACCESS,			// dwDesiredAccess
                                        SERVICE_WIN32_OWN_PROCESS,	// dwServiceType
-                                       SERVICE_AUTO_START,			// dwStartType
+                                       dwStartType,					// dwStartType - John Rutter (V1.2.2)
                                        SERVICE_ERROR_NORMAL,		// dwErrorControl
                                        filePath,					// lpBinaryPathName
                                        NULL,						// lpLoadOrderGroup
