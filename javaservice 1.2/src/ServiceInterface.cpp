@@ -1,4 +1,5 @@
 //Copyright (c) 2000, Alexandria Software Consulting
+//Some enhancements, post V1.2.0, (c) 2003 Multiplan Consultants Ltd
 //
 //All rights reserved. Redistribution and use in source 
 //and binary forms, with or without modification, are permitted provided 
@@ -23,125 +24,149 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <string.h>
-#include "jni.h"
 #include "JavaInterface.h"
 #include "ServiceInterface.h"
 #include "Messages.h"
+#include "VersionNo.h"
+
+////
+//// Constant Declarations
+////
+
+// Number of milliseconds delay timeout when stopping the service, default value
+static const long DEFAULT_SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
+
+// Extra period of time on shutdown notification to service manager
+static const long SHUTDOWN_HINT_EXTRA_MSECS = 5000; // 5 seconds
+
+// Number of milliseconds delay after exit handler has been triggered
+// (no obvious use for this, as it the sleep occurs after the JVM has died)
+static const long EXIT_HANDLER_TIMEOUT_MSECS = 15000; // 15 seconds
+
+
+////
+//// Local Variables
+////
+
+// Flag for whether we are to simply to display version number information
+static bool versionEnquiry = false;
 
 //Flag for whether we are trying to install a service.
-bool installing = false;
+static bool installing = false;
 
 //Flag for whether we are trying to uninstall a service.
-bool uninstalling = false;
+static bool uninstalling = false;
 
 //The name of the service.
-char *serviceName = NULL;
+static char *serviceName = NULL;
 
 //The location of the jvm library.
-char *jvmLibrary = NULL;
+static char *jvmLibrary = NULL;
 
 //The number of jvm options.
-int jvmOptionCount=0;
+static int jvmOptionCount=0;
 
 //The jvm options.
-char **jvmOptions = NULL;
+static char **jvmOptions = NULL;
 
 //The start class for the service.
-char *startClass = NULL;
+static char *startClass = NULL;
 
 //The start method for the service.
-char *startMethod = "main";
+static char *startMethod = "main";
 
 //The number of parameters for the start method.
-int startParamCount=0;
+static int startParamCount=0;
 
 //The start method parameters.
-char **startParams = NULL;
+static char **startParams = NULL;
 
 //The stop class for the service.
-char *stopClass = NULL;
+static char *stopClass = NULL;
 
 //The stop method for the service.
-char *stopMethod = "main";
+static char *stopMethod = "main";
 
 //The number of parameters for the stop method.
-int stopParamCount=0;
+static int stopParamCount=0;
 
 //The stop method parameters.
-char **stopParams = NULL;
+static char **stopParams = NULL;
 
 //The out redirect file.
-char *outFile = NULL;
+static char *outFile = NULL;
 
 //The err redirect file.
-char *errFile = NULL;
+static char *errFile = NULL;
 
-///////// This section added by Lars Johanson IVF 2001-02-26
 //The path extension.
-char *pathExt = NULL;
-///////// End of added section
+static char *pathExt = NULL;
 
 //The current directory.
-char *currentDirectory = NULL;
-
-//////// This section added by John Rutter, Multiplan Consultants Ltd, 2002-11-03 (V1.2.1)
+static char *currentDirectory = NULL;
 
 // NT service dependency
-const char* dependsOn = NULL;
-
-// Constant for number of milliseconds delay timeout when stopping the service
-static const long SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
-
-// Constant for number of milliseconds delay after exit handler has been triggered
-static const long EXIT_HANDLER_TIMEOUT_MSECS = 90000; // 90 seconds
-
-///////// End of added section (John Rutter, john@multiplan.co.uk)
-
-//////// This section added by John Rutter, Multiplan Consultants Ltd, 2003-05-14 (V1.2.2)
+static const char* dependsOn = NULL;
 
 // Automatic (default) or manual service startup
-bool autoStart = true;
+static bool autoStart = true;
 
-///////// End of added section (John Rutter, john@multiplan.co.uk)
+// Number of seconds to allow for service to shutdown when processing java function
+static long shutdownMsecs = DEFAULT_SHUTDOWN_TIMEOUT_MSECS;
+
+
+////
+//// Local function prototypes
+////
+
+static bool ParseArguments(int argc, char* argv[]);
+static void PrintUsage();
+static void PrintVersion();
+static void FreeGlobals();
+static int IsServiceInstalled(bool *result);
+static int InstallService();
+static int UninstallService();
+
+////
+//// Global function prototypes
+////
+
+static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
+static void WINAPI ServiceHandler(DWORD opcode);
+static DWORD WINAPI StartService(LPVOID lpParam);
+static DWORD WINAPI StopService(LPVOID lpParam);
+static DWORD WINAPI TimeoutStop(LPVOID lpParam);
+static LONG RegQueryValueExAllocate(HKEY hKey, LPCTSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE *lplpData, LPDWORD lpcbData);
+
 
 
 //
-// function prototypes
-//
-
-bool ParseArguments(int argc, char* argv[]);
-void PrintUsage();
-void FreeGlobals();
-int IsServiceInstalled(bool *result);
-int InstallService();
-int UninstallService();
-void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
-void WINAPI ServiceHandler(DWORD opcode);
-DWORD WINAPI StartService(LPVOID lpParam);
-DWORD WINAPI StopService(LPVOID lpParam);
-DWORD WINAPI TimeoutStop(LPVOID lpParam);
-LONG RegQueryValueExAllocate(HKEY hKey, LPCTSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE *lplpData, LPDWORD lpcbData);
-
-//
-// program entry point
+// program entry point - invoked from command line or as executable service with no params
 //
 int main(int argc, char* argv[])
 {
 	//Parse the arguments into the global variables.
 	bool argumentsValid = ParseArguments(argc, argv);
 
+	//Make sure the supplied arguments were valid.
+	if (!argumentsValid)
+	{
+		PrintUsage();
+		FreeGlobals();
+		return -1;
+	}
+
+	// See if program simply has to show version information and exit
+	if (versionEnquiry)
+	{
+		PrintVersion();
+		FreeGlobals();
+		return 0;
+	}
+
 	//See if we are trying to install a service.
 	if (installing)
 	{
-		//Make sure the arguments were valid.
-		if (!argumentsValid)
-		{
-			PrintUsage();
-			FreeGlobals();
-			return -1;
-		}
-
 		//Make sure we have all of the necessary arguments.
 		if (serviceName == NULL || jvmLibrary == NULL || startClass == NULL)
 		{
@@ -163,7 +188,7 @@ int main(int argc, char* argv[])
 		}
 		if (ret)
 		{
-			printf("The %s service is already installed.\n", serviceName ); //// newline and service name added by John Rutter (V1.2.1 / V1.2.2)
+			printf("The %s service is already installed.\n", serviceName );
 			FreeGlobals();
 			return -1;
 		}
@@ -173,13 +198,12 @@ int main(int argc, char* argv[])
 		{
 			LPVOID lpMsgBuf;
 			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
-			printf("Error while installing the %s service: %s\n", serviceName, lpMsgBuf); //// service name added by John Rutter (V1.2.2)
+			printf("Error while installing the %s service: %s\n", serviceName, lpMsgBuf);
 			LocalFree(lpMsgBuf);
 			FreeGlobals();
 			return -1;
 		}
 
-		//// status report message text updated by John Rutter (V1.2.1 / V1.2.2) to add dependency and other info
 		if (dependsOn == NULL)
 		{
 			printf("The %s %s service was successfully installed.\n",
@@ -199,14 +223,6 @@ int main(int argc, char* argv[])
 	//See if we are trying to uninstall a service.
 	else if (uninstalling)
 	{
-		//Make sure the arguments were valid.
-		if (!argumentsValid)
-		{
-			PrintUsage();
-			FreeGlobals();
-			return -1;
-		}
-
 		//Make sure we have all of the necessary arguments.
 		if (serviceName == NULL)
 		{
@@ -220,23 +236,15 @@ int main(int argc, char* argv[])
 		{
 			LPVOID lpMsgBuf;
 			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
-			printf("Error while uninstalling the %s service: %s\n", serviceName, lpMsgBuf); //// service name added by John Rutter (V1.2.2)
+			printf("Error while uninstalling the %s service: %s\n", serviceName, lpMsgBuf);
 			LocalFree(lpMsgBuf);
 			FreeGlobals();
 			return -1;
 		}
 
-		printf("The %s service was successfully uninstalled.\n", serviceName); //// newline and service name added by John Rutter (V1.2.1 / V1.2.2)
+		printf("The %s service was successfully uninstalled.\n", serviceName);
 		FreeGlobals();
 		return 0;
-	}
-
-	//Make sure the arguments were valid.
-	if (!argumentsValid)
-	{
-		PrintUsage();
-		FreeGlobals();
-		return -1;
 	}
 
 	//Register the ServiceMain function.
@@ -250,7 +258,7 @@ int main(int argc, char* argv[])
 	if (StartServiceCtrlDispatcher(st) == 0)
 	{
 		//Register An event source to log this error using JavaService, since we don't yet have the service name.
-		HANDLE hJavaServiceEventSource = RegisterEventSource(NULL,  "JavaService"); //NOTE - conflicts with multiple Java Services? (J.R.)
+		HANDLE hJavaServiceEventSource = RegisterEventSource(NULL,  "JavaService");
 		if (hJavaServiceEventSource != NULL)
 		{
 			//Log the error to the event log.
@@ -273,7 +281,9 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-bool ParseArguments(int argc, char* argv[])
+
+
+static bool ParseArguments(int argc, char* argv[])
 {
 	//See if this is an install.
 	if (argc >= 2 && strcmp(argv[1], "-install") == 0)
@@ -321,8 +331,14 @@ bool ParseArguments(int argc, char* argv[])
 				nextArg++;
 
 				//Use the next argument as the class to start.
-				if (nextArg < argc) startClass = argv[nextArg++];
-				else return false;
+				if (nextArg < argc)
+				{
+					startClass = argv[nextArg++];
+				}
+				else
+				{
+					return false;
+				}
 			}
 
 			//See if there is a method for the start class.
@@ -332,7 +348,10 @@ bool ParseArguments(int argc, char* argv[])
 				nextArg++;
 
 				//Use the next argument as the method to start.
-				if (nextArg < argc) startMethod = argv[nextArg++];
+				if (nextArg < argc)
+				{
+					startMethod = argv[nextArg++];
+				}
 			}
 
 			//See if there are start parameters.
@@ -376,8 +395,14 @@ bool ParseArguments(int argc, char* argv[])
 				nextArg++;
 
 				//Use the next argument as the class to stop.
-				if (nextArg < argc) stopClass = argv[nextArg++];
-				else return false;
+				if (nextArg < argc)
+				{
+					stopClass = argv[nextArg++];
+				}
+				else
+				{
+					return false;
+				}
 
 				//See if there is a method for the stop class.
 				if (nextArg < argc && strcmp(argv[nextArg], "-method") == 0)
@@ -386,8 +411,14 @@ bool ParseArguments(int argc, char* argv[])
 					nextArg++;
 
 					//Use the next argument as the method to stop.
-					if (nextArg < argc) stopMethod = argv[nextArg++];
-					else return false;
+					if (nextArg < argc)
+					{
+						stopMethod = argv[nextArg++];
+					}
+					else
+					{
+						return false;
+					}
 				}
 
 				//See if there are stop parameters.
@@ -433,8 +464,14 @@ bool ParseArguments(int argc, char* argv[])
 				nextArg++;
 
 				//Use the next argument as the out file.
-				if (nextArg < argc) outFile = argv[nextArg++];
-				else return false;
+				if (nextArg < argc)
+				{
+					outFile = argv[nextArg++];
+				}
+				else
+				{
+					return false;
+				}
 			}
 
 			//See if there is an err file.
@@ -444,8 +481,14 @@ bool ParseArguments(int argc, char* argv[])
 				nextArg++;
 
 				//Use the next argument as the err file.
-				if (nextArg < argc) errFile = argv[nextArg++];
-				else return false;
+				if (nextArg < argc)
+				{
+					errFile = argv[nextArg++];
+				}
+				else
+				{
+					return false;
+				}
 			}
 
 			//See if there is a current directory.
@@ -455,11 +498,16 @@ bool ParseArguments(int argc, char* argv[])
 				nextArg++;
 
 				//Use the next argument as the extended path
-				if (nextArg < argc) currentDirectory = argv[nextArg++];
-				else return false;
+				if (nextArg < argc)
+				{
+					currentDirectory = argv[nextArg++];
+				}
+				else
+				{
+					return false;
+				}
 			}
 
-			///////// This section added by Lars Johanson IVF 2001-02-26
 			//See if there is any path additions
 			if (nextArg < argc && strcmp(argv[nextArg], "-path") == 0)
 			{
@@ -467,12 +515,16 @@ bool ParseArguments(int argc, char* argv[])
 				nextArg++;
 
 				//Use the next argument as the extended path
-				if (nextArg < argc) pathExt = argv[nextArg++];
-				else return false;
+				if (nextArg < argc)
+				{
+					pathExt = argv[nextArg++];
+				}
+				else
+				{
+					return false;
+				}
 			}
-			///////// End of added section
 
-			//////// This section added by John Rutter, Multiplan Consultants Ltd, 2002-11-03 (V1.2.1)
 			//See if there is any dependency addition
 			if (nextArg < argc && strcmp(argv[nextArg], "-depends") == 0)
 			{
@@ -484,11 +536,12 @@ bool ParseArguments(int argc, char* argv[])
 				{
 					dependsOn = argv[nextArg++];
 				}
-				else return false;
+				else
+				{
+					return false;
+				}
 			}
-			///////// End of added section (John Rutter, john@multiplan.co.uk)
 
-			//////// This section added by John Rutter, Multiplan Consultants Ltd, 2003-05-14 (V1.2.2)
 			//See if automatic or manual service startup is specified (defaults to auto mode)
 			if (nextArg < argc && strcmp(argv[nextArg], "-auto") == 0)
 			{
@@ -502,12 +555,47 @@ bool ParseArguments(int argc, char* argv[])
 				nextArg++;
 				autoStart = false; // clear the flag, overriding the default
 			}
-			///////// End of added section (John Rutter, john@multiplan.co.uk)
+
+			//See if the shutdown timeout value is specified (hard-coded default otherwise)
+			if (nextArg < argc && strcmp(argv[nextArg], "-shutdown") == 0)
+			{
+				//Skip the -shutdown
+				nextArg++;
+
+				//Use the next argument as the number of seconds to allow
+				if (nextArg < argc)
+				{
+					const char* shutdownString = argv[nextArg++];
+
+					// parse the string and convert to milliseconds value, if valid
+					const int shutdownSeconds = atoi(shutdownString);
+
+					if (shutdownSeconds >= 0)
+					{
+						shutdownMsecs = shutdownSeconds * 1000; // millisecs value held in registry
+					}
+					else
+					{
+						return false; // negative value is invalid (accept zero though)
+					}
+				}
+				else
+				{
+					return false; // cannot have shutdown param without it's value
+				}
+			}
+
+
 
 			//If there are extra parameters, return false.
-			if (nextArg < argc) return false;
-
-			return true;
+			if (nextArg < argc)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
 		}
 		return false;
 	}
@@ -526,10 +614,30 @@ bool ParseArguments(int argc, char* argv[])
 
 			return true;
 		}
-		return false;
+		else
+		{
+			return false;
+		}
 	}
 	
-	//See if the service is starting up.
+	//See if this is a simple version number enquiry
+	else if (argc >= 2 && strcmp(argv[1], "-version") == 0)
+	{
+		//Mark that we are performing a version number enquiry
+		versionEnquiry = true;
+
+		//Make sure we have the correct number of parameters for uninstalling.
+		if (argc == 2)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	//See if the service is starting up (no actual parameters, just local program name)
 	else if (argc == 1)
 	{
 		return true;
@@ -538,17 +646,23 @@ bool ParseArguments(int argc, char* argv[])
 	return false;
 }
 
-void PrintUsage()
+
+
+static void PrintUsage()
 {
+	printf("To show version information:\n");
+	printf("\t-version\n");
+	printf("\n");
 	printf("To install a service:\n");
 	printf("\t-install service_name jvm_library (jvm_option)*\n");
 	printf("\t-start start_class [-method start_method] [-params (start_parameter)+]\n");
 	printf("\t[-stop start_class [-method stop_method] [-params (stop_parameter)+]]\n");
 	printf("\t[-out out_log_file] [-err err_log_file]\n");
 	printf("\t[-current current_dir]\n");
-	printf("\t[-path extra_path]\n");	 // Modified by Lars Johanson IVF 2001-02-26
-	printf("\t[-depends other_service]\n");	 // Added by John Rutter (V1.2.1)
-	printf("\t[-auto | -manual]\n");	 // Added by John Rutter (V1.2.2)
+	printf("\t[-path extra_path]\n");
+	printf("\t[-depends other_service]\n");
+	printf("\t[-auto | -manual]\n");
+	printf("\t[-shutdown seconds]\n");
 	printf("\n");
 	printf("To uninstall a service:\n");
 	printf("\t-uninstall service_name\n");
@@ -567,19 +681,33 @@ void PrintUsage()
 	printf("err_log_file:\tA file to redirect System.err into.\n");
 	printf("current_dir:\tThe current working directory for the service.\n");
 	printf("\t\tRelative paths will be relative to this directory.\n");
-	printf("extra_path:\tPath additions, for native DLLs etc.\n");	 // Modified by Lars Johanson IVF 2001-02-26
-	printf("other_service:\tSingle service name dependency, must start first.\n");	 // Added by John Rutter (V1.2.1)
-	printf("auto / manual:\tStartup automatic (default) or manual mode.\n");	 // Added by John Rutter (V1.2.2)
+	printf("extra_path:\tPath additions, for native DLLs etc.\n");
+	printf("other_service:\tSingle service name dependency, must start first.\n");
+	printf("auto / manual:\tStartup automatic (default) or manual mode.\n");
+	printf("seconds:\tTime for Java method shutdown processing before timeout.\n");
 }
 
-void FreeGlobals()
+
+
+static void PrintVersion()
+{
+	printf( "\nJavaService (Java NT Service Adaptor) Version %s\n", STRPRODUCTVER );
+	printf( "Copyright (c) 2000 Alexandria Software Consulting.\n" );
+	printf( "Enhancements (c) 2005 Multiplan Consultants Ltd.\n\n" );
+}
+
+
+
+static void FreeGlobals()
 {
 	if (jvmOptions != NULL) delete[] jvmOptions;
 	if (startParams != NULL) delete[] startParams;
 	if (stopParams != NULL) delete[] stopParams;
 }
 
-int IsServiceInstalled(bool *ret)
+
+
+static int IsServiceInstalled(bool *ret)
 {
 	// Open the Service Control Manager
 	SC_HANDLE hSCM = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
@@ -615,7 +743,9 @@ int IsServiceInstalled(bool *ret)
 	return 0;
 }
 
-int InstallService()
+
+
+static int InstallService()
 {
 	// Open the Service Control Manager
 	SC_HANDLE hSCM = OpenSCManager(NULL, NULL, SC_MANAGER_CREATE_SERVICE);
@@ -628,8 +758,6 @@ int InstallService()
 	char filePath[MAX_PATH];
 	GetModuleFileName(NULL, filePath, sizeof(filePath));
 
-	//// Following section modified to add dependency parameter by John Rutter (V1.2.1)
-
 	// if service dependency specified, set up correct parameter type here
 	char* dependency = NULL;
 	if (dependsOn != NULL)
@@ -640,8 +768,6 @@ int InstallService()
 		memset( dependency, 0, dependencyLen );
 		strcpy( dependency, dependsOn );
 	}
-
-	//// Further modifications to include auto/manual option by John Rutter (V1.2.2)
 
 	// Set up automatic or manual service startup mode
 
@@ -654,16 +780,16 @@ int InstallService()
                                        serviceName,					// lpDisplayName
                                        SERVICE_ALL_ACCESS,			// dwDesiredAccess
                                        SERVICE_WIN32_OWN_PROCESS,	// dwServiceType
-                                       dwStartType,					// dwStartType - John Rutter (V1.2.2)
+                                       dwStartType,					// dwStartType
                                        SERVICE_ERROR_NORMAL,		// dwErrorControl
                                        filePath,					// lpBinaryPathName
                                        NULL,						// lpLoadOrderGroup
                                        NULL,						// lpdwTagId
-                                       dependency,					// lpDependencies - John Rutter (V1.2.1)
+                                       dependency,					// lpDependencies
                                        NULL,						// lpServiceStartName
                                        NULL);						// lpPassword
 
-	// clean up any dependency parameter straight away - John Rutter (V1.2.1)
+	// clean up any dependency parameter straight away
 	if (dependency != NULL)
 	{
 		delete[] dependency;
@@ -826,7 +952,6 @@ int InstallService()
 	}
 
 
-	///////// This section added by Lars Johanson IVF 2001-02-26
 	if (pathExt != NULL)
 	{
 		//Set the path extension
@@ -836,7 +961,13 @@ int InstallService()
 			return -1;
 		}
 	}
-	///////// End of added section
+
+	// Set the shutdown timeout value
+	if (RegSetValueEx(hKey, "Shutdown Timeout", 0, REG_DWORD,  (BYTE *)&shutdownMsecs, sizeof(shutdownMsecs)) != ERROR_SUCCESS)
+	{
+		RegCloseKey(hKey);
+		return -1;
+	}
 
 	//Close the registry.
 	RegCloseKey(hKey);
@@ -895,7 +1026,9 @@ int InstallService()
 	return 0;
 }
 
-int UninstallService()
+
+
+static int UninstallService()
 {
 	// Open the Service Control Manager
 	SC_HANDLE hSCM = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
@@ -923,14 +1056,22 @@ int UninstallService()
 	return 0;
 }
 
-SERVICE_STATUS_HANDLE hServiceStatus;
-SERVICE_STATUS status;
-HANDLE hEventSource;
-HANDLE hWaitForStart = NULL;
-HANDLE hWaitForStop = NULL;
-bool serviceStartedSuccessfully = false;
 
-void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
+
+
+////
+//// Additional data declarations used in operation of the service
+////
+
+static SERVICE_STATUS_HANDLE hServiceStatus;
+static SERVICE_STATUS status;
+static HANDLE hEventSource;
+static HANDLE hWaitForStart = NULL;
+static HANDLE hWaitForStop = NULL;
+static bool serviceStartedSuccessfully = false;
+
+
+static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 {
 	//Set the service name.
 	serviceName = lpszArgv[0];
@@ -1041,15 +1182,17 @@ void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 	DeregisterEventSource (hEventSource);
 }
 
-void WINAPI ServiceHandler(DWORD opcode)
+
+
+static void WINAPI ServiceHandler(DWORD opcode)
 {
 	switch (opcode)
 	{
     case SERVICE_CONTROL_STOP:
     case SERVICE_CONTROL_SHUTDOWN:
-		//Tell the service mamanger that stop is pending.
+		//Tell the service mamanger that stop is pending, with hint as to how long it may take
 		status.dwCurrentState = SERVICE_STOP_PENDING;
-		status.dwWaitHint = 35000;
+		status.dwWaitHint = shutdownMsecs + SHUTDOWN_HINT_EXTRA_MSECS;
 		SetServiceStatus(hServiceStatus, &status);
 
 		//Start the stop method in another thread.
@@ -1093,7 +1236,9 @@ void WINAPI ServiceHandler(DWORD opcode)
 	}
 }
 
-DWORD WINAPI StartService(LPVOID lpParam)
+
+
+static DWORD WINAPI StartService(LPVOID lpParam)
 {
 	//Open the registry for this service's parameters.
 	LONG regRet;
@@ -1329,9 +1474,8 @@ DWORD WINAPI StartService(LPVOID lpParam)
 		}
 	}
 
-	///////// This section added by Lars Johanson IVF 2001-02-26 modified by Elijah Roberts 2001-04-12.
 	//Get the path extension.
-	char *regPathExt = NULL; ///// Modified to avoid erroneous delete below - John Rutter (V1.2.1)
+	char *regPathExt = NULL;
 	DWORD regPathExtLength = 0;
 	if ((regRet=RegQueryValueExAllocate(hKey, "Path", NULL, NULL,  (BYTE **)&regPathExt, &regPathExtLength)) != ERROR_SUCCESS)
 	{
@@ -1379,7 +1523,10 @@ DWORD WINAPI StartService(LPVOID lpParam)
 		}
 
 		//If there was a path already and there is a new path, append a seperator.
-		if (strlen(currentPath) > 0 && strlen(regPathExt) > 0) strcat(currentPath, ";");
+		if (strlen(currentPath) > 0 && strlen(regPathExt) > 0)
+		{
+			strcat(currentPath, ";");
+		}
 
 		//Append the new path.
 		strcat(currentPath, regPathExt);
@@ -1401,13 +1548,24 @@ DWORD WINAPI StartService(LPVOID lpParam)
 			return -1;
 		}
 	}
-	///////// End of added section
+
+	//Get the shutdown timer value, if specified
+	long regShutdownMsecs = 0;
+	DWORD regShutdownMsecsLength = sizeof(regShutdownMsecs);
+	if ((regRet=RegQueryValueEx(hKey, "Shutdown Timeout", NULL, NULL,  (BYTE *)&regShutdownMsecs, &regShutdownMsecsLength)) != ERROR_SUCCESS)
+	{
+		// value was not initially stored in registry, so use default value as before
+		shutdownMsecs = DEFAULT_SHUTDOWN_TIMEOUT_MSECS;
+	}
+	else
+	{
+		shutdownMsecs = regShutdownMsecs; // use whatever value was found in the registry (legal or not)
+	}
 
 	//Close the registry.
 	RegCloseKey(hKey);
 
 	//Run the java service.
-	serviceStartedSuccessfully = true;
 	serviceStartedSuccessfully = StartJavaService(hEventSource, regJvmLibrary, regJvmOptionCount, regJvmOptions, regStartClass, regStartMethod, regStartParamCount, regStartParams, regOutFileValue, regErrFileValue);
 
 	//Free the buffers.
@@ -1456,7 +1614,9 @@ DWORD WINAPI StartService(LPVOID lpParam)
 	return 0;
 }
 
-DWORD WINAPI StopService(LPVOID lpParam)
+
+
+static DWORD WINAPI StopService(LPVOID lpParam)
 {
 	//Open the registry for this service's parameters.
 	LONG regRet;
@@ -1609,24 +1769,36 @@ DWORD WINAPI StopService(LPVOID lpParam)
 	return 0;
 }
 
-DWORD WINAPI TimeoutStop(LPVOID lpParam)
+
+
+static DWORD WINAPI TimeoutStop(LPVOID lpParam)
 {
 	//Sleep for required number of seconds.
-	Sleep(SHUTDOWN_TIMEOUT_MSECS); // modified to use constant definition here - John Rutter (V1.2.1)
+	Sleep(shutdownMsecs);
 
-	//Tell the main thread that the service is no longer running.
+	//Write event log message to indicate timedout during shutdown request procesing
+	//don't want to send this if shutdown was successful, so could/should check status
 	LPTSTR messages[1];
 	messages[0] = serviceName;
 	ReportEvent(hEventSource, EVENTLOG_ERROR_TYPE, 0, EVENT_STOP_TIMEDOUT, NULL, 1, 0, (const char **)messages, NULL);
-	if (hWaitForStart != NULL && hWaitForStop != NULL)
+
+	//Tell the main thread that the service is no longer running.
+	if (hWaitForStart != NULL)
 	{
 		SetEvent(hWaitForStart);
+	}
+	if (hWaitForStop != NULL)
+	{
 		SetEvent(hWaitForStop);
 	}
 
 	return 0;
 }
 
+
+//
+// Globally-accessed function used on shutdown
+//
 void ExitHandler(int code)
 {
 	//Log the code to the event log.
@@ -1652,10 +1824,12 @@ void ExitHandler(int code)
 	{
 		SetEvent(hWaitForStop);
 	}
-	Sleep(EXIT_HANDLER_TIMEOUT_MSECS); // modified to use constant definition here - John Rutter (V1.2.1)
+	Sleep(EXIT_HANDLER_TIMEOUT_MSECS);
 }
 
-LONG RegQueryValueExAllocate(HKEY hKey, LPCTSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE *lplpData, LPDWORD lpcbData)
+
+
+static LONG RegQueryValueExAllocate(HKEY hKey, LPCTSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE *lplpData, LPDWORD lpcbData)
 {
 	LONG ret;
 
