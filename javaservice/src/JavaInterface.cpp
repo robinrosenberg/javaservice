@@ -104,15 +104,15 @@ bool StartJavaService(HANDLE hEventSource, const ServiceParameters* serviceParam
 
 	ServiceLogger::write("StartJavaService(serviceParams)\n");
 	bool started = StartJavaService(hEventSource,
-									serviceParams->jvmLibrary,
-									serviceParams->jvmOptionCount,
-									serviceParams->jvmOptions,
-									serviceParams->startClass,
-									serviceParams->startMethod,
-									serviceParams->startParamCount,
-									serviceParams->startParams,
-									serviceParams->outFile,
-									serviceParams->errFile);
+									serviceParams->getJvmLibrary(),
+									serviceParams->getJvmOptionCount(),
+									serviceParams->getJvmOptions(),
+									serviceParams->getStartClass(),
+									serviceParams->getStartMethod(),
+									serviceParams->getStartParamCount(),
+									serviceParams->getStartParams(),
+									serviceParams->getOutFile(),
+									serviceParams->getErrFile());
 
 	ServiceLogger::write(started ? "StartJavaService successful\n" : "StartJavaService failed\n");
 	return started;
@@ -231,10 +231,10 @@ bool StopJavaService(HANDLE hEventSource, const ServiceParameters* serviceParams
 {
 	ServiceLogger::write("StopJavaService(serviceParams)\n");
 	return StopJavaService(hEventSource, 
-							serviceParams->stopClass,
-							serviceParams->stopMethod,
-							serviceParams->stopParamCount,
-							serviceParams->stopParams);
+							serviceParams->getStopClass(),
+							serviceParams->getStopMethod(),
+							serviceParams->getStopParamCount(),
+							serviceParams->getStopParams());
 }
 
 

@@ -304,13 +304,13 @@ static DWORD WINAPI StartServiceThread(LPVOID lpParam)
 
 	// if a current operating directory is specified, change to that location now
 
-	if (serviceParams->currentDirectory != NULL)
+	if (serviceParams->getCurrentDirectory() != NULL)
 	{
 		ServiceLogger::write("Start Service Thread setting current directory to '");
-		ServiceLogger::write(serviceParams->currentDirectory);
+		ServiceLogger::write(serviceParams->getCurrentDirectory());
 		ServiceLogger::write("'\n");
 
-		if (!SetCurrentDirectory(serviceParams->currentDirectory))
+		if (!SetCurrentDirectory(serviceParams->getCurrentDirectory()))
 		{
 			ServiceLogger::write("Start Service Thread failed to set directory\n");
 			logFunctionError(processGlobals->getEventSource(), "SetCurrentDirectory"); //TODO - include directory string?
@@ -322,13 +322,13 @@ static DWORD WINAPI StartServiceThread(LPVOID lpParam)
 
 	// if there is a path extension, set that up for the local environment
 
-	if (serviceParams->pathExt != NULL)
+	if (serviceParams->getPathExt() != NULL)
 	{
 		ServiceLogger::write("Start Service Thread setting path extension '");
-		ServiceLogger::write(serviceParams->pathExt);
+		ServiceLogger::write(serviceParams->getPathExt());
 		ServiceLogger::write("'\n");
 
-		if (!setExtendedPath(serviceParams->pathExt))
+		if (!setExtendedPath(serviceParams->getPathExt()))
 		{
 			ServiceLogger::write("Start Service Thread failed to set path extension\n");
 			processGlobals->setBothEvents();
@@ -438,7 +438,7 @@ static DWORD WINAPI StopServiceThread(LPVOID lpParam)
 		return -1;
 	}
 
-	if (serviceParams->stopClass != NULL)
+	if (serviceParams->getStopClass() != NULL)
 	{
 		//Stop the java service.
 		if (StopJavaService(processGlobals->getEventSource(), 

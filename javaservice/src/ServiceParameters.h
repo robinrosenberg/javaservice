@@ -57,72 +57,98 @@ public:
 	bool readFromRegistry(const char* serviceName);
 
 	//
-	// Initial implementation, all values available with unchecked public access
+	// Data members all have read-only get accessors and copy-type set modifiers
 	//
 
-	// Software version number, for reference only
-	const char* swVersion;
+	void setSwVersion(const char* wotVersion) { updateStringValue(swVersion, wotVersion); }
+	const char* getSwVersion() const { return swVersion; }
 
-	//The location of the jvm library.
-	const char *jvmLibrary;
+	void setJvmLibrary(const char* wotLibrary) { updateStringValue(jvmLibrary, wotLibrary); }
+	const char* getJvmLibrary() const { return jvmLibrary; }
 
-	//The number of jvm options.
-	int jvmOptionCount;
+	void setJvmOptionCount(int wotCount);
+	int getJvmOptionCount() const { return jvmOptionCount; }
+	void setJvmOption(int optionIndex, const char* wotOption) { jvmOptions[optionIndex] = wotOption; }
+	const char* getJvmOption(int optionIndex) const { return jvmOptions[optionIndex]; }
+	void setJvmOptions(const char** wotOptions) { if (jvmOptions != NULL) { delete[] jvmOptions; } jvmOptions = wotOptions; }
+	const char** getJvmOptions() const { return jvmOptions; }
 
-	//The jvm options.
-	const char **jvmOptions;
+	void setStartClass(const char* wotClass) { updateStringValue(startClass, wotClass); }
+	const char* getStartClass() const { return startClass; }
 
-	//The start class for the service.
-	const char *startClass;
+	void setStartMethod(const char* wotMethod) { updateStringValue(startMethod, wotMethod); }
+	const char* getStartMethod() const { return startMethod; }
 
-	//The start method for the service.
-	const char *startMethod;
+	void setStartParamCount(int wotCount);
+	int getStartParamCount() const { return startParamCount; }
+	void setStartParam(int paramIndex, const char* wotParam) { startParams[paramIndex] = wotParam; }
+	const char* getStartParam(int paramIndex) const { return startParams[paramIndex]; }
+	void setStartParams(const char** wotParams) { startParams = wotParams; }
+	const char** getStartParams() const { return startParams; }
 
-	//The number of parameters for the start method.
-	int startParamCount;
+	void setStopClass(const char* wotClass) { updateStringValue(stopClass, wotClass); }
+	const char* getStopClass() const { return stopClass; }
 
-	//The start method parameters.
-	const char **startParams;
-
-	//The stop class for the service.
-	const char *stopClass;
-
-	//The stop method for the service.
-	const char *stopMethod;
-
-	//The number of parameters for the stop method.
-	int stopParamCount;
-
-	//The stop method parameters.
-	const char **stopParams;
-
-	//The out redirect file.
-	const char *outFile;
-
-	//The err redirect file.
-	const char *errFile;
-
-	//The path extension.
-	const char *pathExt;
-
-	//The current directory.
-	const char *currentDirectory;
-
-	// NT service dependency
-	const char* dependsOn;
-
-	// Automatic (default) or manual service startup
-	bool autoStart;
+	void setStopMethod(const char* wotMethod) { updateStringValue(stopMethod, wotMethod); }
+	const char* getStopMethod() const { return stopMethod; }
 
 
-	// set this flag if the string values have been allocated and will need to be freed
-	void setLoadedDynamically(bool isDynamic) { loadedDynamically = isDynamic; }
+	void setStopParamCount(int wotCount);
+	int getStopParamCount() const { return stopParamCount; }
+	void setStopParams(const char** wotParams) { stopParams = wotParams; }
+	const char** getStopParams() const { return stopParams; }
+	void setStopParam(int paramIndex, const char* wotParam) { stopParams[paramIndex] = wotParam; }
+	const char* getStopParam(int paramIndex) const { return stopParams[paramIndex]; }
+
+	void setOutFile(const char* wotFile) { updateStringValue(outFile, wotFile); }
+	const char* getOutFile() const { return outFile; }
+
+	void setErrFile(const char* wotFile) { updateStringValue(errFile, wotFile); }
+	const char* getErrFile() const { return errFile; }
+
+	void setPathExt(const char* wotPathExtension) { updateStringValue(pathExt, wotPathExtension); }
+	const char* getPathExt() const { return pathExt; }
+
+	void setCurrentDirectory(const char* wotDirectory) { updateStringValue(currentDirectory, wotDirectory); }
+	const char* getCurrentDirectory() const { return currentDirectory; }
+
+	void setDependency(const char* wotDependency) { updateStringValue(dependency, wotDependency); }
+	const char* getDependency() const { return dependency; }
+
+	void setAutoStart(bool isAutoStart) { autoStart = isAutoStart; }
+	bool isAutoStart() const { return autoStart; }
 
 
 private:
 
-	bool loadedDynamically;
+	const char* swVersion;			// Software version number, for reference only
+	const char *jvmLibrary;			// the jvm library dll of the run-time environment
+	int jvmOptionCount;				// number of jvm options
+	const char **jvmOptions;		// the jvm option(s)
 
+
+	const char *startClass;			// start class for the service
+	const char *startMethod;		// start method for the service
+	int startParamCount;			// number of parameters for the start method
+	const char **startParams;		// start method parameters
+
+	const char *stopClass;			// stop class for the service
+	const char *stopMethod;			// stop method for the service
+	int stopParamCount;				// number of parameters for the stop method
+	const char **stopParams;		// stop method parameters
+
+	const char *outFile;			// java stdout redirect file
+	const char *errFile;			// java stderr redirect file
+	const char *pathExt;			// path extension
+	const char *currentDirectory;	// run-time directory
+	const char* dependency;			// service dependency
+	bool autoStart;					// Automatic (default) or manual service startup
+
+
+	void updateStringValue(const char*& stringRef, const char* newString);
+
+
+	// private access copy functions, not implemented / not used
 	ServiceParameters(const ServiceParameters& other);
 	ServiceParameters& operator=(const ServiceParameters& other);
 };

@@ -119,16 +119,16 @@ bool InstallCommand::installService()
 	{
 		// successful installation, output result information
 
-		const char* startType = serviceParameters->autoStart ? "automatic" : "manual";
+		const char* startType = serviceParameters->isAutoStart() ? "automatic" : "manual";
 
-		if (serviceParameters->dependsOn == NULL)
+		if (serviceParameters->getDependency() == NULL)
 		{
 			cout << "The " << getServiceName() << " " << startType << " service was successfully installed" << endl;
 		}
 		else
 		{
 			cout << "The " << getServiceName() << " " << startType << " service was successfully installed, depends on "
-				 << serviceParameters->dependsOn << " service." << endl;
+				 << serviceParameters->getDependency() << " service." << endl;
 		}
 
 		installed = true;

@@ -123,119 +123,119 @@ bool RegistryHandler::writeServiceParams(const ServiceParameters& serviceParams)
 
 	// Set the JVM Library value.
 
-	if (written && !storeRegValueString(hKey, REG_KEY_JVM_LIBRARY, serviceParams.jvmLibrary))
+	if (written && !storeRegValueString(hKey, REG_KEY_JVM_LIBRARY, serviceParams.getJvmLibrary()))
 	{
 		written = false;
 	}
 
 	// Set the jvm option count.
 
-	if (written && !storeRegValueDword(hKey, REG_KEY_JVM_OPTION_COUNT, serviceParams.jvmOptionCount))
+	if (written && !storeRegValueDword(hKey, REG_KEY_JVM_OPTION_COUNT, serviceParams.getJvmOptionCount()))
 	{
 		written = false;
 	}
 
 	// Set the jvm options.
 
-	for (int opt = 0; written && (opt < serviceParams.jvmOptionCount); opt++)
+	for (int opt = 0; written && (opt < serviceParams.getJvmOptionCount()); opt++)
 	{
 		char optKeyName[256];
 		sprintf(optKeyName, REG_KEY_JVM_OPTION_NO_FMT, opt);
 
-		written = storeRegValueString(hKey, optKeyName, serviceParams.jvmOptions[opt]);
+		written = storeRegValueString(hKey, optKeyName, serviceParams.getJvmOption(opt));
 	}
 
 	// Set the start class.
 
-	if (written && !storeRegValueString(hKey, REG_KEY_START_CLASS, serviceParams.startClass))
+	if (written && !storeRegValueString(hKey, REG_KEY_START_CLASS, serviceParams.getStartClass()))
 	{
 		written = false;
 	}
 
 	// Set the start method.
 
-	if (written && !storeRegValueString(hKey, REG_KEY_START_METHOD, serviceParams.startMethod))
+	if (written && !storeRegValueString(hKey, REG_KEY_START_METHOD, serviceParams.getStartMethod()))
 	{
 		written = false;
 	}
 
 	// Set the start parameter count.
 
-	if (written && !storeRegValueDword(hKey, REG_KEY_START_PARAM_COUNT, serviceParams.startParamCount))
+	if (written && !storeRegValueDword(hKey, REG_KEY_START_PARAM_COUNT, serviceParams.getStartParamCount()))
 	{
 		written = false;
 	}
 
 	// Set the start parameters.
 
-	for (int param = 0; written && (param < serviceParams.startParamCount); param++)
+	for (int param = 0; written && (param < serviceParams.getStartParamCount()); param++)
 	{
 		char paramKeyName[256];
 		sprintf(paramKeyName, REG_KEY_START_PARAM_NO_FMT, param);
 
-		written = storeRegValueString(hKey, paramKeyName, serviceParams.startParams[param]);
+		written = storeRegValueString(hKey, paramKeyName, serviceParams.getStartParam(param));
 	}
 
 	// Set stop class/method/parameters
 
-	if (written && (serviceParams.stopClass != NULL))
+	if (written && (serviceParams.getStopClass() != NULL))
 	{
 		// Set the stop class.
 
-		if (written && !storeRegValueString(hKey, REG_KEY_STOP_CLASS, serviceParams.stopClass))
+		if (written && !storeRegValueString(hKey, REG_KEY_STOP_CLASS, serviceParams.getStopClass()))
 		{
 			written = false;
 		}
 
 		// Set the stop method.
 
-		if (written && !storeRegValueString(hKey, REG_KEY_STOP_METHOD, serviceParams.stopMethod))
+		if (written && !storeRegValueString(hKey, REG_KEY_STOP_METHOD, serviceParams.getStopMethod()))
 		{
 			written = false;
 		}
 
 		// Set the stop parameter count.
 
-		if (written && !storeRegValueDword(hKey, REG_KEY_STOP_PARAM_COUNT, serviceParams.stopParamCount))
+		if (written && !storeRegValueDword(hKey, REG_KEY_STOP_PARAM_COUNT, serviceParams.getStopParamCount()))
 		{
 			written = false;
 		}
 
 		// Set the stop parameters.
 
-		for (int param = 0; written && (param < serviceParams.stopParamCount); param++)
+		for (int param = 0; written && (param < serviceParams.getStopParamCount()); param++)
 		{
 			char paramKeyName[256];
 			sprintf(paramKeyName, REG_KEY_STOP_PARAM_NO_FMT, param);
 
-			written = storeRegValueString(hKey, paramKeyName, serviceParams.stopParams[param]);
+			written = storeRegValueString(hKey, paramKeyName, serviceParams.getStopParam(param));
 		}
 	}
 
 	// Set the out file, if specified
 
-	if (written && !storeRegValueString(hKey, REG_KEY_SYSTEM_OUT, serviceParams.outFile))
+	if (written && !storeRegValueString(hKey, REG_KEY_SYSTEM_OUT, serviceParams.getOutFile()))
 	{
 		written = false;
 	}
 
 	// Set the err file, if specified
 
-	if (written && !storeRegValueString(hKey, REG_KEY_SYSTEM_ERR, serviceParams.errFile))
+	if (written && !storeRegValueString(hKey, REG_KEY_SYSTEM_ERR, serviceParams.getErrFile()))
 	{
 		written = false;
 	}
 
 	// Set the current directory, if specified
 
-	if (written && !storeRegValueString(hKey, REG_KEY_CURRENT_DIR, serviceParams.currentDirectory))
+	if (written && !storeRegValueString(hKey, REG_KEY_CURRENT_DIR, serviceParams.getCurrentDirectory()))
 	{
 		written = false;
 	}
 
 	// Set the path extension, if specified
 
-	if (written && !storeRegValueString(hKey, REG_KEY_PATH_EXT, serviceParams.pathExt))
+	if (written && !storeRegValueString(hKey, REG_KEY_PATH_EXT, serviceParams.getPathExt()))
 	{
 		written = false;
 	}
@@ -258,8 +258,6 @@ bool RegistryHandler::writeServiceParams(const ServiceParameters& serviceParams)
 
 bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 {
-	bool read = true; // set to false if any operations fail
-
 	const char* regKeyName = createServiceKeyName(serviceName);
 
 	HKEY hKey = openRegKey(regKeyName);
@@ -268,64 +266,102 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 
 	if (hKey == NULL)
 	{
-		read = false; // failed at the first step
+		return false; // failed at the first step
 	}
 
-	if (read && !getRegValueString(hKey, REG_KEY_SW_VERSION, &serviceParams.swVersion))
+	bool read = true; // set to false if any operations fail
+
+	char* tempString = NULL;
+	int tempCount;
+
+	if (getRegValueString(hKey, REG_KEY_SW_VERSION, &tempString))
 	{
-		serviceParams.swVersion = "V1.x"; // unknown value, but assumed pre-V2 (not an error)
+		serviceParams.setSwVersion(tempString);
+		delete[] tempString;
+	}
+	else
+	{
+		serviceParams.setSwVersion("V1.x"); // unknown value, but assumed pre-V2 (not an error)
 	}
 
-	if (read && !getRegValueString(hKey, REG_KEY_JVM_LIBRARY, &serviceParams.jvmLibrary))
+	if (getRegValueString(hKey, REG_KEY_JVM_LIBRARY, &tempString))
+	{
+		serviceParams.setJvmLibrary(tempString);
+		delete[] tempString;
+	}
+	else
 	{
 		read = false;
 	}
 
-	if (read && !getRegValueDword(hKey, REG_KEY_JVM_OPTION_COUNT, &serviceParams.jvmOptionCount))
+	if (read && getRegValueDword(hKey, REG_KEY_JVM_OPTION_COUNT, &tempCount))
+	{
+		serviceParams.setJvmOptionCount(tempCount);
+	}
+	else
 	{
 		read = false;
 	}
 
-	if (read && (serviceParams.jvmOptionCount > 0))
+	if (read && (tempCount > 0))
 	{
 		// allocate list of string pointers for all jvm options, then load them
-		serviceParams.jvmOptions = (const char**) new char*[serviceParams.jvmOptionCount];
-
-		for (int option = 0; read && (option < serviceParams.jvmOptionCount); option++)
+		for (int option = 0; read && (option < tempCount); option++)
 		{
 			char optionKeyName[256];
 			sprintf(optionKeyName, REG_KEY_JVM_OPTION_NO_FMT, option);
 
-			read = getRegValueString(hKey, optionKeyName, &serviceParams.jvmOptions[option]);
+			read = getRegValueString(hKey, optionKeyName, &tempString);
+			if (read)
+			{
+				serviceParams.setJvmOption(option, tempString);
+				delete[] tempString;
+			}
 		}
 	}
 
-	if (read && !getRegValueString(hKey, REG_KEY_START_CLASS, &serviceParams.startClass))
+	if (read && getRegValueString(hKey, REG_KEY_START_CLASS, &tempString))
+	{
+		serviceParams.setStartClass(tempString);
+		delete[] tempString;
+	}
+	else
 	{
 		read = false;
 	}
 
-	if (read && !getRegValueString(hKey, REG_KEY_START_METHOD, &serviceParams.startMethod))
+	if (read && getRegValueString(hKey, REG_KEY_START_METHOD, &tempString))
+	{
+		serviceParams.setStartMethod(tempString);
+		delete[] tempString;
+	}
+	else
 	{
 		read = false;
 	}
 
-	if (read && !getRegValueDword(hKey, REG_KEY_START_PARAM_COUNT, &serviceParams.startParamCount))
+	if (read && getRegValueDword(hKey, REG_KEY_START_PARAM_COUNT, &tempCount))
+	{
+		serviceParams.setStartParamCount(tempCount);
+	}
+	else
 	{
 		read = false;
 	}
 
-	if (read && (serviceParams.startParamCount > 0))
+	if (read && (tempCount > 0))
 	{
-		// allocate list of string pointers for the start parameters, then load them
-		serviceParams.startParams = (const char**) new char*[serviceParams.startParamCount];
-
-		for (int param = 0; read && (param < serviceParams.startParamCount); param++)
+		for (int param = 0; read && (param < tempCount); param++)
 		{
 			char paramKeyName[256];
 			sprintf(paramKeyName, REG_KEY_START_PARAM_NO_FMT, param);
 
-			read = getRegValueString(hKey, paramKeyName, &serviceParams.startParams[param]);
+			read = getRegValueString(hKey, paramKeyName, &tempString);
+			if (read)
+			{
+				serviceParams.setStartParam(param, tempString);
+				delete[] tempString;
+			}
 		}
 	}
 
@@ -333,10 +369,26 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 
 	if (read)
 	{
-		getRegValueString(hKey, REG_KEY_SYSTEM_OUT, &serviceParams.outFile);
-		getRegValueString(hKey, REG_KEY_SYSTEM_ERR, &serviceParams.errFile);
-		getRegValueString(hKey, REG_KEY_CURRENT_DIR, &serviceParams.currentDirectory);
-		getRegValueString(hKey, REG_KEY_PATH_EXT, &serviceParams.pathExt);
+		if (getRegValueString(hKey, REG_KEY_SYSTEM_OUT, &tempString))
+		{
+			serviceParams.setOutFile(tempString);
+			delete[] tempString;
+		}
+		if (getRegValueString(hKey, REG_KEY_SYSTEM_ERR, &tempString))
+		{
+			serviceParams.setErrFile(tempString);
+			delete[] tempString;
+		}
+		if (getRegValueString(hKey, REG_KEY_CURRENT_DIR, &tempString))
+		{
+			serviceParams.setCurrentDirectory(tempString);
+			delete[] tempString;
+		}
+		if (getRegValueString(hKey, REG_KEY_PATH_EXT, &tempString))
+		{
+			serviceParams.setPathExt(tempString);
+			delete[] tempString;
+		}
 
 	}
 
@@ -530,7 +582,7 @@ bool RegistryHandler::storeRegValueDword(HKEY hRegKey, const char* entryKey, con
 }
 
 
-bool RegistryHandler::getRegValueString(HKEY hRegKey, const char* entryKey, const char** entryValue)
+bool RegistryHandler::getRegValueString(HKEY hRegKey, const char* entryKey, char** entryValue)
 {
 	bool gotValue = false;
 

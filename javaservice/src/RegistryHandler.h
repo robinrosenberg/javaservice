@@ -69,7 +69,7 @@ protected:
 
 	bool storeRegValueExpString(HKEY hRegKey, const char* entryKey, const char* entryValue);
 
-	bool getRegValueString(HKEY hRegKey, const char* entryKey, const char** entryValue);
+	bool getRegValueString(HKEY hRegKey, const char* entryKey, char** entryValue);
 
 	bool getRegValueDword(HKEY hRegKey, const char* entryKey, int* entryValue);
 

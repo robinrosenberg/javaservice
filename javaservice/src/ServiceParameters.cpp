@@ -47,26 +47,28 @@ static int countOptionalArgs(const char** args, const char* stopAtArgs[], int ma
 // Default Constructor
 //
 ServiceParameters::ServiceParameters()
-: swVersion(STRPRODUCTVER)
+: swVersion(NULL)
 , jvmLibrary(NULL)
 , jvmOptionCount(0)
 , jvmOptions(NULL)
 , startClass(NULL)
-, startMethod("main")
+, startMethod(NULL)
 , startParamCount(0)
 , startParams(NULL)
 , stopClass(NULL)
-, stopMethod("main")
+, stopMethod(NULL)
 , stopParamCount(0)
 , stopParams(NULL)
 , outFile(NULL)
 , errFile(NULL)
 , pathExt(NULL)
 , currentDirectory(NULL)
-, dependsOn(NULL)
+, dependency(NULL)
 , autoStart(true)
-, loadedDynamically(false)
 {
+	setSwVersion(STRPRODUCTVER);
+	setStartMethod("main");
+	setStopMethod("main");
 }
 
 
@@ -75,52 +77,43 @@ ServiceParameters::ServiceParameters()
 //
 ServiceParameters::~ServiceParameters()
 {
-	// allow for two current setup modes - using dynamic strings to be deleted, or input strings to be discarded
-	//TODO - supply setProperty functions that always allocate a new string, then always delete them after...
-	if (loadedDynamically)
+	if (swVersion != NULL) delete[] (void*)swVersion;
+	if (jvmLibrary != NULL) delete[] (void*)jvmLibrary;
+	if (startClass != NULL) delete[] (void*)startClass;
+	if (startMethod != NULL) delete[] (void*)startMethod;
+	if (stopClass != NULL) delete[] (void*)stopClass;
+	if (stopMethod != NULL) delete[] (void*)stopMethod;
+	if (outFile != NULL) delete[] (void*)outFile;
+	if (errFile != NULL) delete[] (void*)errFile;
+	if (pathExt != NULL) delete[] (void*)pathExt;
+	if (currentDirectory != NULL) delete[] (void*)currentDirectory;
+
+	if ((jvmOptionCount > 0) && (jvmOptions != NULL))
 	{
-		// some of these strings are not to be deleted, since constants may be supplied instead
-		//TODO if (swVersion != NULL) delete[] (void*)swVersion;
-		if (jvmLibrary != NULL) delete[] (void*)jvmLibrary;
-		if (startClass != NULL) delete[] (void*)startClass;
-		//TODO if (startMethod != NULL) delete[] (void*)startMethod;
-		if (stopClass != NULL) delete[] (void*)stopClass;
-		//TODO if (stopMethod != NULL) delete[] (void*)stopMethod;
-		if (outFile != NULL) delete[] (void*)outFile;
-		if (errFile != NULL) delete[] (void*)errFile;
-		if (pathExt != NULL) delete[] (void*)pathExt;
-		if (currentDirectory != NULL) delete[] (void*)currentDirectory;
-
-		if ((jvmOptionCount > 0) && (jvmOptions != NULL))
+		for (int i = 0; i < jvmOptionCount; i++)
 		{
-			for (int i = 0; i < jvmOptionCount; i++)
-			{
-				delete[] (void*)jvmOptions[i];
-			}
+			delete[] (void*)jvmOptions[i];
 		}
-
-		if ((startParamCount > 0) && (startParams != NULL))
-		{
-			for (int i = 0; i < startParamCount; i++)
-			{
-				delete[] (void*)startParams[i];
-			}
-		}
-
-		if ((stopParamCount > 0) && (stopParams != NULL))
-		{
-			for (int i = 0; i < stopParamCount; i++)
-			{
-				delete[] (void*)stopParams[i];
-			}
-		}
-
+		delete[] jvmOptions;
 	}
 
-	// the arrays of pointers are always dynamic, even if the contents aren't/weren't
-	if (jvmOptions != NULL) delete[] jvmOptions;
-	if (startParams != NULL) delete[] startParams;
-	if (stopParams != NULL) delete[] stopParams;
+	if ((startParamCount > 0) && (startParams != NULL))
+	{
+		for (int i = 0; i < startParamCount; i++)
+		{
+			delete[] (void*)startParams[i];
+		}
+		delete[] startParams;
+	}
+
+	if ((stopParamCount > 0) && (stopParams != NULL))
+	{
+		for (int i = 0; i < stopParamCount; i++)
+		{
+			delete[] (void*)stopParams[i];
+		}
+		delete[] stopParams;
+	}
 }
 
 //
@@ -167,18 +160,18 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 
 	// first argument (mandatory) is the JVM Library
 
-	jvmLibrary = *args++;
+	setJvmLibrary(*args++);
 	remaining--;
 
 	// following arguments are taken to be JVM options up until '-start' argument
 
-	jvmOptionCount = countOptionalArgs(args, "-start", remaining);
+	setJvmOptionCount(countOptionalArgs(args, "-start", remaining));
 
-	if (jvmOptionCount > 0)
+	if (getJvmOptionCount() > 0)
 	{
-		jvmOptions = getOptionalArgs(args, jvmOptionCount);
-		args += jvmOptionCount;
-		remaining -= jvmOptionCount;
+		setJvmOptions(getOptionalArgs(args, getJvmOptionCount()));
+		args += getJvmOptionCount();
+		remaining -= getJvmOptionCount();
 	}
 
 	// next two arguments after jvm library and any jvm options must be '-start'
@@ -189,7 +182,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		args++; // skip -start arg
 		remaining--;
 
-		startClass = *args++; // start class name
+		setStartClass(*args++); // start class name
 		remaining--;
 	}
 	else // start argument(s) not present after JVM parameter(s)
@@ -205,7 +198,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		args++; // skip -method arg
 		remaining--;
 
-		startMethod = *args++; // start method name
+		setStartMethod(*args++); // start method name
 		remaining--;
 	}
 
@@ -219,13 +212,13 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		args++; // skip -params arg
 		remaining--;
 
-		startParamCount = countOptionalArgs(args, endingArgs, remaining);
+		setStartParamCount(countOptionalArgs(args, endingArgs, remaining));
 
-		if (startParamCount > 0)
+		if (getStartParamCount() > 0)
 		{
-			startParams = getOptionalArgs(args, startParamCount);
-			args += startParamCount;
-			remaining -= startParamCount;
+			setStartParams(getOptionalArgs(args, getStartParamCount()));
+			args += getStartParamCount();
+			remaining -= getStartParamCount();
 		}
 	}
 
@@ -236,7 +229,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		args++; // skip -stop arg
 		remaining--;
 
-		stopClass = *args++; // stop class name
+		setStopClass(*args++); // stop class name
 		remaining--;
 
 		// optional '-method' and method name arguments present?
@@ -246,7 +239,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 			args++; // skip -method arg
 			remaining--;
 
-			stopMethod = *args++; // stop method name
+			setStopMethod(*args++); // stop method name
 			remaining--;
 		}
 
@@ -258,13 +251,13 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 			remaining--;
 
 			// skip first element (-stop) in list of ending arguments in this call
-			stopParamCount = countOptionalArgs(args, &endingArgs[1], remaining);
+			setStopParamCount(countOptionalArgs(args, &endingArgs[1], remaining));
 
-			if (stopParamCount > 0)
+			if (getStopParamCount() > 0)
 			{
-				stopParams = getOptionalArgs(args, stopParamCount);
-				args += stopParamCount;
-				remaining -= stopParamCount;
+				setStopParams(getOptionalArgs(args, getStopParamCount()));
+				args += getStopParamCount();
+				remaining -= getStopParamCount();
 			}
 		}
 	}
@@ -276,7 +269,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		args++; // skip -out arg
 		remaining--;
 
-		outFile = *args++; // stdout filename
+		setOutFile(*args++); // stdout filename
 		remaining--;
 	}
 
@@ -287,7 +280,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		args++; // skip -err arg
 		remaining--;
 
-		errFile = *args++; // stderr filename
+		setErrFile(*args++); // stderr filename
 		remaining--;
 	}
 
@@ -298,18 +291,18 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		args++; // skip -current arg
 		remaining--;
 
-		currentDirectory = *args++; // current directory location
+		setCurrentDirectory(*args++); // current directory location
 		remaining--;
 	}
 
-	// optional '-path' additional classpath definition
+	// optional '-path' additional system path definition
 
 	if (argsOk && (remaining > 1) && (strcmp(*args, "-path") == 0))
 	{
 		args++; // skip -path arg
 		remaining--;
 
-		pathExt = *args++; // additional path
+		setPathExt(*args++); // additional path
 		remaining--;
 	}
 
@@ -320,7 +313,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		args++; // skip -depends arg
 		remaining--;
 
-		dependsOn = *args++; // service dependency
+		setDependency(*args++); // service dependency
 		remaining--;
 	}
 
@@ -330,13 +323,13 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 	{
 		if (strcmp(*args, "-auto") == 0)
 		{
-			autoStart = true; // set the flag, although this is defaulted already
+			setAutoStart(true); // set the flag, although this is defaulted already
 			args++;
 			remaining--;
 		}
 		else if (strcmp(*args, "-manual") == 0)
 		{
-			autoStart = false;
+			setAutoStart(false);
 			args++;
 			remaining--;
 		}
@@ -437,11 +430,86 @@ bool ServiceParameters::readFromRegistry(const char* serviceName)
 
 	delete registryHandler; // don't need this object any more
 
-	setLoadedDynamically(gotParams); // ensure new strings get released
-
 	return gotParams;
 }
 
+
+
+void ServiceParameters::setJvmOptionCount(int wotCount)
+{
+	if (jvmOptionCount != wotCount) {
+
+		if (jvmOptions != NULL) {
+			delete[] jvmOptions;
+			jvmOptions = NULL;
+		}
+
+		jvmOptionCount = wotCount;
+
+		if (jvmOptionCount > 0)
+		{
+			jvmOptions = (const char**) new char*[jvmOptionCount];
+		}
+	}
+}
+
+
+void ServiceParameters::setStartParamCount(int wotCount)
+{
+	if (startParamCount != wotCount) {
+
+		if (startParams != NULL) {
+			delete[] startParams;
+			startParams = NULL;
+		}
+
+		startParamCount = wotCount;
+
+		if (startParamCount > 0)
+		{
+			startParams = (const char**) new char*[startParamCount];
+		}
+	}
+}
+
+
+void ServiceParameters::setStopParamCount(int wotCount)
+{
+	if (stopParamCount != wotCount) {
+
+		if (stopParams != NULL) {
+			delete[] stopParams;
+			stopParams = NULL;
+		}
+
+		stopParamCount = wotCount;
+
+		if (stopParamCount > 0)
+		{
+			stopParams = (const char**) new char*[stopParamCount];
+		}
+	}
+}
+
+
+void ServiceParameters::updateStringValue(const char*& stringRef, const char* newString)
+{
+	if (stringRef != NULL)
+	{
+		delete[] (void*)stringRef;
+		stringRef = NULL;
+	}
+
+	if (newString != NULL)
+	{
+		int stringLen = strlen(newString);
+		char* allocated = new char[stringLen + 1];
+		strcpy(allocated, newString);
+		allocated[stringLen] = '\0';
+
+		stringRef = allocated;
+	}
+}
 
 
 
@@ -499,23 +567,23 @@ ostream& operator<< (ostream& os, const ServiceParameters& serviceParams)
 
 	os << "Service configuration values:-" << endl;
 
-	outputConfigString(os, "JavaService Version ", serviceParams.swVersion);
+	outputConfigString(os, "JavaService Version ", serviceParams.getSwVersion());
 
-	outputConfigString(os, "JVM Library", serviceParams.jvmLibrary);
+	outputConfigString(os, "JVM Library", serviceParams.getJvmLibrary());
 
-	outputConfigArray(os, "JVM Option", serviceParams.jvmOptionCount, serviceParams.jvmOptions);
+	outputConfigArray(os, "JVM Option", serviceParams.getJvmOptionCount(), serviceParams.getJvmOptions());
 
-	outputClassInfo(os, "Start", serviceParams.startClass, serviceParams.startMethod, serviceParams.startParamCount, serviceParams.startParams);
+	outputClassInfo(os, "Start", serviceParams.getStartClass(), serviceParams.getStartMethod(), serviceParams.getStartParamCount(), serviceParams.getStartParams());
 
-	outputClassInfo(os, "Stop", serviceParams.stopClass, serviceParams.stopMethod, serviceParams.stopParamCount, serviceParams.stopParams);
+	outputClassInfo(os, "Stop", serviceParams.getStopClass(), serviceParams.getStopMethod(), serviceParams.getStopParamCount(), serviceParams.getStopParams());
 
-	outputConfigString(os, "Stdout File", serviceParams.outFile);
+	outputConfigString(os, "Stdout File", serviceParams.getOutFile());
 
-	outputConfigString(os, "Stderr File", serviceParams.errFile);
+	outputConfigString(os, "Stderr File", serviceParams.getErrFile());
 
-	outputConfigString(os, "Path Extension", serviceParams.pathExt);
-	
-	outputConfigString(os, "Current Directory", serviceParams.currentDirectory);
+	outputConfigString(os, "Path Extension", serviceParams.getPathExt());
+
+	outputConfigString(os, "Current Directory", serviceParams.getCurrentDirectory());
 
 	// dependsOn and autostart only used during installation command processing
 

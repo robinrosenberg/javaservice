@@ -201,10 +201,10 @@ bool ServiceCommand::createService(const ServiceParameters& serviceParams)
 		GetModuleFileName(NULL, filePath, sizeof(filePath));
 
 		// if service dependency specified, set up correct parameter type here
-		const char* dependency = getDependencyString(serviceParams.dependsOn);
+		const char* dependency = getDependencyString(serviceParams.getDependency());
 
 		// set up automatic or manual service startup mode
-		DWORD dwStartType = serviceParams.autoStart ? SERVICE_AUTO_START : SERVICE_DEMAND_START;
+		DWORD dwStartType = serviceParams.isAutoStart() ? SERVICE_AUTO_START : SERVICE_DEMAND_START;
 
 		// attempt to create the service
 		SC_HANDLE hService = CreateService(hSCM,						// hSCManager
