@@ -1,0 +1,108 @@
+<html>
+<head>
+<title>JavaService - Java to NT Service Connector</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="styles.css" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF">
+<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr> 
+    <td class="mainTitle"><span class="mainHeading">JavaService - Overview</span></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td> 
+      <p class="mainBold">Current Version: 1.2.0<br>
+        Release Date: April 12, 2001</p>
+      <p class="mainNormal">Java provides developers with a platform independent 
+        programming API. This allows programs to be written and compiled for distinct 
+        operating systems and architectures, such as Windows, Solaris, and Linux.</p>
+      <p class="mainNormal">Windows NT/2000 includes a set of tools and APIs that 
+        allow the creation and management of programs that run as background tasks, 
+        or services. Services typically run without any user interaction. This 
+        is especially useful when running programs, such as web servers, that 
+        should start automatically when the operating systems starts. Also, a 
+        service can be manually stopped, started, or paused using the service 
+        control manager that is includes with the operating system.</p>
+      <p class="mainNormal">JavaService is a Win32 executable that allows any 
+        Java class to be run as an NT service. It uses JNI's invocation API to 
+        create a Java Virtual Machine using any JNI compliant Java implementation. 
+        JavaService can call the typical entry method</p>
+      <blockquote> 
+        <p class="mainCode">static void main(String[])</p>
+      </blockquote>
+      <p class="mainNormal">in order to start the service, or any other method 
+        you choose. In order to stop the service it can call another method or 
+        simply terminate the JVM.</p>
+      <p class="mainNormal">JavaService is free software. It is distributed using 
+        a BSD style license. This means that you can do whatever you want with 
+        it, provided you follow a <a href="license.html">few simple rules</a> 
+        about distribution.</p>
+      <p class="mainBold"><a name="Release_Notes"></a>Release Notes</p>
+      <blockquote> 
+        <p class="mainBold">Version: 1.2.0<br>
+          Release Date: April 12, 2001</p>
+        <ul class="mainNormal">
+          <li><b>Added the ability to have registry values greater than 256 characters</b>. 
+            Registry access is now fully dynamic and values can have any length. 
+            A lot of people were having problems with the 256 character limit. 
+            I'm sorry it took so long to fix that, but I've been busy.</li>
+          <li>Fixed several printf statements that were missing parameters. Thanks 
+            to Anthony Tagunov for catching this.</li>
+          <li>Fixed a problem that prevented registry errors from being displayed 
+            properly. Thanks to Lars Johanson for sending in a fix for this.</li>
+          <li>Fixed a missing parameter in the Tomcat 3.2 install batch file. 
+            This is untested as I don't use Tomcat 3.2, so if someone would let 
+            me know if it works or not, I would appreciate it. Thanks to Joe Siebenmann 
+            for pointing out that there was a problem with the old batch file.</li>
+          <li>Added a new parameter &quot;-current&quot; to allow the current 
+            working directory to be specified. There were some people having problems 
+            with code that used relative paths, so this should help them out.</li>
+          <li>Added a new parameter &quot;-path&quot; to allow for extra path 
+            information to be added for finding dependent DLLs. Thanks to Lars 
+            Johanson for this submission.<br>
+          </li>
+        </ul>
+        <p class="mainBold"></p>
+        <p class="mainBold">Version: 1.1.1<br>
+          Release Date: December 21, 2000 </p>
+        <ul class="mainNormal">
+          <li>Added a new batch file to install Tomcat 3.2 that was contributed 
+            by James Bigler.</li>
+        </ul>
+        <p class="mainBold">Version: 1.1.0<br>
+          Release Date: October 11, 2000 </p>
+        <ul class="mainNormal">
+          <li>Added an exit handler to the JVM so that a message is logged and 
+            the service is stopped gracefully if the System.exit method is called. 
+          </li>
+        </ul>
+        <p class="mainBold">Version: 1.0.0<br>
+          Release Date: August 27, 2000 </p>
+        <ul class="mainNormal">
+          <li>Modified to work around a bug in the Sun J2SE 1.3 that caused the 
+            JVM to exit and the service to stop whenever a user logged off of 
+            the system.</li>
+        </ul>
+        <p class="mainBold">Version: 0.9.0<br>
+          Release Date: April 14, 2000 </p>
+        <ul class="mainNormal">
+          <li>Initial Release. </li>
+        </ul>
+        </blockquote>
+      <p class="mainBold"><a name="To_Do"></a>To Do</p>
+      <p class="mainNormal">When stopping the service, the time to wait for both 
+        the start and stop methods to return before the JVM is terminated is hard 
+        coded to 30 seconds. Make this adjustable.</p>
+      <p class="mainBold">Support</p>
+      <p class="mainNormal">While this product is not really supported in any 
+        real sense, if you have questions or problems with it, please feel free 
+        to email <a href="mailto:eroberts@alexandriasc.com">eroberts@alexandriasc.com</a>.</p>
+          </td>
+  </tr>
+</table>
+</body>
+</html>
