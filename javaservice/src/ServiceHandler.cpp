@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -44,14 +44,12 @@
 //// Constant Declarations
 ////
 
-// Number of milliseconds delay timeout when stopping the service
-static const long SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
-
-// Number of milliseconds for shutdown status update interval
-static const long SERVICE_SHUTDOWN_MSECS = SHUTDOWN_TIMEOUT_MSECS + 5000;
+// Extra period of time on shutdown notification to service manager
+static const long SHUTDOWN_HINT_EXTRA_MSECS = 5000; // 5 seconds
 
 // Number of milliseconds delay after exit handler has been triggered
-static const long EXIT_HANDLER_TIMEOUT_MSECS = 90000; // 90 seconds
+// (no obvious use for this, as it the sleep occurs after the JVM has died)
+static const long EXIT_HANDLER_TIMEOUT_MSECS = 15000; // 15 seconds
 
 
 
@@ -93,7 +91,7 @@ bool ServiceHandler::invokeWindowsService()
 	// Start the service dispatcher, which will call the ServiceMain function for the service
 	// (or do nothing at all if program invoked from command line with no parameters)
 
-	BOOL startSuccess = StartServiceCtrlDispatcher(serviceTable);
+	const BOOL startSuccess = StartServiceCtrlDispatcher(serviceTable);
 
 	// note that it does not return from this call until service is terminated...
 
@@ -224,9 +222,10 @@ static void WINAPI ServiceControlHandler(DWORD opcode)
 		{
 			ServiceLogger::write("Service control stop/shutdown requested\n");
 
-			// Tell the service manager that stop is pending, and may take longer than the 20-sec shutdown
+			// Tell the service manager that stop is pending, and may take longer than the usual 20-sec shutdown
 
-			processGlobals->setStatusWaitHint(SERVICE_SHUTDOWN_MSECS);
+			const long maxShutdownMsecs = processGlobals->getServiceParameters()->getShutdownMsecs() + SHUTDOWN_HINT_EXTRA_MSECS;
+			processGlobals->setStatusWaitHint(maxShutdownMsecs);
 			processGlobals->updateServiceStatus(SERVICE_STOP_PENDING);
 
 			// Invoke the stop method in another thread, at higher priority level
@@ -480,8 +479,9 @@ static DWORD WINAPI TimeoutStopThread(LPVOID lpParam)
 	ServiceLogger::write("Timeout Stop Thread invoked\n");
 
 	//Sleep for required number of seconds.
-	Sleep(SHUTDOWN_TIMEOUT_MSECS);
+	Sleep(processGlobals->getServiceParameters()->getShutdownMsecs());
 
+	// if timeout thread completed before normal service shutdown, log the failure
 	if (!processGlobals->getServiceStoppedSuccessfully())
 	{
 		processGlobals->logServiceEvent(EVENT_STOP_TIMEDOUT);
@@ -497,7 +497,7 @@ static DWORD WINAPI TimeoutStopThread(LPVOID lpParam)
 
 
 //
-// Globally-accessed function used on shutdown
+// Globally-accessed function used on JVM shutdown
 //
 void ExitHandler(int code)
 {
@@ -514,5 +514,5 @@ void ExitHandler(int code)
 	//Tell the main thread that the service is no longer running.
 	processGlobals->setBothEvents();
 
-	Sleep(EXIT_HANDLER_TIMEOUT_MSECS);
+	Sleep(EXIT_HANDLER_TIMEOUT_MSECS); // wait around a while, but can't do anything else in Java-land, JVM is dead
 }
