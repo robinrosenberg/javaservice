@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -128,7 +128,7 @@ public class SampleService
 	 * processing function within that - which continues in a loop (with delays)
 	 * until signalled to end by the service stop function 
 	 * 
-	 * @param args command-line arguments, array may be zero-length or more
+	 * @param args command-line arguments, expect first element to be 'start'
 	 */
 	public static void serviceStart(String[] args)
 	{
@@ -137,7 +137,7 @@ public class SampleService
 		outputJvmDetails();
 		outputHeapDetails();
 
-		getServiceInstance().execute();
+		getServiceInstance().execute(args);
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class SampleService
 	 * Get singleton instance and signal that it is to terminate the processing
 	 * loop (if that is even running at the time).
 	 * 
-	 * @param args command-line arguments, array may be zero-length or more
+	 * @param args command-line arguments, expect first element to be 'stop'
 	 */
 	public static void serviceStop(String[] args)
 	{
@@ -206,17 +206,28 @@ public class SampleService
 	 * Start service execution, until such time as control flag is cleared.
 	 * Does little other than output message and sleep one second at a time
 	 * in a continuous loop, which terminates if/when the flag gets reset.
+	 * Extra argument may be supplied to cause program to allocate Objects from
+	 * the heap in the processing loop, so that garbage collection will have
+	 * something to do whenever it is invoked.
+	 * 
+	 * @param args command-line arguments, expect first element to be 'start'
 	 */	
-	private void execute()
+	private void execute(String[] args)
 	{
+		final boolean useMemory = (args.length > 1);
 		System.out.println("Starting service execution");
+		if (useMemory)
+		{
+			System.out.println("(Execution loop will exercise memory heap)");
+		}
+
 		
 		setServiceExecuting(true);
 		while (isServiceExecuting())
 		{
 			try
 			{
-				doSomething();
+				doSomething(useMemory);
 				Thread.sleep(1000); // wait one second on each loop iteration
 			}
 			catch (InterruptedException ignored)
@@ -228,25 +239,44 @@ public class SampleService
 
 	/**
 	 * Perform a little bit of cpu-crunching just to provide some unit of work.
-	 * Note that this does not use objects, so heap sizing unlikely to be
+	 * Note that this does not normally use objects, so heap sizing unlikely to be
 	 * affected and garbage collection will achieve very little once the
 	 * temporary objects (runtime ref and string concatenations) from startup
 	 * information logging have been cleaned up (other strings are fixed).
-	 * The finishing heap size will always be off a bit though, as shutdown
-	 * gets some more temporaries which would are not cleaned up right away.
+	 * The finishing heap size is likely to be off a bit though, as shutdown
+	 * gets some more temporaries which are not cleaned up right away.
+	 * If the flag parameter is set, the processing loop will allocate objects
+	 * so that the heap and garbage collector will be exercised, for test use.
+	 *
+	 * @param allocateMemory flag set to true if objects to be allocated in loop
 	 */
-	private void doSomething()
+	private void doSomething(boolean allocateMemory)
 	{
+		Object objectRef = null;
 		int x = 0;
 		for (int i = 0; i < 1001; i++)
 		{
+			if (allocateMemory)
+			{
+				// create an object of some useful size, losing any earlier ref
+				objectRef = new StringBuffer(i);
+			}
+
 			x += i;
 			for (int j = 0; j < 42; j++)
 			{
 				x += j;
 			}
 		}
-		System.out.println("Service calculation = " + x);
+
+		if (allocateMemory)
+		{
+			outputHeapDetails();
+		}
+		else
+		{
+			System.out.println("Service calculation = " + x);
+		}
 	}
 
 	/**
