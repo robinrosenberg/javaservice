@@ -285,12 +285,13 @@ static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, const char *errF
 
 static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamFile, bool isStdout)
 {
+	const char* wotStream = isStdout ? "System.out" : "System.err";
+
 	//Create a String for the path.
 	jstring pathString = env->NewStringUTF(streamFile);
 	if (exceptionRaised(env) || (pathString == NULL))
 	{
-		logError(hEventSource, isStdout ? "Could not create a string for System.out path."
-										: "Could not create a string for System.err path.");
+		logError(hEventSource, "Could not create a path string for ", wotStream);
 		return false;
 	}
 
@@ -298,8 +299,7 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
     jclass fileOutputStreamClass = env->FindClass("java/io/FileOutputStream");
     if (exceptionRaised(env) || (fileOutputStreamClass == NULL))
 	{
-		logError(hEventSource, isStdout ? "Could not find the FileOutputStream class for System.out redirect."
-										: "Could not find the FileOutputStream class for System.err redirect.");
+		logError(hEventSource, "Could not find the FileOutputStream class for redirect of ", wotStream);
 		return false;
     }
 
@@ -314,8 +314,7 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
 	}
     if (exceptionRaised(env) || (fileOutputStreamConstructor == NULL))
 	{
-		logError(hEventSource, isStdout ? "Could not find the FileOutputStream constructor for System.out redirect."
-										: "Could not find the FileOutputStream constructor for System.err redirect.");
+		logError(hEventSource, "Could not find the FileOutputStream constructor for redirect of ", wotStream);
 		return false;
     }
 
@@ -324,8 +323,7 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
 											  :	env->NewObject(fileOutputStreamClass, fileOutputStreamConstructor, pathString);
     if (exceptionRaised(env) || (fileOutputStream == NULL))
 	{
-		logError(hEventSource, isStdout ? "Could not create a FileOutputStream for System.out redirect."
-										: "Could not create a FileOutputStream for System.err redirect.");
+		logError(hEventSource, "Could not create a FileOutputStream for redirect of ", wotStream);
 		return false;
     }
 
@@ -333,8 +331,7 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
     jclass printStreamClass = env->FindClass("java/io/PrintStream");
     if (exceptionRaised(env) || (printStreamClass == NULL))
 	{
-		logError(hEventSource, isStdout ? "Could not find the PrintStream class for System.out redirect."
-										: "Could not find the PrintStream class for System.err redirect.");
+		logError(hEventSource, "Could not find the PrintStream class for redirect of ", wotStream);
 		return false;
     }
 
@@ -342,8 +339,7 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
     jmethodID printStreamConstructor = env->GetMethodID(printStreamClass, "<init>", "(Ljava/io/OutputStream;)V");
     if (exceptionRaised(env) || (printStreamConstructor == NULL))
 	{
-		logError(hEventSource, isStdout ? "Could not find the PrintStream constructor for System.out redirect."
-										: "Could not find the PrintStream constructor for System.err redirect.");
+		logError(hEventSource, "Could not find the PrintStream constructor for redirect of ", wotStream);
 		return false;
     }
 
@@ -351,8 +347,7 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
     jobject printStream = env->NewObject(printStreamClass, printStreamConstructor, fileOutputStream);
     if (exceptionRaised(env) || (printStream == NULL))
 	{
-		logError(hEventSource, isStdout ? "Could not create a PrintStream for System.out redirect."
-										: "Could not create a PrintStream for System.err redirect.");
+		logError(hEventSource, "Could not create a PrintStream for redirect of ", wotStream);
 		return false;
     }
 
@@ -360,8 +355,7 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
     jclass systemClass = env->FindClass("java/lang/System");
     if (exceptionRaised(env) || (systemClass == NULL))
 	{
-		logError(hEventSource, isStdout ? "Could not find the System class for System.out redirect."
-										: "Could not find the System class for System.err redirect.");
+		logError(hEventSource, "Could not find the System class for redirect of ", wotStream);
 		return false;
     }
 
@@ -369,8 +363,7 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
     jmethodID setMethod = env->GetStaticMethodID(systemClass, isStdout ? "setOut" : "setErr", "(Ljava/io/PrintStream;)V");
     if (exceptionRaised(env) || (setMethod == NULL))
 	{
-		logError(hEventSource, isStdout ? "Could not find the setOut method for System.out redirect."
-										: "Could not find the setErr method for System.err redirect.");
+		logError(hEventSource, "Could not find the setErr method for redirect of ", wotStream);
 		return false;
     }
 
@@ -378,8 +371,7 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
 	env->CallStaticVoidMethod(systemClass, setMethod, printStream);
 	if (exceptionRaised(env))
 	{
-		logError(hEventSource, isStdout ? "Could not call the setOut method for System.out redirect."
-										: "Could not call the setErr method for System.err redirect.");
+		logError(hEventSource, "Could not call the setErr method for redirect of ", wotStream);
 		return false;
 	}
 
