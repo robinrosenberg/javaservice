@@ -1,7 +1,6 @@
 # Microsoft Developer Studio Generated Dependency File, included by JavaService.mak
 
 .\CommandFactory.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\CommandFactory.h"\
 	".\CommandInterface.h"\
 	".\DaemonCommand.h"\
@@ -13,6 +12,7 @@
 	".\StatusCommand.h"\
 	".\UninstallCommand.h"\
 	".\VersionCommand.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\DaemonCommand.cpp : \
@@ -22,10 +22,9 @@
 	
 
 .\EventLogger.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\EventLogger.h"\
-	".\Messages.h"\
 	".\ServiceLogger.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\HelpCommand.cpp : \
@@ -34,37 +33,34 @@
 	
 
 .\InstallCommand.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\CommandInterface.h"\
 	".\InstallCommand.h"\
 	".\RegistryHandler.h"\
 	".\ServiceCommand.h"\
 	".\ServiceParameters.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\JavaInterface.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	"..\..\j2sdk\include\jni.h"\
 	"..\..\j2sdk\include\win32\jni_md.h"\
 	".\EventLogger.h"\
 	".\JavaInterface.h"\
-	".\Messages.h"\
 	".\ServiceHandler.h"\
 	".\ServiceLogger.h"\
 	".\ServiceParameters.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\JavaService.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\CommandFactory.h"\
 	".\CommandInterface.h"\
 	".\ServiceHandler.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\JavaService.rc : \
 	".\JavaService.rc2"\
-	".\Messages.rc"\
-	".\MSG00001.bin"\
 	".\VersionNo.h"\
 	
 
@@ -74,43 +70,42 @@
 	
 
 .\ProcessGlobals.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\EventLogger.h"\
 	".\ProcessGlobals.h"\
 	".\ServiceParameters.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\QueryCommand.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\CommandInterface.h"\
 	".\QueryCommand.h"\
 	".\ServiceCommand.h"\
 	".\ServiceParameters.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\RegistryHandler.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\RegistryHandler.h"\
 	".\ServiceParameters.h"\
 	".\VersionNo.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\ServiceCommand.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\CommandInterface.h"\
 	".\ServiceCommand.h"\
 	".\ServiceParameters.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\ServiceHandler.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\EventLogger.h"\
 	".\JavaInterface.h"\
-	".\Messages.h"\
 	".\ProcessGlobals.h"\
 	".\ServiceHandler.h"\
 	".\ServiceLogger.h"\
 	".\ServiceParameters.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\ServiceLogger.cpp : \
@@ -118,26 +113,26 @@
 	
 
 .\ServiceParameters.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\RegistryHandler.h"\
 	".\ServiceParameters.h"\
 	".\VersionNo.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\StatusCommand.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\CommandInterface.h"\
 	".\ServiceCommand.h"\
 	".\ServiceParameters.h"\
 	".\StatusCommand.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\UninstallCommand.cpp : \
-	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	".\CommandInterface.h"\
 	".\RegistryHandler.h"\
 	".\ServiceCommand.h"\
 	".\UninstallCommand.h"\
+	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\VersionCommand.cpp : \
