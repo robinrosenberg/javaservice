@@ -46,7 +46,8 @@
 #endif
 
 // hard-coded filename to be used for logging if not specified before use
-//TODO - may try using %TEMP% or %SYSTEMROOT% environment variables in the name
+// cannot use %TEMP% or %SYSTEMROOT% environment variables, they do not
+// get automatically substituted (and TEMP is different for users and system)
 #define DEFAULT_LOGFILE_NAME "c:\\javaservice.log"
 
 
@@ -127,8 +128,8 @@ void ServiceLogger::enableLogging(const char* outputFile)
 		}
 	}
 
-	loggingEnabled = true;
 	logOutput = outputFile;
+	loggingEnabled = true;
 }
 
 
@@ -151,7 +152,7 @@ void ServiceLogger::disableLogging()
 ServiceLogger::ServiceLogger()
 : logFile(NULL)
 {
-	if (loggingEnabled)
+	if (loggingEnabled && (logOutput != NULL))
 	{
 		logFile = fopen(logOutput, "a+");
 		writeLog("\n***** Start of new JavaService log session *****\n");
