@@ -1,4 +1,4 @@
-call installSampleService g:\j2sdk1.4.2_06\jre\bin\server d:\javaservice\dev\SampleService\bin d:\javaservice\dev\JavaService\bin -manual
+call installSampleService c:\j2sdk1.4.2\jre\bin\server c:\javaservice\dev\SampleService\bin c:\javaservice\dev\JavaService\bin -manual
 
 net start SampleService
 @pause
@@ -6,4 +6,4 @@ net start SampleService
 net stop SampleService
 @pause
 
-call uninstallSampleService d:\javaservice\dev\SampleService\bin
+call uninstallSampleService c:\javaservice\dev\SampleService\bin
