@@ -23,25 +23,30 @@
         is especially useful when running programs, such as web servers, that 
         should start automatically when the operating systems starts. Also, a 
         service can be manually stopped, started, or paused using the service 
-        control manager that is includes with the operating system.</p>
+        control manager that is included within the operating system.</p>
 
       <p>JavaService is a Win32 executable that allows any 
         Java class to be run as an NT service. It uses JNI's invocation API to 
         create a Java Virtual Machine using any JNI compliant Java implementation.</p>
 
-		<p>JavaService can call the typical entry method</p>
-
-	<source><![CDATA[
-	public static void main(String[] args)
-]]>	</source>
-	
-
-      <p>in order to start the service, or any other method 
+		<p>JavaService can call the typical 'public static void main' entry method, or any other method 
         you choose. In order to stop the service it can call another method or 
         simply terminate the JVM.</p>
 
+	<p>
+	Once a Java application is installed as a service, it can be
+controlled from the Windows command prompt with the commands:
+	</p>
+	<source><![CDATA[
+	net start MyService
 
-	<copyright>Original source copyright Alexandria Software Consulting. Updated source copyright Multiplan Consultants Ltd.</copyright>
+	...
+
+	net stop MyService
+]]>	</source>
+	
+
+	<copyright>Original source copyright Alexandria Software Consulting.<br /> Updated source copyright Multiplan Consultants Ltd.</copyright>
 
     </s1>
   </body>
