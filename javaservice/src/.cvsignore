@@ -1,2 +1,5 @@
 *.ncb
 *.plg
+Messages.h
+Messages.rc
+MSG00001.bin
