@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -116,6 +116,7 @@ void HelpCommand::printCommandDetails(const char* forTopic) const
 						 "\t[-path extra_path]\n"
 						 "\t[-depends other_service]\n"
 						 "\t[-auto | -manual]\n"
+						 "\t[-shutdown seconds]\n"
 						 "\nWhere:\n"
 						 "  service_name:\tThe name of the service.\n"
 						 "  jvm_library:\tThe location of the JVM DLL used to run the service.\n"
@@ -133,7 +134,8 @@ void HelpCommand::printCommandDetails(const char* forTopic) const
 						 "\t\t\tRelative paths will be relative to this directory.\n"
 						 "  extra_path:\tPath additions, for native DLLs etc. (no spaces)\n"
 						 "  other_service:\tSingle service name dependency, must start first.\n"
-						 "  auto / manual:\tStartup automatic (default) or manual mode.";
+						 "  auto / manual:\tStartup automatic (default) or manual mode.\n"
+						 "  seconds:\tTime for Java method shutdown processing before timeout.\n";
 	}
 	else if (!strncmp(forTopic, "queryconfig", 4))
 	{
