@@ -1,0 +1,1 @@
+JavaService.exe -uninstall OutputTest
