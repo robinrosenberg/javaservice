@@ -8,8 +8,8 @@
   <title>JavaService</title>
 
   <description>
-    JavaService is a software utility that allows execution of Java applications as Windows NT 'Services'.
-	This can be used with any server-type application, configured from simple script files for different programs and parameters, without the need for extra Java coding.
+    JavaService is a software utility that allows a Java application to be run in the background as a Windows 'System Service'.
+	This utility can be used with any non-GUI type of application, configured without the need for any additional Java coding.
   </description>
 
   <keywords>
@@ -22,26 +22,27 @@
       <legend>Project Links</legend>
       <menuitem><a href="index.html">Home</a></menuitem>
       <menuitem><a href="http://forge.objectweb.org/project/showfiles.php?group_id=137">Download</a></menuitem>
-      <menuitem><a href="./docs/index.html">Documentation</a></menuitem>
+      <menuitem><a href="docs/index.html">Documentation</a></menuitem>
       <menuitem><a href="http://forge.objectweb.org/mail/?group_id=137">Mailing Lists</a></menuitem>
-      <menuitem><a href="users.html">Users</a></menuitem>
-      <menuitem><a href="licensing.html">License</a></menuitem>
+      <menuitem><a href="licensing.html">Licence</a></menuitem>
       <menuitem><a href="support.html">Support</a></menuitem>
       <menuitem><a href="history.html">History</a></menuitem>
     </menu>
 
     <menu>
       <legend>Developers' Corner</legend>
-      <menuitem><a href="contribute.html">How to Contribute</a></menuitem>
+      <menuitem><a href="http://forge.objectweb.org/projects/javaservice/">ObjectWeb Project Forge</a></menuitem>
+      <menuitem><a href="http://forge.objectweb.org/forum/?group_id=137">Support Forums</a></menuitem>
+      <menuitem><a href="mailto:javaservice@objectweb.org">Support Group Email</a></menuitem>
       <menuitem><a href="http://forge.objectweb.org/scm/?group_id=137">CVS Repository</a></menuitem>
-      <menuitem><a href="http://forge.objectweb.org/projects/javaservice/">ObjectWeb Forge Site</a></menuitem>
+      <menuitem><a href="contribute.html">How to Contribute</a></menuitem>
     </menu>
 
     <menu>
       <legend>About</legend>
       <menuitem><a href="background.html">Background</a></menuitem>
-      <menuitem><a href="licensing.html">License</a></menuitem>
-      <menuitem><a href="mailto:javaservice@objectweb.org">Contact</a></menuitem>
+      <menuitem><a href="licensing.html">Licence</a></menuitem>
+      <menuitem><a href="users.html">Users</a></menuitem>
     </menu>
 
   </body>
