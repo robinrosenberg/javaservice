@@ -8,10 +8,12 @@
 	can run the Java application as a Windows NT System Service.
 	</description>
 
+	<property name="version" value="2.0.1"/>
 	<property name="srcdir" value="./src"/>
 	<property name="bindir" value="./bin"/>
 	<property name="docdir" value="./docs"/>
-	<property name="zipfile" value="./SampleService.zip"/>
+	<property name="jarfile" value="${bindir}/SampleService.jar"/>
+	<property name="zipfile" value="./SampleService-${version}.zip"/>
 
 	<target name="usage" description="Provides information on Ant usage">
 
@@ -19,7 +21,7 @@
 		
 	This build script can be invoked by ANT as follows:
 
-	ant build		(Compiles the Java application)
+	ant build		(Compiles the Java application and creates JAR archive)
 	ant clean		(Deletes earlier log, class, javadoc and zip files)
 	ant docs		(Generates JavaDoc files for the project)
 	ant dist		(Creates zip file containing project release files)
@@ -38,14 +40,32 @@
 				 includes="**/*.class, **/*/.log" />
 			<fileset dir="${docdir}/api"/>
 			<fileset file="${zipfile}"/>
+			<fileset file="${jarfile}"/>
 		</delete>
 
 	</target>
 
-	<target name="build" description="Generate class file(s) for sample service">
+	<target name="build" description="Generate class and jar files for sample service">
 
 		<javac srcdir="${srcdir}" destdir="${bindir}" debug="on" />
 
+		<jar destfile="${jarfile}"
+		     basedir="${bindir}"
+		     includes="org/objectweb/**"
+		     excludes="**/CVS"
+		     index="true"
+		     compress="true"
+		     update="false">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Specification-Title" value="JavaService" />
+				<attribute name="Specification-Version" value="JavaService V2.0" />
+				<attribute name="Specification-Vendor" value="ObjectWeb JavaService project" />
+				<attribute name="Implementation-Title" value="SampleService" />
+				<attribute name="Implementation-Version" value="SampleService V${version}" />
+				<attribute name="Implementation-Vendor" value="Multiplan Consultants Ltd" />
+			</manifest>
+		</jar>
 	</target>
 
 
