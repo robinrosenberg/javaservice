@@ -8,12 +8,11 @@
   <title>JavaService</title>
 
   <description>
-    JavaService is a software utility that allows a Java application to be run in the background as a Windows 'System Service'.
-	This utility can be used with any non-GUI type of application, configured without the need for any additional Java coding.
+    JavaService is an ObjectWeb software utility that runs Java applications in the background as a Windows 'System Services'.
   </description>
 
   <keywords>
-    JavaService, Java, Daemon, Windows NT System Service, Automatic execution, Background process, Systems administration, Software development, ObjectWeb Forge, Open Source
+    JavaService, Java, Windows NT, 2000, XP, System Service, Service Manager, Net Start, Net Stop, Daemon, Automatic execution, Background process, Systems administration, Software development, ObjectWeb Forge, Open Source
   </keywords>
 
   <body>
