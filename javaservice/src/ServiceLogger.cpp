@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -60,7 +60,7 @@
 bool ServiceLogger::loggingEnabled = LOGGING_ENABLED_DEFAULT;
 
 // last-specified log output filename, if any
-const char* ServiceLogger::logOutput = NULL;
+const char* ServiceLogger::logOutput = DEFAULT_LOGFILE_NAME;
 
 // singleton instance, created on first use (if logging enabled)
 ServiceLogger* ServiceLogger::instance = NULL;
