@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -49,7 +49,7 @@ void VersionCommand::printVersion()
 {
 	cout << endl
 		 << " JavaService Version " << STRPRODUCTVER << endl
-		 << " (c) 2004 Multiplan Consultants Ltd" << endl
+		 << " (c) 2005 Multiplan Consultants Ltd" << endl
 		 << " See http://javaservice.objectweb.org" << endl
 		 << endl << flush ;
 }

@@ -38,7 +38,7 @@ BEGIN
             VALUE "FileDescription", "JavaService\0"
             VALUE "FileVersion", STRFILEVER
             VALUE "InternalName", "JavaService\0"
-            VALUE "LegalCopyright", "(c) 2004 Multiplan Consultants Limited\0"
+            VALUE "LegalCopyright", "(c) 2005 Multiplan Consultants Limited\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "JavaService.exe\0"
             VALUE "PrivateBuild", "http://forge.objectweb.org/projects/javaservice/\0"
