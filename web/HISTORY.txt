@@ -1,0 +1,61 @@
+
+--------------------------------------------------------------------
+History File
+--------------------------------------------------------------------
+
+2003/12/19:
+ - first version.
+
+2004/01/06:
+ - updated copyright footnote.
+
+2004/01/09:
+ - removed uneeded call to disableStyleSheet() javascript function in
+   browsable stylesheet (body tag).
+
+ - removed disableStyleSheet() function in js/rolls.js (the stylesheet
+   is disabled for netscape 4.x thanks to the id="stylesheet"
+   statement that is not recognized by this old browser.
+
+2004/01/13:
+ - Remplaced Basic program by a Java program in the sample file!
+
+ - Created if needed html and cgi-bin directories in the build.xml (if
+   these directories are ampty in CVS, a checkout with -P option will
+   not create them).
+
+2004/01/14:
+ - suggested in the README file to store all needed file in a web
+   directory in the root of the CVS repository (if the user wants to
+   use CVS).
+
+ - moved distributed archive from site-template.tgz to web.tgz.
+
+2004/01/15:
+ - Added this history file in the distributed file.
+ - Added .cvsignore as suggested by Michael Giroux to avoid dist and
+   common dirs to be added in CVS.
+
+2004/03/18:
+ - Modify DOCTYPE of project.xml and index.xml to include
+   a PUBLIC identifier [Michael Giroux].
+
+ - Modify build.xml to include xmlcatalog to specify location
+   of DTD files [Michael Giroux].
+
+ - Modify build.xml xmlvalidate task in the check target to use   
+   the xmlcatalog [Michael Giroux].
+
+ - Modify build.xml style task in the real_html target to use
+   the xmlcatalog [Michael Giroux].
+
+ - Modified common mini icon names to favicon.ico.
+
+2004/07/09:
+ - Some cosmetic changes (reduced header space, removed color hoover
+   in a.active links to avoid bad effect with some browsers).
+
+2004/08/09:
+ - Google search engine is now used instead of htdig.
+
+ - Remplaced wrong '_new' target by '_blank'.

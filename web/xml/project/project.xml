@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project PUBLIC "-//ObjectWeb//DTD ObjectWeb Project Definition Web Site//EN"
+"../../common/dtd/project.dtd">
+
+<project>
+
+  <title>JavaService</title>
+
+  <description>
+    JavaService is a software utility that allows execution of Java applications as Windows NT 'Services'.
+	This can be used with any server-type application, configured from simple script files for different programs and parameters, without the need for extra Java coding.
+
+  </description>
+
+  <keywords>
+    JavaService, Java, Daemon, Windows NT System Service, Automatic execution, Background process, Systems administration, Software development, ObjectWeb Forge, Open Source
+  </keywords>
+
+  <body>
+
+    <menu>
+      <legend>Project Links</legend>
+      <menuitem><a href="index.html">Home</a></menuitem>
+      <menuitem><a href="index.html">Download</a></menuitem>
+      <menuitem><a href="index.html">Documentation</a></menuitem>
+      <menuitem><a href="index.html">Mailing Lists</a></menuitem>
+      <menuitem><a href="index.html">Partners</a></menuitem>
+      <menuitem><a href="index.html">License</a></menuitem>
+      <menuitem><a href="index.html">History</a></menuitem>
+    </menu>
+
+    <menu>
+      <legend>Developers' Corner</legend>
+      <menuitem><a href="index.html">How to Contribute</a></menuitem>
+      <menuitem><a href="index.html">CVS Repository</a></menuitem>
+      <menuitem><a href="index.html">ObjectWeb Forge Site</a></menuitem>
+    </menu>
+
+    <menu>
+      <legend>About</legend>
+      <menuitem><a href="index.html">Team</a></menuitem>
+      <menuitem><a href="index.html">Contact</a></menuitem>
+    </menu>
+
+  </body>
+</project>
