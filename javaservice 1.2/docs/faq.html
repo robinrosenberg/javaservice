@@ -24,6 +24,8 @@
 		<br>
         <a href="#needed">Why is JavaService actually needed?</a>
 		<br>
+        <a href="#gui">Can my Java Service display a graphical interface?</a>
+		<br>
         <a href="#memory">What memory management options are available?</a>
 		<br>
         <a href="#monitoring">How can I monitor what the program is doing?</a>
@@ -56,6 +58,14 @@
       <p class="mainNormal">A particular use for JavaService is to run an Application Server on startup, within
 	  which your own Java applications will run as EJBs, JSP or whatever. Examples of such Java-based
 	  application servers include Orion, Tomcat, JOnAS and JBoss.</p>
+
+	  <h4><a name="gui">Can my Java Service display a graphical interface?</a></h4>
+      <p class="mainNormal">Windows Services are not intended to provide user interfaces, so Swing or other GUI displays
+	  are not supported from such background processes.</p>
+      <p class="mainNormal">Services can be configured to 'interact with the desktop', but this relates more to putting
+	  popup alerts and simple prompts onto the console. It does not mean that a GUI interface can be provided from the service.</p>
+      <p class="mainNormal">If you do include a JFrame, or similar, in your service application code, then it may well be
+	  displayed to the first user that logs in to the console, but your service will hang when they subsequently log out.</p>
 
 	  <h4><a name="memory">What memory management options are available?</a></h4>
 	  <p class="mainNormal">
@@ -135,7 +145,7 @@
 	  <p class="mainNormal">To investigate the problem further, you should analyse and be clear about when the
 	  failure arises. It may be during startup of the service, during background or apparently-idle processing,
 	  when handling a particular request or perhaps on shutdown event handling.</p>
-  	  <p class="mainNormal">Startup problems often point to memoery management, as described above. Frequent
+  	  <p class="mainNormal">Startup problems often point to memory management, as described above. Frequent
 	  startup and run-time problems are caused by incorrect classpath definitions and unexpected classloader
 	  operations - especially within a J2EE container that has it's own rules for loading of class files.
 	  You should always ensure that the software runs correctly in an interactive fashion <strong>with the same
@@ -154,6 +164,9 @@
 	  <h4><a name="support">Is JavaService support available?</a></h4>
 	  <p class="mainNormal">As a freely-available, Open Source, software product, users of JavaService
 	  do not receive any direct support for investigation and resolution of any problems experienced.</p>
+	  <p class="mainNormal">Since being accepted as an <strong>ObjectWeb</strong> project, the JavaService project pages
+	  (<a href="http://javaservice.objectweb.org">http://javaservice.objectweb.org</a>) provide further information as well
+	  as a place to raise queries. Use of this open source site is highly recommended for JavaService questions.</p>
 	  <p class="mainNormal">However, informal or casual support may be provided by contributors to JavaService development,
 	  as the problems you experience may have been seen before. An email enquiry to one of these
 	  contributors may results in a solution for your problem, often depending on the timing of your

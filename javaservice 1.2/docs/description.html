@@ -29,9 +29,9 @@
 		  <a href="#JBoss_Example">Example (JBoss 3.0)</a></p>
       </blockquote>
       <p class="mainBold"><a name="Requirements"></a>Requirements</p>
-      <p class="mainNormal">JavaService currently requires a JNI 1.2 compliant 
-        Java Virtual Machine. This includes the Sun Java 2 SDK versions 1.2 and 
-        1.3. It does not currently support JDK 1.1.x.</p>
+      <p class="mainNormal">JavaService requires a JNI 1.2 compliant 
+        Java Virtual Machine. This includes the Sun Java 2 SDK versions 1.2, 1.3 and 
+        1.4. It does not support the older JDK 1.1.x.</p>
       <p class="mainBold"><a name="Overview"></a>Overview</p>
       <p class="mainNormal">JavaService can be used to run any Java classes as 
         an NT Service. It can start the service using the standard
@@ -84,7 +84,7 @@
         </ul>
         <li>Copy the JavaService.exe file to a directory appropriate for your 
           application, and optionally rename JavaService.exe to something more 
-          appropriate.<br>
+          relevant.<br>
           <br>
         </li>
         <li>Start a command prompt and change to the directory where the JavaService.exe 
@@ -190,6 +190,12 @@
 			should be run automatically on system startup (default mode), or if it should
 			be started on demand using a manual command (i.e. net start service).<br>
 			</li>
+            <li>-shutdown<i> seconds</i> (optional) - Specify the amount of time that
+			may be taken during processing of your shutdown/stop method. The value here
+			is used as a timeout, so if the method has not completed in this length of time,
+			the JVM process will be terminated to allow the service to shutdown completely.<br>
+			<br>
+			</li>
           </ul>
         </li>
       </ol>
@@ -271,6 +277,8 @@
           be redirected. If this key is absent, System.err will not be redirected.</p>
         <p class="mainNormal">System.out File - A file into which System.out will 
           be redirected. If this key is absent, System.out will not be redirected.</p>
+        <p class="mainNormal">Shutdown Timeout - The number of milliseconds to allow for
+		the Java Stop method to complete, before timeout and JVM forced termination.</p>
       </blockquote>
       <p class="mainBold"><a name="Event_Logging"></a>Event Logging</p>
       <p class="mainNormal">JavaService logs both informational events and errors 
@@ -307,7 +315,7 @@
           -out {TOMCAT_HOME}\logs\stdout.log<br>
           -err {TOMCAT_HOME}\logs\stderr.log</span> </li>
       </ol>
-	  <!-- following example added in V1.2.1 release by John Rutter, Multiplan Consultants Ltd (john@multiplan.co.uk) -->
+
       <p class="mainBold"><a name="Orion_Example"></a>Example (Orion)</p>
       <p class="mainNormal">The <a href="http://www.orionserver.com">Orion</a> Application Server
 	  is a J2EE-compliant product that runs under the Java run-time environment. The JavaService
@@ -346,7 +354,6 @@
 	  <span class="textCode">net start mysql</span><br>
 	  This will first stop the Orion service, if it is currently running, following user confirmation.</p>
 	  
-	  <!-- following example added in V1.2.2 release by John Rutter, Multiplan Consultants Ltd (john@multiplan.co.uk) -->
       <p class="mainBold"><a name="JBoss_Example"></a>Example (JBoss 3.0)</p>
       <p class="mainNormal">The <a href="http://www.jboss.org">JBoss</a> server software provides a Java
 	  run-time environment that can be used for JSP and J2EE applications. In this use, it often needs to
