@@ -1,0 +1,154 @@
+# Microsoft Developer Studio Generated Dependency File, included by JavaService.mak
+
+.\CommandFactory.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\CommandFactory.h"\
+	".\CommandInterface.h"\
+	".\DaemonCommand.h"\
+	".\HelpCommand.h"\
+	".\InstallCommand.h"\
+	".\LicenceCommand.h"\
+	".\QueryCommand.h"\
+	".\ServiceCommand.h"\
+	".\StatusCommand.h"\
+	".\UninstallCommand.h"\
+	".\VersionCommand.h"\
+	
+
+.\DaemonCommand.cpp : \
+	".\CommandInterface.h"\
+	".\DaemonCommand.h"\
+	".\ServiceHandler.h"\
+	
+
+.\EventLogger.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\EventLogger.h"\
+	".\Messages.h"\
+	".\ServiceLogger.h"\
+	
+
+.\HelpCommand.cpp : \
+	".\CommandInterface.h"\
+	".\HelpCommand.h"\
+	
+
+.\InstallCommand.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\CommandInterface.h"\
+	".\InstallCommand.h"\
+	".\RegistryHandler.h"\
+	".\ServiceCommand.h"\
+	".\ServiceParameters.h"\
+	
+
+.\JavaInterface.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"..\..\j2sdk\include\jni.h"\
+	"..\..\j2sdk\include\win32\jni_md.h"\
+	".\EventLogger.h"\
+	".\JavaInterface.h"\
+	".\Messages.h"\
+	".\ServiceHandler.h"\
+	".\ServiceLogger.h"\
+	".\ServiceParameters.h"\
+	
+
+.\JavaService.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\CommandFactory.h"\
+	".\CommandInterface.h"\
+	".\ServiceHandler.h"\
+	
+
+.\JavaService.rc : \
+	".\JavaService.rc2"\
+	".\Messages.rc"\
+	".\MSG00001.bin"\
+	".\VersionNo.h"\
+	
+
+.\LicenceCommand.cpp : \
+	".\CommandInterface.h"\
+	".\LicenceCommand.h"\
+	
+
+.\ProcessGlobals.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\EventLogger.h"\
+	".\ProcessGlobals.h"\
+	".\ServiceParameters.h"\
+	
+
+.\QueryCommand.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\CommandInterface.h"\
+	".\QueryCommand.h"\
+	".\ServiceCommand.h"\
+	".\ServiceParameters.h"\
+	
+
+.\RegistryHandler.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\RegistryHandler.h"\
+	".\ServiceParameters.h"\
+	".\VersionNo.h"\
+	
+
+.\ServiceCommand.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\CommandInterface.h"\
+	".\ServiceCommand.h"\
+	".\ServiceParameters.h"\
+	
+
+.\ServiceHandler.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\EventLogger.h"\
+	".\JavaInterface.h"\
+	".\Messages.h"\
+	".\ProcessGlobals.h"\
+	".\ServiceHandler.h"\
+	".\ServiceLogger.h"\
+	".\ServiceParameters.h"\
+	
+
+.\ServiceLogger.cpp : \
+	".\ServiceLogger.h"\
+	
+
+.\ServiceParameters.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\RegistryHandler.h"\
+	".\ServiceParameters.h"\
+	".\VersionNo.h"\
+	
+
+.\StatusCommand.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\CommandInterface.h"\
+	".\ServiceCommand.h"\
+	".\ServiceParameters.h"\
+	".\StatusCommand.h"\
+	
+
+.\UninstallCommand.cpp : \
+	"..\..\..\..\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	".\CommandInterface.h"\
+	".\RegistryHandler.h"\
+	".\ServiceCommand.h"\
+	".\UninstallCommand.h"\
+	
+
+.\VersionCommand.cpp : \
+	".\CommandInterface.h"\
+	".\VersionCommand.h"\
+	".\VersionNo.h"\
+	
+
+!IF  "$(CFG)" == "JavaService - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "JavaService - Win32 Debug"
+
+!ENDIF 
+
