@@ -303,8 +303,15 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
 		return false;
     }
 
-	//Find the FileOutputStream constructor.
-    jmethodID fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;)V");
+	//Find the FileOutputStream constructor - look for JDK1.4 version first, of (String name, boolean append) format
+	bool useAppendParam = true;
+    jmethodID fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;Z)V");
+	// if this form of constructor not found (pre 1.4 JVM) then use simpler (String name) form instead, no append
+    if (exceptionRaised(env) || (fileOutputStreamConstructor == NULL))
+	{
+		useAppendParam = false;
+	    fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;)V");
+	}
     if (exceptionRaised(env) || (fileOutputStreamConstructor == NULL))
 	{
 		logError(hEventSource, isStdout ? "Could not find the FileOutputStream constructor for System.out redirect."
@@ -313,7 +320,8 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
     }
 
 	//Create a FileOutputStream.
-    jobject fileOutputStream = env->NewObject(fileOutputStreamClass, fileOutputStreamConstructor, pathString);
+    jobject fileOutputStream = useAppendParam ? env->NewObject(fileOutputStreamClass, fileOutputStreamConstructor, pathString, JNI_TRUE)
+											  :	env->NewObject(fileOutputStreamClass, fileOutputStreamConstructor, pathString);
     if (exceptionRaised(env) || (fileOutputStream == NULL))
 	{
 		logError(hEventSource, isStdout ? "Could not create a FileOutputStream for System.out redirect."
@@ -357,21 +365,21 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
 		return false;
     }
 
-	//Find the setOut() method.
-    jmethodID setOutMethod = env->GetStaticMethodID(systemClass, "setOut", "(Ljava/io/PrintStream;)V");
-    if (exceptionRaised(env) || (setOutMethod == NULL))
+	//Find the setOut/setErr() method.
+    jmethodID setMethod = env->GetStaticMethodID(systemClass, isStdout ? "setOut" : "setErr", "(Ljava/io/PrintStream;)V");
+    if (exceptionRaised(env) || (setMethod == NULL))
 	{
 		logError(hEventSource, isStdout ? "Could not find the setOut method for System.out redirect."
-										: "Could not find the setOut method for System.err redirect.");
+										: "Could not find the setErr method for System.err redirect.");
 		return false;
     }
 
-	//Call System.setOut().
-	env->CallStaticVoidMethod(systemClass, setOutMethod, printStream);
+	//Call System.setOut/setErr().
+	env->CallStaticVoidMethod(systemClass, setMethod, printStream);
 	if (exceptionRaised(env))
 	{
 		logError(hEventSource, isStdout ? "Could not call the setOut method for System.out redirect."
-										: "Could not call the setOut method for System.err redirect.");
+										: "Could not call the setErr method for System.err redirect.");
 		return false;
 	}
 
