@@ -254,12 +254,12 @@ public class SampleService
 	{
 		Object objectRef = null;
 		int x = 0;
-		for (int i = 0; i < 1001; i++)
+		for (int i = 1; i <= 1000; i++)
 		{
 			if (allocateMemory)
 			{
 				// create an object of some useful size, losing any earlier ref
-				objectRef = new StringBuffer((100 + i) * 100);
+				objectRef = new StringBuffer(i * 100);
 			}
 
 			x += i;
