@@ -35,7 +35,7 @@
 	This Ant Build script packages up the files for testing and release.
 	</description>
 
-	<property name="version" value="2.0.2"/>
+	<property name="version" value="2.0.3"/>
 
 	<property name="srcdir" value="./src"/>
 	<property name="bindir" value="./bin"/>
