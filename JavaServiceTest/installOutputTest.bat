@@ -15,7 +15,7 @@ goto eof
 
 :ok
 
-JavaService.exe -install OutputTest %1\jre\bin\%2\jvm.dll -Djava.class.path=d:\Multiplan\dev\JavaServiceTest\bin -start OutputTest -stop OutputTest -method systemExit -out d:\Multiplan\dev\JavaServiceTest\out.log -err d:\Multiplan\dev\JavaServiceTest\err.log -current d:\Multiplan\dev\JavaServiceTest -manual
+JavaService.exe -install OutputTest %1\jre\bin\%2\jvm.dll -Djava.class.path=d:\javaservice\dev\JavaServiceTest\bin -start OutputTest -stop OutputTest -method systemExit -out d:\javaservice\dev\JavaServiceTest\out.log -err d:\Multiplan\dev\JavaServiceTest\err.log -current d:\javaservice\dev\JavaServiceTest -manual
 
 :eof
 
