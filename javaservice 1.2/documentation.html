@@ -23,7 +23,8 @@
           <a href="#UnInstalling">UnInstalling</a><br>
           <a href="#Registry_Settings">Registry Settings</a><br>
           <a href="#Event_Logging">Event Logging</a><br>
-          <a href="#Example">Example (Tomcat)</a></p>
+          <a href="#Tomcat_Example">Example (Tomcat)</a><br>
+		  <a href="#Orion_Example">Example (Orion)</a></p>
       </blockquote>
       <p class="mainBold"><a name="Requirements"></a>Requirements</p>
       <p class="mainNormal">JavaService currently requires a JNI 1.2 compliant 
@@ -164,7 +165,15 @@
               the service. The specified path will be appended to the system path 
               before the service is started. This can be used to specify where 
               additional DLLs that native libraries are dependent upon can be 
-              found.</li>
+              found.<br>
+              <br>
+            </li>
+			<!-- following parameter added in V1.2.1 release by John Rutter, Multiplan Consultants Ltd (john@multiplan.co.uk) -->
+            <li>-depends<i> other_service</i> (optional) - Another NT service that
+			must be running before this particular java service can start. Will cause
+			the named service to be started automatically if required when starting
+			the java service. Will also stop the java service if the named service is stopped
+			(usually with user confirmation first being requested by Windows NT).</li>
           </ul>
         </li>
       </ol>
@@ -240,7 +249,7 @@
         Log to see if any errors were reported. Additionally you can check the 
         redirected System.err file, as any Java exceptions will be written there 
         by the Virtual Machine.</p>
-      <p class="mainBold"><a name="Example"></a>Example (Tomcat)</p>
+      <p class="mainBold"><a name="Tomcat_Example"></a>Example (Tomcat)</p>
       <p class="mainNormal"><a href="http://jakarta.apache.org">Tomcat</a> is 
         a JSP engine and was the primary reason that JavaService was created. 
         It is a pure Java application that is ideally used as a service, but comes 
@@ -266,6 +275,44 @@
           -out {TOMCAT_HOME}\logs\stdout.log<br>
           -err {TOMCAT_HOME}\logs\stderr.log</span> </li>
       </ol>
+	  <!-- following example added in V1.2.1 release by John Rutter, Multiplan Consultants Ltd (john@multiplan.co.uk) -->
+      <p class="mainBold"><a name="Orion_Example"></a>Example (Orion)</p>
+      <p class="mainNormal">The <a href="http://www.orionserver.com">Orion</a> Application Server
+	  is a J2EE-compliant product that runs under the Java run-time environment. The JavaService
+	  utility provides a convenient mechanism to run this program as an NT Service.
+	  As the application server requires that an associated database server is already running, there
+	  is a need to add a Windows NT Service dependency to the Orion Java Service. The example below
+	  shows how this can be defined, with a dependency on the MySql databaser service in this case.
+	  {JDK_HOME} is the location of your JDK and {ORION_HOME} is the location of your Orion
+	  installation. The administrator username and password fields also need to be substituted in this command.
+	  Please note that this has been used successfully against the V1.5.2 OrionServer release,
+	  but is in any case provided 'as is'.</p>
+      <ol class="mainNormal">
+        <li>Copy the JavaService.exe file into the{ORION_HOME} directory as OrionServer.exe.</li>
+        <li>Start a command prompt and change to the directory {ORION_HOME}.</li>
+        <li>Run the following command:<br>
+          <span class="textCode">OrionServer.exe -install Orion<br>
+			{JDK_HOME}\jre\bin\{hotspot|server|classic}\jvm.dll<br>
+			-Djava.class.path={ORION_HOME}\orion.jar;{JDK_HOME}\lib\tools.jar<br>
+			-start com.evermind.server.ApplicationServer<br>
+			-stop com.evermind.client.orion.OrionConsoleAdmin<br>
+			-params "ormi://localhost admin_username admin_password -shutdown"<br>
+			-out {ORION_HOME}\log\stdout.log<br>
+			-err {ORION_HOME}\log\stderr.log<br>
+			-current {ORION_HOME}<br>
+			-depends mysql</span> </li>
+        <li>To remove the registered service, run the following command from the same directory:<br>
+          <span class="textCode">OrionServer.exe -uninstall Orion</span><br> </li>
+      </ol>
+      <p class="mainNormal">The Orion service can then be started by issuing the following command,
+	   which will also start the MySql service beforehand if it is not already running:<br>
+	  <span class="textCode">net start orion</span></p>
+      <p class="mainNormal">The Orion service can then be stopped by issuing the following command:<br>
+	  <span class="textCode">net stop orion</span></p>
+      <p class="mainNormal">The MySql database service may be stopped as normal by issuing the following command:<br>
+	  <span class="textCode">net start mysql</span><br>
+	  This will first stop the Orion service, if it is currently running, following user confirmation.</p>
+	  
     </td>
   </tr>
   <tr> 

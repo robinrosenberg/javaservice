@@ -85,6 +85,21 @@ char *pathExt = NULL;
 //The current directory.
 char *currentDirectory = NULL;
 
+//////// This section added by John Rutter, Multiplan Consultants Ltd, 2002-11-03 (V1.2.1)
+// NT service dependency
+const char* dependsOn = NULL;
+
+// Constant for number of milliseconds delay timeout when stopping the service
+static const long SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
+
+// Constant for number of milliseconds delay after exit handler has been triggered
+static const long EXIT_HANDLER_TIMEOUT_MSECS = 90000; // 90 seconds
+
+///////// End of added section (John Rutter, john@multiplan.co.uk)
+
+//
+// function prototypes
+//
 
 bool ParseArguments(int argc, char* argv[]);
 void PrintUsage();
@@ -99,6 +114,9 @@ DWORD WINAPI StopService(LPVOID lpParam);
 DWORD WINAPI TimeoutStop(LPVOID lpParam);
 LONG RegQueryValueExAllocate(HKEY hKey, LPCTSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE *lplpData, LPDWORD lpcbData);
 
+//
+// program entry point
+//
 int main(int argc, char* argv[])
 {
 	//Parse the arguments into the global variables.
@@ -136,7 +154,7 @@ int main(int argc, char* argv[])
 		}
 		if (ret)
 		{
-			printf("The service is already installed.");
+			printf("The service is already installed.\n"); //// newline added by John Rutter (V1.2.1)
 			FreeGlobals();
 			return -1;
 		}
@@ -152,7 +170,13 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 
-		printf("The service was successfully installed.");
+		printf("The service was successfully installed.\n"); //// newline added by John Rutter (V1.2.1)
+		//// extra information report added by John Rutter (V1.2.1)
+		if (dependsOn != NULL)
+		{
+			printf("(With startup dependency on '%s' service)", dependsOn);
+		}
+
 		FreeGlobals();
 		return 0;
 	}
@@ -187,7 +211,7 @@ int main(int argc, char* argv[])
 			return -1;
 		}
 
-		printf("The service was successfully uninstalled.");
+		printf("The service was successfully uninstalled.\n"); //// newline added by John Rutter (V1.2.1)
 		FreeGlobals();
 		return 0;
 	}
@@ -433,7 +457,23 @@ bool ParseArguments(int argc, char* argv[])
 			}
 			///////// End of added section
 
-			//If there are extra paramters, return false.
+			//////// This section added by John Rutter, Multiplan Consultants Ltd, 2002-11-03 (V1.2.1)
+			//See if there is any dependency addition
+			if (nextArg < argc && strcmp(argv[nextArg], "-depends") == 0)
+			{
+				//Skip the -depends.
+				nextArg++;
+
+				//Use the next argument as a single service name dependency
+				if (nextArg < argc)
+				{
+					dependsOn = argv[nextArg++];
+				}
+				else return false;
+			}
+			///////// End of added section (John Rutter, john@multiplan.co.uk)
+
+			//If there are extra parameters, return false.
 			if (nextArg < argc) return false;
 
 			return true;
@@ -476,6 +516,7 @@ void PrintUsage()
 	printf("\t[-out out_log_file] [-err err_log_file]\n");
 	printf("\t[-current current_dir]\n");
 	printf("\t[-path extra_path]\n");	 // Modified by Lars Johanson IVF 2001-02-26
+	printf("\t[-depends other_service]\n");	 // Added by John Rutter (V1.2.1)
 	printf("\n");
 	printf("To uninstall a service:\n");
 	printf("\t-uninstall service_name\n");
@@ -495,6 +536,7 @@ void PrintUsage()
 	printf("current_dir:\tThe current working directory for the service.\n");
 	printf("\t\tRelative paths will be relative to this directory.\n");
 	printf("extra_path:\tPath additions, for native DLLs etc.\n");	 // Modified by Lars Johanson IVF 2001-02-26
+	printf("other_service:\tSingle service name dependency, must start first.\n");	 // Added by John Rutter (V1.2.1)
 }
 
 void FreeGlobals()
@@ -553,20 +595,39 @@ int InstallService()
 	char filePath[MAX_PATH];
 	GetModuleFileName(NULL, filePath, sizeof(filePath));
 
+	//// Following section modified to add dependency parameter by John Rutter (V1.2.1)
+
+	// if service dependency specified, set up correct parameter type here
+	char* dependency = NULL;
+	if (dependsOn != NULL)
+	{
+		// set up dependency parameter with extra double null-terminator
+		int dependencyLen = strlen(dependsOn) + 3;
+		dependency = new char[dependencyLen];
+		memset( dependency, 0, dependencyLen );
+		strcpy( dependency, dependsOn );
+	}
+
 	// Create the service
-	SC_HANDLE hService = CreateService(hSCM,
-                                       serviceName,
-                                       serviceName,
-                                       SERVICE_ALL_ACCESS,
-                                       SERVICE_WIN32_OWN_PROCESS,
-                                       SERVICE_AUTO_START,
-                                       SERVICE_ERROR_NORMAL,
-                                       filePath,
-                                       NULL,
-                                       NULL,
-                                       NULL,
-                                       NULL,
-                                       NULL);
+	SC_HANDLE hService = CreateService(hSCM,						// hSCManager
+                                       serviceName,					// lpServiceName
+                                       serviceName,					// lpDisplayName
+                                       SERVICE_ALL_ACCESS,			// dwDesiredAccess
+                                       SERVICE_WIN32_OWN_PROCESS,	// dwServiceType
+                                       SERVICE_AUTO_START,			// dwStartType
+                                       SERVICE_ERROR_NORMAL,		// dwErrorControl
+                                       filePath,					// lpBinaryPathName
+                                       NULL,						// lpLoadOrderGroup
+                                       NULL,						// lpdwTagId
+                                       dependency,					// lpDependencies - John Rutter (V1.2.1)
+                                       NULL,						// lpServiceStartName
+                                       NULL);						// lpPassword
+
+	// clean up any dependency parameter straight away - John Rutter (V1.2.1)
+	if (dependency != NULL)
+	{
+		delete[] dependency;
+	}
 
 	//If the function failed, return an error.
 	if (hService == NULL)
@@ -965,7 +1026,7 @@ void WINAPI ServiceHandler(DWORD opcode)
 			LocalFree(messages[1]);
 		}
 
-		//Start a thread to stop the service in 30 seconds, if it has not stopped yet.
+		//Start a thread to stop the service in a number of seconds, if it has not stopped yet.
 		DWORD timeoutId;
 		HANDLE timeoutThread; 
 		timeoutThread = CreateThread(NULL, 0, TimeoutStop, NULL, 0, &timeoutId);
@@ -1230,7 +1291,7 @@ DWORD WINAPI StartService(LPVOID lpParam)
 
 	///////// This section added by Lars Johanson IVF 2001-02-26 modified by Elijah Roberts 2001-04-12.
 	//Get the path extension.
-	char *regPathExt;
+	char *regPathExt = NULL; ///// Modified to avoid erroneous delete below - John Rutter (V1.2.1)
 	DWORD regPathExtLength = 0;
 	if ((regRet=RegQueryValueExAllocate(hKey, "Path", NULL, NULL,  (BYTE **)&regPathExt, &regPathExtLength)) != ERROR_SUCCESS)
 	{
@@ -1510,8 +1571,8 @@ DWORD WINAPI StopService(LPVOID lpParam)
 
 DWORD WINAPI TimeoutStop(LPVOID lpParam)
 {
-	//Sleep for 30 seconds.
-	Sleep(30000);
+	//Sleep for required number of seconds.
+	Sleep(SHUTDOWN_TIMEOUT_MSECS); // modified to use constant definition here - John Rutter (V1.2.1)
 
 	//Tell the main thread that the service is no longer running.
 	LPTSTR messages[1];
@@ -1551,7 +1612,7 @@ void ExitHandler(int code)
 	{
 		SetEvent(hWaitForStop);
 	}
-	Sleep(90000);
+	Sleep(EXIT_HANDLER_TIMEOUT_MSECS); // modified to use constant definition here - John Rutter (V1.2.1)
 }
 
 LONG RegQueryValueExAllocate(HKEY hKey, LPCTSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE *lplpData, LPDWORD lpcbData)
