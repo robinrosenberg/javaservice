@@ -1,0 +1,100 @@
+'------------------------------------------------------------------------------
+'FILE DESCRIPTION: Update build number in version.h resource include file
+'------------------------------------------------------------------------------
+' To use this in Visual Studio, go to Tools/Customize.../Add-ins and macro files/Browse
+
+Function GetProjectDir(FullName)
+
+'VC++ doesn't provide any method for getting the path of the active project
+'See the VB Script reference for more information on the VB Script functions
+'used in this function
+
+Dim proj_path
+proj_path = Split(StrReverse(FullName),"\",-1,1)
+
+Dim count
+count = UBound(proj_path)
+
+Dim full_path
+full_path = ""
+Dim i
+
+for i = 1 to count
+	full_path = full_path & "\" & proj_path(i)
+next
+
+GetProjectDir = StrReverse(full_path)
+
+End Function
+
+
+Sub ReplaceText(selection, count, incrementby)
+
+'selection represents the TextSelection object
+'count represents the word position of the version number to be incremented
+'incrementby represents a number that will be added to the existing version number
+
+selection.WordRight dsMove, count
+selection.WordRight dsExtend, 1
+Dim str
+str = selection.Text
+str = str + incrementby
+
+selection.Text = str
+
+End Sub
+
+
+Sub Application_BuildFinish(numError, numWarning)
+
+'This event will be triggered after every build of a project
+'Only update the version number if there are no errors or warnings
+If (numError <> 0) Then
+    exit sub
+end if
+If (numWarning <> 0) Then
+    exit sub
+end if
+
+'Obtain the full path of the active project
+Dim full_path
+full_path = GetProjectDir(ActiveProject.FullName)
+
+full_path = full_path & "VersionNo.h"
+
+'Open the VersionNo.h file
+vdoc = Documents.Open(full_path, "Text")
+
+' See if it is read-only, in which case leave the version number alone
+if ActiveDocument.ReadOnly then
+	ActiveDocument.Close
+	exit sub
+end if
+
+'Obtain the TextSelection object
+Dim selection
+set selection = ActiveDocument.Selection
+selection.StartOfDocument
+
+'Increment the version information
+selection.FindText "FILEVER"
+selection.StartOfLine
+' FILEVER
+ReplaceText selection, 9, 1
+selection.LineDown
+selection.StartOfLine
+' PRODUCTVER
+ReplaceText selection, 9, 1
+selection.LineDown
+selection.StartOfLine
+' STRFILEVER
+ReplaceText selection, 10, 1
+selection.LineDown
+selection.StartOfLine
+' STRPRODUCTVER
+ReplaceText selection, 10, 1
+
+ActiveDocument.Save
+ActiveDocument.Close
+
+End Sub

@@ -1,0 +1,160 @@
+<?xml version="1.0" ?>
+
+<!--
+ * JavaService - Windows NT Service Daemon for Java applications
+ *
+ * Copyright (C) 2004 Multiplan Consultants Ltd.
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *
+ * Information about the JavaService software is available at the ObjectWeb
+ * web site. Refer to http://javaservice.objectweb.org for more details.
+ *
+-->
+
+
+<project name="JavaService" default="usage">
+
+	<description>
+	The JavaService utility allows Java applications to be run on Windows NT-type
+	systems in the background as a System Service (aka Daemon process).
+	This Ant Build script packages up the files for testing and release.
+	</description>
+
+	<property name="version" value="2.0"/>
+
+	<property name="srcdir" value="./src"/>
+	<property name="bindir" value="./bin"/>
+	<property name="docdir" value="./docs"/>
+	<property name="scriptdir" value="./scripts"/>
+	<property name="testdir" value="./test"/>
+	<property name="rel.exe" value="${srcdir}/Release/JavaService.exe"/>
+	<property name="dbg.exe" value="${srcdir}/Debug/JavaServiceDebug.exe"/>
+	<property name="samplejar" value="../SampleService/bin/SampleService.jar"/>
+	<property name="lgpl" value="./LGPL.txt"/>
+	<property name="license" value="./LICENSE.txt"/>
+	<property name="binzipfile" value="./JavaService-bin-${version}.zip"/>
+	<property name="srczipfile" value="./JavaService-src-${version}.zip"/>
+
+
+
+	<target name="usage" description="Provides information on usage of this Ant build file">
+
+		<echo>
+		
+	This build script can be invoked by ANT as follows:
+
+	ant clean	 (Deletes earlier distribution output files)
+	ant build	 (Checks that the required build files exist)
+	ant dist	 (Creates binary and source release zip files)
+	ant bin		 (Creates application binary release zip file)
+	ant src		 (Creates application source release zip file)
+	ant all		 (Performs clean, build and dist steps in turn)
+	ant usage	 (Displays this help text)
+	ant -projecthelp (Lists the available targets)
+
+		</echo>
+	</target>
+
+
+
+	<target name="clean" description="Delete any previous distribution output files">
+
+		<delete includeEmptyDirs="true" quiet="true">
+			<fileset dir="${bindir}"
+				 includes="**/*.exe,**/*.jar" />
+			<fileset file="${binzipfile}"/>
+			<fileset file="${srczipfile}"/>
+		</delete>
+
+	</target>
+
+
+
+	<target name="build" description="Copy the required application files from external builds">
+
+		<available file="${rel.exe}" property="release.exe.present" value="true" />
+		<fail message="Release build not completed, file ${rel.exe} not present">
+			<condition>
+				<isfalse value="${release.exe.present}" />
+			</condition>
+		</fail>
+			
+		<available file="${dbg.exe}" property="debug.exe.present" value="true" />
+		<fail message="Debug build not completed, file ${dbg.exe} not present">
+			<condition>
+				<isfalse value="${debug.exe.present}" />
+			</condition>
+		</fail>
+
+		<available file="${samplejar}" property="sample.jar.present" value="true" />
+		<fail message="SampleService build not completed, file ${samplejar} not present">
+			<condition>
+				<isfalse value="${sample.jar.present}" />
+			</condition>
+		</fail>
+
+		<copy file="${rel.exe}" todir="${bindir}" />
+		<copy file="${dbg.exe}" todir="${bindir}" />
+		<copy file="${samplejar}" todir="${bindir}" />
+
+	</target>
+
+
+
+	<target name="dist" depends="build, src, bin" description="Creates zip files for application binary and source releases">
+
+		<echo message="ZIP files now created for binary and source distributions" />
+
+	</target>
+
+
+
+	<target name="src" depends="build" description="Create source distribution zip file">
+
+		<zip destfile="${srczipfile}"
+		     basedir="../"
+		     defaultexcludes="false"
+		     includes="javaservice/**"
+		     excludes="**/*.zip, **/*.log, **/CVS, **/*.ncb, **/*.plg, **/*.obj, **/*.bsc, **/*.idb, **/*.pch, **/*.pdb, **/*.res, **/*.sbr, **/Debug/*.exe, **/Release/*.exe"
+		     compress="true"
+		     update="false" />
+	</target>
+
+
+
+	<target name="bin" depends="build" description="Create binary distribution zip file">
+
+		<zip destfile="${binzipfile}"
+		     defaultexcludes="true"
+		     excludes="**/*.zip, **/*.log"
+		     compress="true"
+		     update="false">
+			<fileset dir="${bindir}" />
+			<fileset dir="${scriptdir}" />
+			<fileset file="${lgpl}" />
+			<fileset file="${license}" />
+		</zip>
+	</target>
+
+
+
+	<target name="all" depends="clean, build, dist" description="Deletes previous build results, generates distribution files">
+
+	</target>
+
+</project>
