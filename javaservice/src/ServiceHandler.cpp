@@ -157,14 +157,9 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 
 	processGlobals->logServiceEvent(EVENT_SERVICE_STARTED);
 
-
-
-	// mark the service as pending startup and then started (could nove that after thread created)
+	// mark the service as pending startup, so service manager knows we are here
 
 	processGlobals->updateServiceStatus(SERVICE_START_PENDING);
-
-	processGlobals->updateServiceStatus(SERVICE_RUNNING);
-
 
 	// start the background service thread and wait until the service ends
 
@@ -172,6 +167,9 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 
 	if (hServiceThread != NULL)
 	{
+		// thread created, so now mark service status as running
+		processGlobals->updateServiceStatus(SERVICE_RUNNING);
+
 		ServiceLogger::write("Service Main waiting for event flags to be set\n");
 
 		// wait (indefinitely) until start and stop event flags are both set
