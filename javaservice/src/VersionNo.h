@@ -1,16 +1,16 @@
 //
 // JavaService - Windows NT Service Daemon for Java applications
 //
-// Copyright (C) 2004 Multiplan Consultants Ltd.
+// Copyright (C) 2005 Multiplan Consultants Ltd.
 //
 
 #ifndef __VERSION_NO_H__
 #define __VERSION_NO_H__
 
-#define FILEVER         2,0,0,17
-#define PRODUCTVER      2,0,0,17
-#define STRFILEVER     "2,0,0,17\0"
-#define STRPRODUCTVER  "2,0,0,17\0"
+#define FILEVER         2,0,0,27
+#define PRODUCTVER      2,0,0,27
+#define STRFILEVER     "2,0,0,27\0"
+#define STRPRODUCTVER  "2,0,0,27\0"
 
 #endif // __VERSION_NO_H__
 
