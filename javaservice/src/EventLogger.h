@@ -44,6 +44,8 @@ void logMessage(HANDLE hEventSource, const char* logText);
 
 void logError(HANDLE hEventSource, const char* errText);
 
+void logError(HANDLE hEventSource, const char* errText, const char* extraText);
+
 void logEventMessage(HANDLE hEventSource, const char* messageText, int messageType);
 
 void logFunctionError(HANDLE hEventSource, const char* functionName);

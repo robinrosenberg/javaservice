@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -76,6 +76,28 @@ void logError(HANDLE hEventSource, const char* errText)
 {
 	logEventMessage(hEventSource, errText, EVENT_GENERIC_ERROR);
 }
+
+void logError(HANDLE hEventSource, const char* errText, const char* extraText)
+{
+
+	const int errTextLen = strlen(errText) + 1;
+	const int extraTextLen = (extraText != NULL) ? strlen(extraText) : 0;
+	const int totalTextLen = errTextLen + extraTextLen;
+
+	char* fullText = (char*)malloc(totalTextLen);
+	memset(fullText, 0, totalTextLen);
+	strcpy(fullText, errText);
+	if (extraTextLen > 0)
+	{
+		strcpy(fullText + errTextLen, extraText);
+	}
+
+	logEventMessage(hEventSource, fullText, EVENT_GENERIC_ERROR);
+
+	free(fullText);
+}
+
+
 
 
 void logEventMessage(HANDLE hEventSource, const char* messageText, int messageType)
