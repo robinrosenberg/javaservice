@@ -156,6 +156,7 @@ ServiceLogger::ServiceLogger()
 	{
 		logFile = fopen(logOutput, "a+");
 		writeLog("\n***** Start of new JavaService log session *****\n");
+		// can use freopen(logOutput,"a+",stdout) to redirect stdout/stderr too
 	}
 }
 
@@ -174,6 +175,7 @@ void ServiceLogger::closeLogFile()
 {
 	if (loggingEnabled && (logFile != NULL))
 	{
+		// can use freopen("CON","w",stdout) to revert stdout/stderr too
 		writeLog("\n***** End of JavaService log session *****\n");
 		fflush(logFile);
 		fclose(logFile);
