@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -36,6 +36,14 @@
 
 
 //
+// Local constant definitions
+//
+
+// Number of milliseconds delay timeout when stopping the service, default value
+static const long DEFAULT_SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
+
+
+//
 // Local function references
 //
 static int countOptionalArgs(const char** args, const char* stopAtArg, int maxArgs);
@@ -65,6 +73,7 @@ ServiceParameters::ServiceParameters()
 , currentDirectory(NULL)
 , dependency(NULL)
 , autoStart(true)
+, shutdownMsecs(DEFAULT_SHUTDOWN_TIMEOUT_MSECS)
 {
 	setSwVersion(STRPRODUCTVER);
 	setStartMethod("main");
@@ -142,6 +151,7 @@ ServiceParameters::~ServiceParameters()
 //		[-path extraPath
 //		[-depends serviceDependency]
 //		[-auto | -manual]
+//		[-shutdown seconds]
 //
 bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 {
@@ -203,7 +213,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 	}
 
 	// list of arguments that will end options lists in calls below
-	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-auto", "-manual", NULL };
+	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-auto", "-manual", "-shutdown", NULL };
 
 	// start method parameters
 
@@ -317,7 +327,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		remaining--;
 	}
 
-	// finally, check for optional '-auto' or '-manual' startup control flag
+	// check for optional '-auto' or '-manual' startup control flag
 
 	if (argsOk && (remaining > 0))
 	{
@@ -334,6 +344,32 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 			remaining--;
 		}
 	}
+
+	// end with optional '-shutdown' service stop timeout
+
+	if (argsOk && (remaining > 1) && (strcmp(*args, "-shutdown") == 0))
+	{
+		args++; // skip -shutdown arg
+		remaining--;
+
+		// get string value, parse to get number and validate that before using it
+		const char* shutdownString = *args;
+		const int shutdownSeconds = atoi(shutdownString);
+
+		if (shutdownSeconds >= 0)
+		{
+			setShutdownMsecs(shutdownSeconds * 1000); // shutdown milliseconds timeout
+			args++;
+			remaining--;
+		}
+		else
+		{
+			cerr << "'-shutdown seconds' parameter not present on install command" << endl;
+			argsOk = false;
+		}
+
+	}
+
 
 	if (argsOk && (remaining > 0))
 	{
@@ -529,6 +565,14 @@ static bool outputConfigString(ostream& os, const char* stringType, const char* 
 }
 
 
+static bool outputConfigValue(ostream& os, const char* intType, const int intEntry)
+{
+
+	os << intType << "\t" << intEntry << endl;
+	return true;
+}
+
+
 static void outputConfigArray(ostream& os, const char* arrayType, int arraySize, const char** arrayEntries)
 {
 
@@ -584,6 +628,8 @@ ostream& operator<< (ostream& os, const ServiceParameters& serviceParams)
 	outputConfigString(os, "Path Extension", serviceParams.getPathExt());
 
 	outputConfigString(os, "Current Directory", serviceParams.getCurrentDirectory());
+
+	outputConfigValue(os, "Shutdown Timeout", serviceParams.getShutdownMsecs());
 
 	// dependsOn and autostart only used during installation command processing
 

@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -118,10 +118,13 @@ public:
 	void setAutoStart(bool isAutoStart) { autoStart = isAutoStart; }
 	bool isAutoStart() const { return autoStart; }
 
+	void setShutdownMsecs(int wotMsecs) { shutdownMsecs = wotMsecs; }
+	int getShutdownMsecs() const { return shutdownMsecs; }
 
 private:
 
 	const char* swVersion;			// Software version number, for reference only
+
 	const char *jvmLibrary;			// the jvm library dll of the run-time environment
 	int jvmOptionCount;				// number of jvm options
 	const char **jvmOptions;		// the jvm option(s)
@@ -144,6 +147,7 @@ private:
 	const char* dependency;			// service dependency
 	bool autoStart;					// Automatic (default) or manual service startup
 
+	int shutdownMsecs;				// milliseconds shutdown timeout
 
 	void updateStringValue(const char*& stringRef, const char* newString);
 
