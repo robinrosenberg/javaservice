@@ -259,7 +259,7 @@ public class SampleService
 			if (allocateMemory)
 			{
 				// create an object of some useful size, losing any earlier ref
-				objectRef = new StringBuffer(i);
+				objectRef = new StringBuffer((100 + i) * 100);
 			}
 
 			x += i;
