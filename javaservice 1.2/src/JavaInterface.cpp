@@ -1,5 +1,5 @@
 //Copyright (c) 2000, Alexandria Software Consulting
-//Some enhancements, post V1.2.0, (c) 2003 Multiplan Consultants Ltd
+//Some enhancements, post V1.2.0, (c) 2005 Multiplan Consultants Ltd
 //
 //All rights reserved. Redistribution and use in source 
 //and binary forms, with or without modification, are permitted provided 
@@ -300,6 +300,21 @@ bool StartJavaService(HANDLE hEventSource, char *jvmDllPath, int jvmOptionCount,
 }
 
 
+static bool exceptionRaised(JNIEnv *env)
+{
+	if (env->ExceptionCheck() == JNI_TRUE)
+	{
+		env->ExceptionDescribe();
+		env->ExceptionClear();
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 
 static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile)
 {
@@ -341,8 +356,16 @@ static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile)
 		return false;
     }
 
-	//Find the FileOutputStream constructor.
-    jmethodID fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;)V");
+
+	//Find the FileOutputStream constructor - look for JDK1.4 version first, of (String name, boolean append) format
+	bool useAppendParam = true;
+    jmethodID fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;Z)V");
+	// if this form of constructor not found (pre 1.4 JVM) then use simpler (String name) form instead, no append
+    if (exceptionRaised(env) || (fileOutputStreamConstructor == NULL))
+	{
+		useAppendParam = false;
+	    fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;)V");
+	}
 	if (env->ExceptionCheck() == JNI_TRUE)
 	{
 		LPTSTR messages[1];
@@ -361,7 +384,8 @@ static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile)
     }
 
 	//Create a FileOutputStream.
-    jobject fileOutputStream = env->NewObject(fileOutputStreamClass, fileOutputStreamConstructor, pathString);
+    jobject fileOutputStream = useAppendParam ? env->NewObject(fileOutputStreamClass, fileOutputStreamConstructor, pathString, JNI_TRUE)
+											  :	env->NewObject(fileOutputStreamClass, fileOutputStreamConstructor, pathString);
 	if (env->ExceptionCheck() == JNI_TRUE)
 	{
 		LPTSTR messages[1];
@@ -531,8 +555,15 @@ static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile)
 		return false;
     }
 
-	//Find the FileOutputStream constructor.
-    jmethodID fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;)V");
+	//Find the FileOutputStream constructor - look for JDK1.4 version first, of (String name, boolean append) format
+	bool useAppendParam = true;
+    jmethodID fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;Z)V");
+	// if this form of constructor not found (pre 1.4 JVM) then use simpler (String name) form instead, no append
+    if (exceptionRaised(env) || (fileOutputStreamConstructor == NULL))
+	{
+		useAppendParam = false;
+	    fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;)V");
+	}
 	if (env->ExceptionCheck() == JNI_TRUE)
 	{
 		LPTSTR messages[1];
@@ -551,7 +582,8 @@ static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile)
     }
 
 	//Create a FileOutputStream.
-    jobject fileOutputStream = env->NewObject(fileOutputStreamClass, fileOutputStreamConstructor, pathString);
+    jobject fileOutputStream = useAppendParam ? env->NewObject(fileOutputStreamClass, fileOutputStreamConstructor, pathString, JNI_TRUE)
+											  :	env->NewObject(fileOutputStreamClass, fileOutputStreamConstructor, pathString);
 	if (env->ExceptionCheck() == JNI_TRUE)
 	{
 		LPTSTR messages[1];
@@ -678,7 +710,6 @@ static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile)
 
 	return true;
 }
-
 
 
 //
