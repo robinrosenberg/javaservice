@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+
+<project name="SampleService" default="usage">
+
+	<description>
+	The SampleService is a simple Java application that can be used
+	to demonstrate and test use of the JavaService utility, which
+	can run the Java application as a Windows NT System Service.
+	</description>
+
+	<property name="srcdir" value="./src"/>
+	<property name="bindir" value="./bin"/>
+	<property name="docdir" value="./docs"/>
+
+	<target name="usage" description="Provides information on Ant usage">
+
+		<echo>
+		
+	This build script can be invoked by ANT as follows:
+
+	ant build		(Compiles the Java application)
+	ant clean		(Deletes earlier log and class files)
+	ant docs		(Generates JavaDoc files for the project)
+	ant rebuild		(Performs clean and build steps in turn)
+	ant all			(Performs clean, build and docs steps in turn)
+	ant usage		(Displays this help text)
+	ant -projecthelp	(Lists the available targets)
+
+		</echo>
+	</target>
+
+	<target name="clean" description="Delete any previous build results and log files">
+
+		<delete includeEmptyDirs="true" quiet="true">
+			<fileset dir="${bindir}"
+				 includes="**/*.class, **/*/.log" />
+			<fileset dir="${docdir}/api"/>
+		</delete>
+
+	</target>
+
+	<target name="build" description="Generate class file(s) for sample service">
+
+		<javac srcdir="${srcdir}" destdir="${bindir}" debug="on" />
+
+	</target>
+
+
+	<target name="docs" description="Generates JavaDoc html files from the source">
+
+		<javadoc destdir="${docdir}/api"
+			 author="true"
+			 version="true"
+			 use="true"
+			 windowtitle="JavaService example application">
+
+			<fileset dir="${srcdir}" defaultexcludes="yes">
+				<include name="org/objectweb/**" />
+			</fileset>
+
+			<header><![CDATA[<strong>JavaService, an ObjectWeb project</strong>]]></header>
+			<doctitle><![CDATA[<h1>JavaService - Sample Service</h1>]]></doctitle>
+			<footer><![CDATA[Project page at <strong><a href="http://javaservice.objectweb.org" target="_top">javaservice.objectweb.org</a></strong>]]></footer>
+			<bottom><![CDATA[<center><emphasis>Copyright &#169; 2004 Multiplan Consultants Ltd.</emphasis></center>]]></bottom>
+		</javadoc>
+
+	</target>
+
+	<target name="rebuild" depends="clean, build" description="Deletes previous build results and regenerate class file(s)">
+
+	</target>
+
+
+	<target name="all" depends="clean, build, docs" description="Deletes previous build results, builds class and javadoc files">
+
+	</target>
+
+</project>
