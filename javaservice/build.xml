@@ -3,7 +3,7 @@
 <!--
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@
 	This Ant Build script packages up the files for testing and release.
 	</description>
 
-	<property name="version" value="2.0"/>
+	<property name="version" value="2.0.2"/>
 
 	<property name="srcdir" value="./src"/>
 	<property name="bindir" value="./bin"/>
@@ -55,6 +55,7 @@
 	<target name="usage" description="Provides information on usage of this Ant build file">
 
 		<echo>
+	JavaService V${version}
 		
 	This build script can be invoked by ANT as follows:
 
@@ -67,7 +68,6 @@
 	ant all		 (Performs clean, build, dist and test steps)
 	ant usage	 (Displays this help text)
 	ant -projecthelp (Lists the available targets)
-
 		</echo>
 	</target>
 
