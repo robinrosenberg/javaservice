@@ -373,6 +373,51 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 		}
 	}
 
+	if (read && getRegValueString(hKey, REG_KEY_STOP_CLASS, &tempString))
+	{
+		serviceParams.setStopClass(tempString);
+		delete[] tempString;
+	}
+	else
+	{
+		read = false;
+	}
+
+	if (read && getRegValueString(hKey, REG_KEY_STOP_METHOD, &tempString))
+	{
+		serviceParams.setStopMethod(tempString);
+		delete[] tempString;
+	}
+	else
+	{
+		read = false;
+	}
+
+	if (read && getRegValueDword(hKey, REG_KEY_STOP_PARAM_COUNT, &tempNumber))
+	{
+		serviceParams.setStopParamCount(tempNumber);
+	}
+	else
+	{
+		read = false;
+	}
+
+	if (read && (tempNumber > 0))
+	{
+		for (int param = 0; read && (param < tempNumber); param++)
+		{
+			char paramKeyName[256];
+			sprintf(paramKeyName, REG_KEY_STOP_PARAM_NO_FMT, param);
+
+			read = getRegValueString(hKey, paramKeyName, &tempString);
+			if (read)
+			{
+				serviceParams.setStopParam(param, tempString);
+				delete[] tempString;
+			}
+		}
+	}
+
 	// optional parameters may not be defined, so do not flag error if not found in registry
 
 	if (read)
