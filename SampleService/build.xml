@@ -8,7 +8,7 @@
 	can run the Java application as a Windows NT System Service.
 	</description>
 
-	<property name="version" value="2.0.2"/>
+	<property name="version" value="2.0.3"/>
 	<property name="srcdir" value="./src"/>
 	<property name="bindir" value="./bin"/>
 	<property name="docdir" value="./docs"/>
