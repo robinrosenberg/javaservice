@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -74,6 +74,7 @@ static const char* const REG_KEY_SYSTEM_OUT = "System.out File";
 static const char* const REG_KEY_SYSTEM_ERR = "System.err File";
 static const char* const REG_KEY_CURRENT_DIR = "Current Directory";
 static const char* const REG_KEY_PATH_EXT = "Path";
+static const char* const REG_KEY_SHUTDOWN_TIMEOUT = "Shutdown Timeout"; // value added from V1.2.4 release
 
 
 static const char* const REG_KEY_EVENT_MESSAGE_FILE = "EventMessageFile";
@@ -240,6 +241,13 @@ bool RegistryHandler::writeServiceParams(const ServiceParameters& serviceParams)
 		written = false;
 	}
 
+	// Set the shutdown timeout
+
+	if (written && !storeRegValueDword(hKey, REG_KEY_SHUTDOWN_TIMEOUT, serviceParams.getShutdownMsecs()))
+	{
+		written = false;
+	}
+
 	if (hKey != NULL)
 	{
 		RegCloseKey(hKey);
@@ -272,7 +280,7 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 	bool read = true; // set to false if any operations fail
 
 	char* tempString = NULL;
-	int tempCount;
+	int tempNumber;
 
 	if (getRegValueString(hKey, REG_KEY_SW_VERSION, &tempString))
 	{
@@ -294,19 +302,19 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 		read = false;
 	}
 
-	if (read && getRegValueDword(hKey, REG_KEY_JVM_OPTION_COUNT, &tempCount))
+	if (read && getRegValueDword(hKey, REG_KEY_JVM_OPTION_COUNT, &tempNumber))
 	{
-		serviceParams.setJvmOptionCount(tempCount);
+		serviceParams.setJvmOptionCount(tempNumber);
 	}
 	else
 	{
 		read = false;
 	}
 
-	if (read && (tempCount > 0))
+	if (read && (tempNumber > 0))
 	{
 		// allocate list of string pointers for all jvm options, then load them
-		for (int option = 0; read && (option < tempCount); option++)
+		for (int option = 0; read && (option < tempNumber); option++)
 		{
 			char optionKeyName[256];
 			sprintf(optionKeyName, REG_KEY_JVM_OPTION_NO_FMT, option);
@@ -340,18 +348,18 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 		read = false;
 	}
 
-	if (read && getRegValueDword(hKey, REG_KEY_START_PARAM_COUNT, &tempCount))
+	if (read && getRegValueDword(hKey, REG_KEY_START_PARAM_COUNT, &tempNumber))
 	{
-		serviceParams.setStartParamCount(tempCount);
+		serviceParams.setStartParamCount(tempNumber);
 	}
 	else
 	{
 		read = false;
 	}
 
-	if (read && (tempCount > 0))
+	if (read && (tempNumber > 0))
 	{
-		for (int param = 0; read && (param < tempCount); param++)
+		for (int param = 0; read && (param < tempNumber); param++)
 		{
 			char paramKeyName[256];
 			sprintf(paramKeyName, REG_KEY_START_PARAM_NO_FMT, param);
@@ -390,6 +398,10 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 			delete[] tempString;
 		}
 
+		if (getRegValueDword(hKey, REG_KEY_SHUTDOWN_TIMEOUT, &tempNumber))
+		{
+			serviceParams.setShutdownMsecs(tempNumber); // else ctor default
+		}
 	}
 
 	if (hKey != NULL)
@@ -697,5 +709,3 @@ static void deleteKeyName(const char* regKeyName)
 		delete[] (void*)regKeyName;
 	}
 }
-
-
