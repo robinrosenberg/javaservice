@@ -704,7 +704,7 @@ bool StopJavaService(HANDLE hEventSource, char *stopClass, char *stopMethod, int
 	if (env->ExceptionCheck() == JNI_TRUE)
 	{
 		LPTSTR messages[1];
-		messages[0] = "Exception after attachin to the Java Virtual Machine.";
+		messages[0] = "Exception after attaching to the Java Virtual Machine.";
 		ReportEvent(hEventSource, EVENTLOG_ERROR_TYPE, 0, EVENT_GENERIC_ERROR, NULL, 1, 0, (const char **)messages, NULL);
 		env->ExceptionDescribe();
 		env->ExceptionClear();
