@@ -30,8 +30,8 @@
 <project name="JavaService" default="usage">
 
 	<description>
-	The JavaService utility allows Java applications to be run on Windows NT-type
-	systems in the background as a System Service (aka Daemon process).
+	The JavaService utility allows Java applications to be run on Windows
+	NT systems in the background as a System Service (aka Daemon process).
 	This Ant Build script packages up the files for testing and release.
 	</description>
 
