@@ -51,7 +51,7 @@ Severity=Error
 Facility=Application
 SymbolicName=EVENT_STOP_FAILED
 Language=English
-The stop method of the %1 service failed to start, the service is being terminated.
+The stop method of the %1 service failed to run, the service is being terminated.
 .
 
 MessageId=0x1004

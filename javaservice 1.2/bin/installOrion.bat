@@ -12,7 +12,7 @@ goto ok
 :err
 
 echo --------
-echo Usage:   %0 jdk_home orion_home (classic/hotspot/server) admin_username admin_password other_service
+echo Usage:   %0 jdk_home orion_home (classic/hotspot/server) admin_username admin_password other_service (-auto / -manual)
 echo NOTE:    You MAY NOT use spaces in the path names. If you know how
 echo          to fix this, please tell me.
 echo          JDK 1.3 does not come with hotpot server by default, you must
@@ -29,7 +29,7 @@ goto eof
 
 copy JavaService.exe %2\OrionService.exe > nul
 
-%2\OrionService.exe -install Orion %1\jre\bin\%3\jvm.dll -Djava.class.path=%2\orion.jar;%1\lib\tools.jar -start com.evermind.server.ApplicationServer -stop com.evermind.client.orion.OrionConsoleAdmin -params "ormi://localhost %4 %5 -shutdown" -out %2\log\stdout.log -err %2\log\stderr.log -current %2 -depends %6
+%2\OrionService.exe -install Orion %1\jre\bin\%3\jvm.dll -Djava.class.path=%2\orion.jar;%1\lib\tools.jar -Xms64M -Xmx128M -start com.evermind.server.ApplicationServer -stop com.evermind.client.orion.OrionConsoleAdmin -params "ormi://localhost %4 %5 -shutdown" -out %2\log\stdout.log -err %2\log\stderr.log -current %2 -depends %6 %7
 
 :eof
 

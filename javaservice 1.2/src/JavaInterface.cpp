@@ -1,4 +1,5 @@
 //Copyright (c) 2000, Alexandria Software Consulting
+//Some enhancements, post V1.2.0, (c) 2003 Multiplan Consultants Ltd
 //
 //All rights reserved. Redistribution and use in source 
 //and binary forms, with or without modification, are permitted provided 
@@ -22,8 +23,6 @@
 //EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <windows.h>
-#include <stdio.h>
-#include <string.h>
 #include "jni.h"
 #include "JavaInterface.h"
 #include "ServiceInterface.h"
@@ -32,14 +31,26 @@
 //Type for JNI_CreateJavaVM function.
 typedef jint (JNICALL *JNICREATEPROC)(JavaVM **, void **, void *);
 
+////
+//// Local function prototypes
+////
+
 //Methods for redirecting out and err.
-bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile);
-bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile);
+static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile);
+static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile);
+
+////
+//// Local variable definitions
+////
 
 //The Java Virtual Machine the service is running in.
-JavaVM *jvm = NULL;
+static JavaVM *jvm = NULL;
 
-BOOL WINAPI ConsoleControlHandler(DWORD dwCtrlType)
+
+//
+// Hook function for when control-key type events are delivered to the process
+//
+static BOOL WINAPI ConsoleControlHandler(DWORD dwCtrlType)
 {
     switch (dwCtrlType)
 	{
@@ -55,6 +66,11 @@ BOOL WINAPI ConsoleControlHandler(DWORD dwCtrlType)
     return FALSE;
 }
 
+
+
+//
+// Global function invoked when JVM and configured class is to be invoked as a service thread
+//
 bool StartJavaService(HANDLE hEventSource, char *jvmDllPath, int jvmOptionCount, char* jvmOptions[], char *startClass, char *startMethod, int startParamCount, char *startParams[], char *outFile, char *errFile)
 {
 	//Load a jvm DLL.
@@ -283,7 +299,9 @@ bool StartJavaService(HANDLE hEventSource, char *jvmDllPath, int jvmOptionCount,
 	return true;
 }
 
-bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile)
+
+
+static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile)
 {
 	//Create a String for the path.
 	jstring pathString = env->NewStringUTF(outFile);
@@ -471,7 +489,9 @@ bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile)
 	return true;
 }
 
-bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile)
+
+
+static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile)
 {
 	//Create a String for the path.
 	jstring pathString = env->NewStringUTF(errFile);
@@ -659,6 +679,11 @@ bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile)
 	return true;
 }
 
+
+
+//
+// Global function invoked when JVM thread is to be shut down
+//
 bool StopJavaService(HANDLE hEventSource, char *stopClass, char *stopMethod, int stopParamCount, char *stopParams[])
 {
     JNIEnv *env;

@@ -93,7 +93,7 @@
 //
 // MessageText:
 //
-//  The stop method of the %1 service failed to start, the service is being terminated.
+//  The stop method of the %1 service failed to run, the service is being terminated.
 //
 #define EVENT_STOP_FAILED                0xC0001003L
 
