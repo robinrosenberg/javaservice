@@ -17,7 +17,18 @@
     <td> 
       <p class="mainBold"><a name="Release_Notes"></a>Release Notes</p>
       <blockquote> 
-      <p class="mainBold">Current Version: 1.2.3 (Multiplan Consultants Ltd)<br>
+      <p class="mainBold">Current Version: 1.2.4 (Multiplan Consultants Ltd)<br>
+        Release Date: January 29, 2005</p>
+        <ul class="mainNormal">
+          <li>Added the ability to specify the NT service shutdown timeout.<br>
+            An optional parameter &quot;-shutdown&quot; has been added to the installation command line, allowing the user to specify the
+			length of time (in seconds) to allow for the Java method processing on shutdown, before timeout occurs and JVM is terminated.</li>
+          <li>This value is also stored in the registry (milliseconds value) and can be updated using RegEdit.</li>
+		  <li>If the value is not found in the registry, the original default of 30 seconds will be used.</li>
+		  <li>Decreased the hard-coded value for pause before exit, after JVM has terminated, from 90 to 15 seconds.</li>
+        </ul>
+		
+      <p class="mainBold">Version: 1.2.3 (Multiplan Consultants Ltd)<br>
         Release Date: July 22, 2003</p>
         <ul class="mainNormal">
           <li>Added an alternative command-line parameter &quot;-version&quot; <br>
@@ -121,27 +132,6 @@
           <li>Initial Release. </li>
         </ul>
         </blockquote>
-
-      <p class="mainBold"><a name="To_Do"></a>To Do</p>
-
-      <p class="mainNormal">The following features have been noted as possible enhancements that
-	  may be included in a future release of the JavaService software.</p>
-      <ul class="mainNormal">
-          <li>Define configuration options for the start and stop method timeouts, which are
-		  currently hard-coded as constant values of 30 seconds each. When these timeouts are
-		  exceeded, the JVM is terminated.</li>
-		  <li>Implement optional parameter to allow program to be run interactively, but
-		  using the same configuration parameters as when run as a service. (i.e. <em>-interactive</em> option
-		  in same format as <em>-install</em> option to allow for improved test environment.</li>
-		  <li>Provide some form of service interrogation interface, to allow the state of
-		  the service to be verified by the user. Either use a simple http web-server mode,
-		  or a Windows system management interface.</li>
-		  <li>Add a heap memory report, which must work across all JVMs, with the value(s)
-		  being reported either on request or as an additional Event Log message on shutdown.</li>
-		  <li>Create improved scripts for install and uninstall of generic programs</li>
-		  <li>Improve and extend the set of example scripts for other known products, to include
-		  JOnAS, J-Integra, Hyperion Application Link, plus later versions of existing products.</li>
-		</ul>
       </td>
   </tr>
 </table>
