@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+
+<!DOCTYPE document SYSTEM '../../common/dtd/objectweb.dtd'>
+
+<document>
+  <properties>
+    <author email="javaservice@objectweb.org">javaservice team</author>
+    <title>Support</title>
+    <filename>support.xml</filename>
+    <pathtoroot>.</pathtoroot>
+  </properties>
+  
+  <body>
+        <s1 name="ObjectWeb Source Forge tools">
+
+                <p>The JavaService software is supported through the use of the community tools at
+				the ObjectWeb Forge for this project. As an open source project, external contributions are
+				welcomed as a means to improving and extending the software capability and usability.</p>
+				
+				<p>If you require support, the best way to find a solution is to browse the forums and if needed, enter your own question.</p>
+
+                <p>If you have need of a new feature that is not implemented within the current version of JavaService,
+				you can also suggest this as an enhancement or new development.</p>
+				
+				<p>The project forums are available <a href="http://forge.objectweb.org/forum/?group_id=137">here</a>
+				and the mailing list can be accessed <a href="http://forge.objectweb.org/mail/?group_id=137">here</a> for any issues
+				related to JavaService.</p>
+        </s1>
+  </body>
+</document>

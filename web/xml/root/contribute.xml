@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+
+<!DOCTYPE document SYSTEM '../../common/dtd/objectweb.dtd'>
+
+<document>
+  <properties>
+    <author email="javaservice@objectweb.org">javaservice team</author>
+    <title>Contributions</title>
+    <filename>contribute.xml</filename>
+    <pathtoroot>.</pathtoroot>
+  </properties>
+
+  <body>
+
+    <s1 name="User Contributions">
+
+	<subtitle>Are you using JavaService?</subtitle>
+
+	<p>If you make use of the JavaService utility, then why not share that information?
+	Send an email to the <a href="mailto:javaservice@objectweb.org">javaservice team</a> and describe what you are using it for.
+	The more user stories that can be described for the software, then the better the likelihood of future enhancements,
+	better shared support, and increased future take-up.</p>
+
+    </s1>
+    
+    <s1 name="Developer Contributions">
+
+	<subtitle>Enhancements for JavaService</subtitle>
+	<p>If you have developed any improvements or new features to the JavaService C++ software, it would be greatly
+	appreciated if you would share these with the greater Open Source community. Send in your updates and they will
+	be considered for inclusion in subsequent releases, or made available for manual add-ins if desired.</p>
+
+	<subtitle>JavaService Documentation</subtitle>
+	<p>Although the software itself is easy to use, any application can benefit from further documentation effort to
+	describe configuration, usage and frequently-asked-questions. Any input on this front will be appreciated.</p>
+
+	<subtitle>Test Tools</subtitle>
+	<p>As some people do experience occasional problems with their installations of JavaService, it can be useful to
+	have a standard test tool application that can be loaded into a user environment. An initial version has
+	been developed for investigation of one particular fault (a JVM was leaking memory when run as a service), but a
+	clearer set of test software would be helpful. If you have, or wish to write, Java software of this sort then
+	please do contact the team to see what may be the best route to take.</p>
+
+    </s1>
+
+    <s1 name="Previous Contributors">
+
+	<p>The JavaService software exists due to contributions from the following:</p>
+	
+	<ul>
+		<li>E Roberts, Alexandria Software Consulting</li>
+		<li>Anthony Tagunov</li>
+		<li>Joe Siebenmann</li>
+		<li>Lars Johanson</li>
+		<li>James Bigler</li>
+		<li>John Rutter, Multiplan Consultants</li>
+	</ul>
+
+    </s1>
+
+  </body>
+  
+</document>

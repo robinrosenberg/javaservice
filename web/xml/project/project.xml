@@ -10,7 +10,6 @@
   <description>
     JavaService is a software utility that allows execution of Java applications as Windows NT 'Services'.
 	This can be used with any server-type application, configured from simple script files for different programs and parameters, without the need for extra Java coding.
-
   </description>
 
   <keywords>
@@ -22,25 +21,27 @@
     <menu>
       <legend>Project Links</legend>
       <menuitem><a href="index.html">Home</a></menuitem>
-      <menuitem><a href="index.html">Download</a></menuitem>
-      <menuitem><a href="index.html">Documentation</a></menuitem>
-      <menuitem><a href="index.html">Mailing Lists</a></menuitem>
-      <menuitem><a href="index.html">Partners</a></menuitem>
-      <menuitem><a href="index.html">License</a></menuitem>
-      <menuitem><a href="index.html">History</a></menuitem>
+      <menuitem><a href="http://forge.objectweb.org/project/showfiles.php?group_id=137">Download</a></menuitem>
+      <menuitem><a href="./docs/index.html">Documentation</a></menuitem>
+      <menuitem><a href="http://forge.objectweb.org/mail/?group_id=137">Mailing Lists</a></menuitem>
+      <menuitem><a href="users.html">Users</a></menuitem>
+      <menuitem><a href="licensing.html">License</a></menuitem>
+      <menuitem><a href="support.html">Support</a></menuitem>
+      <menuitem><a href="history.html">History</a></menuitem>
     </menu>
 
     <menu>
       <legend>Developers' Corner</legend>
-      <menuitem><a href="index.html">How to Contribute</a></menuitem>
-      <menuitem><a href="index.html">CVS Repository</a></menuitem>
-      <menuitem><a href="index.html">ObjectWeb Forge Site</a></menuitem>
+      <menuitem><a href="contribute.html">How to Contribute</a></menuitem>
+      <menuitem><a href="http://forge.objectweb.org/scm/?group_id=137">CVS Repository</a></menuitem>
+      <menuitem><a href="http://forge.objectweb.org/projects/javaservice/">ObjectWeb Forge Site</a></menuitem>
     </menu>
 
     <menu>
       <legend>About</legend>
-      <menuitem><a href="index.html">Team</a></menuitem>
-      <menuitem><a href="index.html">Contact</a></menuitem>
+      <menuitem><a href="background.html">Background</a></menuitem>
+      <menuitem><a href="licensing.html">License</a></menuitem>
+      <menuitem><a href="mailto:javaservice@objectweb.org">Contact</a></menuitem>
     </menu>
 
   </body>

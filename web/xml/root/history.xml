@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+
+<!DOCTYPE document SYSTEM '../../common/dtd/objectweb.dtd'>
+
+<document>
+  <properties>
+    <author email="javaservice@objectweb.org">javaservice team</author>
+    <title>History</title>
+    <filename>history.xml</filename>
+    <pathtoroot>.</pathtoroot>
+  </properties>
+
+  <body>
+
+    <s1 name="History">
+
+	<subtitle>Current Version: 1.2.3 (Multiplan Consultants Ltd) -
+        Release Date: July 22, 2003</subtitle>
+
+        <ul>
+          <li>Added an alternative command-line parameter <strong>-version</strong> <br/>
+		  When specified interactively, the program now reports the version number and copyright information.</li>
+		  <li>Changes to software build process under Visual Studio:-
+		  	<ul>
+		  	<li>Additional resource files definitions used, simplifying build of messages resource.</li>
+			<li>Version number resource information built into application from source code.</li>
+			<li>Debug instance of executable file now renamed to <strong>JavaServiceDebug.exe</strong></li>
+			<li>Removed references to unused libraries and include files.</li>
+		  	</ul>
+		  </li>
+          <li>Minor refactoring to the code:-
+		  	<ul>
+			<li>Local functions and data now restricted to module scope where applicable.</li>
+			<li>If/Then/Else statements restructured to meet preferred code-style.</li>
+			<li>Some areas of code re-ordered to remove duplication.</li>
+			</ul>
+		  </li>
+		  <li>Product documentation updated:-
+		  	<ul>
+			<li>All HTML documentation now moved to the <strong>./docs/</strong> sub-directory.</li>
+			<li>A new <strong>index.html</strong> page used to reference all other document files.</li>
+			<li>Version history information split from the overview document.</li>
+			<li>Software build process description updated accordingly.</li>
+			<li>Updated Orion sample script to specify initial/maximum heap sizes.</li>
+			<li>An initial FAQ has been defined to assist in early fault-finding efforts.</li>
+			</ul>
+		  </li>
+        </ul>
+		
+	<subtitle>Version: 1.2.2 (Multiplan Consultants Ltd) -
+        Release Date: May 17, 2003</subtitle>
+
+        <ul>
+          <li>Added the ability to specify automatic or manual service startup mode.<br/>
+            An optional parameter <strong>-auto</strong> or <strong>-manual</strong> has been added to the command line
+			to allow the service startup to be specified as automatic (the default) or manual. If manual
+			service startup is specified, it will only run when issuing a command of the form <em>net start service</em>.</li>
+          <li>Added an example of using the JavaService program to run the JBoss server software.</li>
+          <li>Further changes to printf statements to show the service name used.</li>
+        </ul>
+
+
+	<subtitle>Version: 1.2.1 (Multiplan Consultants Ltd) -
+        Release Date: November 03, 2002</subtitle>
+
+        <ul>
+          <li>Added the ability to specify an NT service dependency.<br />
+            An optional parameter <strong>-depends</strong> has been added to the command line so that the user can specify an
+			additional NT service that must be started before the registered Java service is run.</li>
+          <li>Added new-line characters to the end of some printf statements to improve log file output.</li>
+          <li>Fixed an unitialised pointer problem that resulted in an occasional memory access error.</li>
+          <li>Added an example of using the JavaService program to run the Orion Application Server as a service.</li>
+        </ul>
+
+
+	<subtitle>Version: 1.2.0 (Alexandria Software Consulting) -
+          Release Date: April 12, 2001</subtitle>
+
+        <ul>
+          <li>Added the ability to have registry values greater than 256 characters. 
+            Registry access is now fully dynamic and values can have any length. 
+            A lot of people were having problems with the 256 character limit. 
+            I'm sorry it took so long to fix that, but I've been busy.</li>
+          <li>Fixed several printf statements that were missing parameters. Thanks 
+            to Anthony Tagunov for catching this.</li>
+          <li>Fixed a problem that prevented registry errors from being displayed 
+            properly. Thanks to Lars Johanson for sending in a fix for this.</li>
+          <li>Fixed a missing parameter in the Tomcat 3.2 install batch file. 
+            This is untested as I don't use Tomcat 3.2, so if someone would let 
+            me know if it works or not, I would appreciate it. Thanks to Joe Siebenmann 
+            for pointing out that there was a problem with the old batch file.</li>
+          <li>Added a new parameter &quot;-current&quot; to allow the current 
+            working directory to be specified. There were some people having problems 
+            with code that used relative paths, so this should help them out.</li>
+          <li>Added a new parameter &quot;-path&quot; to allow for extra path 
+            information to be added for finding dependent DLLs. Thanks to Lars 
+            Johanson for this submission.</li>
+        </ul>
+
+	<subtitle>Version: 1.1.1 (Alexandria Software Consulting) -
+          Release Date: December 21, 2000</subtitle>
+
+        <ul>
+          <li>Added a new batch file to install Tomcat 3.2 that was contributed by James Bigler.</li>
+        </ul>
+
+	<subtitle>Version: 1.1.0 (Alexandria Software Consulting) -
+          Release Date: October 11, 2000</subtitle>
+
+        <ul>
+          <li>Added an exit handler to the JVM so that a message is logged and 
+            the service is stopped gracefully if the System.exit method is called. 
+          </li>
+        </ul>
+
+	<subtitle>Version: 1.0.0 (Alexandria Software Consulting) -
+          Release Date: August 27, 2000</subtitle>
+
+        <ul>
+          <li>Modified to work around a bug in the Sun J2SE 1.3 that caused the 
+            JVM to exit and the service to stop whenever a user logged off of 
+            the system.</li>
+        </ul>
+
+	<subtitle>Version: 0.9.0 (Alexandria Software Consulting) -
+          Release Date: April 14, 2000</subtitle>
+
+        <ul>
+          <li>Initial Release. </li>
+        </ul>
+
+    </s1>
+    
+  </body>
+  
+</document>

@@ -1,0 +1,149 @@
+<html>
+<head>
+<title>JavaService - Version History</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="styles.css" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF">
+<table width="90%" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr> 
+    <td class="mainTitle"><span class="mainHeading">JavaService - Version History</span></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td> 
+      <p class="mainBold"><a name="Release_Notes"></a>Release Notes</p>
+      <blockquote> 
+      <p class="mainBold">Current Version: 1.2.3 (Multiplan Consultants Ltd)<br>
+        Release Date: July 22, 2003</p>
+        <ul class="mainNormal">
+          <li>Added an alternative command-line parameter &quot;-version&quot; <br>
+		  When specified interactively, the program now reports the version number and copyright information.</li>
+		  <li>Changes to software build process under Visual Studio:-
+		  	<ul>
+		  	<li>Additional resource files definitions used, simplifying build of messages resource.</li>
+			<li>Version number resource information built into application from source code.</li>
+			<li>Debug instance of executable file now renamed to <em>JavaServiceDebug.exe</em></li>
+			<li>Removed references to unused libraries and include files.</li>
+		  	</ul>
+		  </li>
+          <li>Minor refactoring to the code:-
+		  	<ul>
+			<li>Local functions and data now restricted to module scope where applicable.</li>
+			<li>If/Then/Else statements restructured to meet preferred code-style.</li>
+			<li>Some areas of code re-ordered to remove duplication.</li>
+			</ul>
+		  </li>
+		  <li>Product documentation updated:-
+		  	<ul>
+			<li>All HTML documentation now moved to the <em>./docs/</em> sub-directory.</li>
+			<li>A new <em>index.html</em> page used to reference all other document files.</li>
+			<li>Version history information split from the overview document.</li>
+			<li>Software build process description updated accordingly.</li>
+			<li>Updated Orion sample script to specify initial/maximum heap sizes.</li>
+			<li>An initial FAQ has been defined to assist in early fault-finding efforts.</li>
+			</ul>
+		  </li>
+          </li>
+        </ul>
+		
+        <p class="mainBold">Version: 1.2.2 (Multiplan Consultants Ltd)<br>
+          Release Date: May 17, 2003</p>
+        <ul class="mainNormal">
+          <li>Added the ability to specify automatic or manual service startup mode.<br>
+            An optional parameter &quot;-auto&quot; or &quot;-manual&quot; has been added to the command line
+			to allow the service startup to be specified as automatic (the default) or manual. If manual
+			service startup is specified, it will only run when issuing a command of the form 'net start service'.</li>
+          <li>Added an example of using the JavaService program to run the JBoss server software.</li>
+          <li>Further changes to printf statements to show the service name used.</li>
+          </li>
+        </ul>
+        <p class="mainBold">Version: 1.2.1 (Multiplan Consultants Ltd)<br>
+          Release Date: November 03, 2002</p>
+        <ul class="mainNormal">
+          <li>Added the ability to specify an NT service dependency.<br>
+            An optional parameter &quot;-depends&quot; has been added to the command line so that the user can specify an
+			additional NT service that must be started before the registered Java service is run.</li>
+          <li>Added new-line characters to the end of some printf statements to improve log file output.</li>
+          <li>Fixed an unitialised pointer problem that resulted in an occasional memory access error.</li>
+          <li>Added an example of using the JavaService program to run the Orion Application Server as a service.</li>
+        </ul>
+        <p class="mainBold"></p>
+        <p class="mainBold">Version: 1.2.0 (Alexandria Software Consulting)<br>
+          Release Date: April 12, 2001</p>
+        <ul class="mainNormal">
+          <li>Added the ability to have registry values greater than 256 characters. 
+            Registry access is now fully dynamic and values can have any length. 
+            A lot of people were having problems with the 256 character limit. 
+            I'm sorry it took so long to fix that, but I've been busy.</li>
+          <li>Fixed several printf statements that were missing parameters. Thanks 
+            to Anthony Tagunov for catching this.</li>
+          <li>Fixed a problem that prevented registry errors from being displayed 
+            properly. Thanks to Lars Johanson for sending in a fix for this.</li>
+          <li>Fixed a missing parameter in the Tomcat 3.2 install batch file. 
+            This is untested as I don't use Tomcat 3.2, so if someone would let 
+            me know if it works or not, I would appreciate it. Thanks to Joe Siebenmann 
+            for pointing out that there was a problem with the old batch file.</li>
+          <li>Added a new parameter &quot;-current&quot; to allow the current 
+            working directory to be specified. There were some people having problems 
+            with code that used relative paths, so this should help them out.</li>
+          <li>Added a new parameter &quot;-path&quot; to allow for extra path 
+            information to be added for finding dependent DLLs. Thanks to Lars 
+            Johanson for this submission.</li>
+        </ul>
+        <p class="mainBold"></p>
+        <p class="mainBold">Version: 1.1.1 (Alexandria Software Consulting)<br>
+          Release Date: December 21, 2000 </p>
+        <ul class="mainNormal">
+          <li>Added a new batch file to install Tomcat 3.2 that was contributed 
+            by James Bigler.</li>
+        </ul>
+        <p class="mainBold">Version: 1.1.0 (Alexandria Software Consulting)<br>
+          Release Date: October 11, 2000 </p>
+        <ul class="mainNormal">
+          <li>Added an exit handler to the JVM so that a message is logged and 
+            the service is stopped gracefully if the System.exit method is called. 
+          </li>
+        </ul>
+        <p class="mainBold">Version: 1.0.0 (Alexandria Software Consulting)<br>
+          Release Date: August 27, 2000 </p>
+        <ul class="mainNormal">
+          <li>Modified to work around a bug in the Sun J2SE 1.3 that caused the 
+            JVM to exit and the service to stop whenever a user logged off of 
+            the system.</li>
+        </ul>
+        <p class="mainBold">Version: 0.9.0 (Alexandria Software Consulting)<br>
+          Release Date: April 14, 2000 </p>
+        <ul class="mainNormal">
+          <li>Initial Release. </li>
+        </ul>
+        </blockquote>
+
+      <p class="mainBold"><a name="To_Do"></a>To Do</p>
+
+      <p class="mainNormal">The following features have been noted as possible enhancements that
+	  may be included in a future release of the JavaService software.</p>
+      <ul class="mainNormal">
+          <li>Define configuration options for the start and stop method timeouts, which are
+		  currently hard-coded as constant values of 30 seconds each. When these timeouts are
+		  exceeded, the JVM is terminated.</li>
+		  <li>Implement optional parameter to allow program to be run interactively, but
+		  using the same configuration parameters as when run as a service. (i.e. <em>-interactive</em> option
+		  in same format as <em>-install</em> option to allow for improved test environment.</li>
+		  <li>Provide some form of service interrogation interface, to allow the state of
+		  the service to be verified by the user. Either use a simple http web-server mode,
+		  or a Windows system management interface.</li>
+		  <li>Add a heap memory report, which must work across all JVMs, with the value(s)
+		  being reported either on request or as an additional Event Log message on shutdown.</li>
+		  <li>Create improved scripts for install and uninstall of generic programs</li>
+		  <li>Improve and extend the set of example scripts for other known products, to include
+		  JOnAS, J-Integra, Hyperion Application Link, plus later versions of existing products.</li>
+		</ul>
+      </td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+
+<!DOCTYPE document SYSTEM '../../common/dtd/objectweb.dtd'>
+
+<document>
+  <properties>
+    <author email="javaservice@objectweb.org">javaservice team</author>
+    <title>Background</title>
+    <filename>background.xml</filename>
+    <pathtoroot>.</pathtoroot>
+  </properties>
+
+  <body>
+
+    <s1 name="Background">
+
+	<subtitle>Alexandria Version</subtitle>
+	<p>The JavaService system service utility was originally developed and made available by
+	Alexandria Software Consulting, under a BSD-style license (from the web site at
+	www.alexandriasc.com - no longer reachable). The last version from that
+	source was V1.2.0 and this has been widely used for many applications.</p>
+
+	<subtitle>Multiplan Versions</subtitle>
+	<p>Multiplan Consultants subsequently made a range of enhancements to the software,
+	continuing to make these updates available under the same licensing terms. Three
+	incremental releases have been provided (1.2.1, 1.2.2 and 1.2.3) from the software
+	section of the <a href="http://www.multiplan.co.uk/software/javaservice">www.multiplan.co.uk</a> web site.</p>
+	
+	<subtitle>ObjectWeb Versions</subtitle>
+	<p>JavaService has now been accepted as an ObjectWeb project and is hosted on the Forge section of that site.
+	The project administrator at this time is John Rutter, of Multiplan Consultants, so this does provide for a
+	level of continuity from the updates of previous years.</p>
+
+	<p>Further development of the software is planned to incorporate further enhancements and functionality, and to
+	increase the level of documentation supporting this software. The community features of the ObjectWeb Forge
+	will also allow for easier exchange of comments and ideas relating to the project.
+	<br />
+	For all releases of JavaService from the ObjectWeb project, the 
+	<a href="http://www.gnu.org/copyleft/lesser.html">GNU Lesser General Public License</a> (LGPL) will apply.</p>
+
+	<p>Further, it is the intention that the JavaService utility will be the preferred method to be used by all ObjectWeb
+	projects when they are installed and used on a Windows NT-type system. It is hoped that this adoption over time will
+	make for consistent ease-of-use of other ObjectWeb projects and also lead to further improvements to JavaService itself.
+	</p>
+    </s1>
+    
+  </body>
+  
+</document>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+
+<!DOCTYPE document SYSTEM '../../common/dtd/objectweb.dtd'>
+
+<document>
+  <properties>
+    <author email="javaservice@objectweb.org">javaservice team</author>
+    <title>JavaService Users</title>
+    <filename>users.xml</filename>
+    <pathtoroot>.</pathtoroot>
+  </properties>
+
+  <body>
+
+    <s1 name="Users and Success Stories">
+	<subtitle>A blank section - so far!</subtitle>
+	<p>This section of the site is to include lists of people and/or companies that have used the
+	JavaService software for their applications - either in development or production environments.</p>
+	
+	<p>This information has not been requested before, so there is no official list at present.
+	But it is know that the software is used in many companies, for many different uses. If you are
+	one of those many users of JavaService, please send in some information to be listed here...</p>
+
+    </s1>
+
+    <s1 name="Web References">
+
+	<p>JavaService is described and referenced from various web locations and install guides.
+	Web references will be added here to link the ObjectWeb site with those other resources.</p>
+	
+	<p>To start with, you can always use the Google search engine to get your own resource list,
+	simply by specifying the keyword <strong>JavaService</strong>, as in
+	<a href="http://www.google.co.uk/search?q=javaservice">this link</a>.</p>
+	
+	</s1>
+	
+  </body>
+</document>
+

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+
+<!DOCTYPE document PUBLIC "-//ObjectWeb//DTD ObjectWeb Project Web Site//EN"
+"../../common/dtd/objectweb.dtd">
+
+<document>
+  <properties>
+    <author email="javaservice@multiplan.co.uk">javaservice@multiplan.co.uk</author>
+    <title>Home Page</title>
+    <filename>index.xml</filename>
+    <pathtoroot>.</pathtoroot>
+  </properties>
+  
+  <body>
+    <s1 name="Section 1" anchor="sect1">
+
+      <s2 name="Sub Section 1">
+
+	<subtitle>Subtitle 1</subtitle>
+	<p>Yet Another Test.</p>	
+
+      </s2>
+
+      <s2 name="Sub Section 2">
+
+	<p>This is a simple paragraph containing a <a href="sample.html#sect1">link</a> and a link to <connect href="index.xml#sect1">another XML document</connect>.</p>
+		      
+	<p>An unordered list:</p>      
+	<ul>
+	  <li>item 1</li>	
+	  <li>item 2</li>
+	</ul>
+	
+	<p>An ordered list:</p>
+	<ol>	
+	  <li>item 1</li>	  
+	  <li>item 2</li>	
+	</ol>
+	
+	<p>Some source code:</p>      
+	<source><![CDATA[
+
+package org.objectweb.foo;
+
+public class Main {
+  public static void main(String args[]) {
+    System.out.println("Sample Program");
+    if (args.length < 1) System.out.println("no arguments");
+  }
+}
+]]>	</source>
+	
+	<p>Sample table:</p>
+      
+	<table>
+	  <tr>
+	    <th>Column 1</th>
+	    <th>Column 2</th>
+	  </tr>
+	  <tr>
+	    <td>cell 1</td>
+	    <td>cell 2</td>
+	  </tr>
+	</table>
+	
+	<p>Sample form:</p>
+	
+	<form action="" method="post">
+	  <table>
+	    <tr>
+	      <td>Name: </td>
+	      <td><input type="text" name="name" value="" size="20"/></td>
+	    </tr>
+	  </table>	
+	</form>
+
+	<copyright>Sample copyright disclaimer.</copyright>
+      </s2>
+    </s1>
+  </body>
+</document>
