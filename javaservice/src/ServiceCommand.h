@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -48,6 +48,9 @@ protected:
 
 	// constructor, requires service name from child class ctor
 	ServiceCommand(const char* _serviceName) : serviceName(_serviceName) {}
+
+	// destructor, does nothing
+	~ServiceCommand() {}
 
 	SC_HANDLE openSCManager(int wot);
 
