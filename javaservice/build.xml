@@ -63,7 +63,8 @@
 	ant dist	 (Creates binary and source release zip files)
 	ant bin		 (Creates application binary release zip file)
 	ant src		 (Creates application source release zip file)
-	ant all		 (Performs clean, build and dist steps in turn)
+	ant smoketest	 (Run simple application 'smoke tests')
+	ant all		 (Performs clean, build, dist and test steps)
 	ant usage	 (Displays this help text)
 	ant -projecthelp (Lists the available targets)
 
@@ -153,8 +154,45 @@
 
 
 
-	<target name="all" depends="clean, build, dist" description="Deletes previous build results, generates distribution files">
+	<target name="smoketest" depends="build" description="Run simple tests against the application">
 
+		<echo message="Displaying application version number" />
+		<exec executable="${rel.exe}" dir="${bindir}" failonerror="true">
+			<arg line="-version" />
+		</exec>
+
+		<echo message="Displaying application licensing text" />
+		<exec executable="${rel.exe}" dir="${bindir}" failonerror="true">
+			<arg line="-licence" />
+		</exec>
+
+		<echo message="Verifying detection of invalid command, to show help" />
+		<!-- Note that invalid command option generates help text, exit success -->
+		<exec executable="${rel.exe}" dir="${bindir}" failonerror="true">
+			<arg line="-no_such_command_option" />
+		</exec>
+
+		<echo message="Verifying service command error, for incomplete command (error = ok)" />
+		<exec executable="${rel.exe}" dir="${bindir}" failonerror="false" resultproperty="test.errorlevel">
+			<arg value="-install" />
+			<arg value="any_old_service_no_jvm" />
+		</exec>
+		<fail message="No error reported for invalid service install command">
+			<condition>
+				<equals arg1="${test.errorlevel}" arg2="0" />
+			</condition>
+		</fail>
+
+		<echo message="'Smoke tests' completed successfully" />
+	</target>
+
+
+
+	<target name="all" depends="clean, build, dist, smoketest" description="Regenerate distribution files for release, run simple tests">
+
+		<echo>
+	Ant build steps completed.
+		</echo>
 	</target>
 
 </project>
