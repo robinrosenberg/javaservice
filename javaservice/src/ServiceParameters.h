@@ -68,9 +68,9 @@ public:
 
 	void setJvmOptionCount(int wotCount);
 	int getJvmOptionCount() const { return jvmOptionCount; }
-	void setJvmOption(int optionIndex, const char* wotOption) { jvmOptions[optionIndex] = wotOption; }
+	void setJvmOption(int optionIndex, const char* wotOption) { updateStringValue(jvmOptions[optionIndex], wotOption); }
 	const char* getJvmOption(int optionIndex) const { return jvmOptions[optionIndex]; }
-	void setJvmOptions(const char** wotOptions) { if (jvmOptions != NULL) { delete[] jvmOptions; } jvmOptions = wotOptions; }
+	void setJvmOptions(const char** wotOptions);
 	const char** getJvmOptions() const { return jvmOptions; }
 
 	void setStartClass(const char* wotClass) { updateStringValue(startClass, wotClass); }
@@ -81,9 +81,9 @@ public:
 
 	void setStartParamCount(int wotCount);
 	int getStartParamCount() const { return startParamCount; }
-	void setStartParam(int paramIndex, const char* wotParam) { startParams[paramIndex] = wotParam; }
+	void setStartParam(int paramIndex, const char* wotParam) { updateStringValue(startParams[paramIndex], wotParam); }
 	const char* getStartParam(int paramIndex) const { return startParams[paramIndex]; }
-	void setStartParams(const char** wotParams) { startParams = wotParams; }
+	void setStartParams(const char** wotParams);
 	const char** getStartParams() const { return startParams; }
 
 	void setStopClass(const char* wotClass) { updateStringValue(stopClass, wotClass); }
@@ -95,9 +95,9 @@ public:
 
 	void setStopParamCount(int wotCount);
 	int getStopParamCount() const { return stopParamCount; }
-	void setStopParams(const char** wotParams) { stopParams = wotParams; }
+	void setStopParams(const char** wotParams);
 	const char** getStopParams() const { return stopParams; }
-	void setStopParam(int paramIndex, const char* wotParam) { stopParams[paramIndex] = wotParam; }
+	void setStopParam(int paramIndex, const char* wotParam) { updateStringValue(stopParams[paramIndex], wotParam); }
 	const char* getStopParam(int paramIndex) const { return stopParams[paramIndex]; }
 
 	void setOutFile(const char* wotFile) { updateStringValue(outFile, wotFile); }

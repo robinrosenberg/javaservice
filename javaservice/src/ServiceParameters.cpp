@@ -46,6 +46,7 @@ static const long DEFAULT_SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
 //
 // Local function references
 //
+static void deleteStringArray(int& count, const char**& array);
 static int countOptionalArgs(const char** args, const char* stopAtArg, int maxArgs);
 static const char** getOptionalArgs(const char** args, int optionCount);
 static int countOptionalArgs(const char** args, const char* stopAtArgs[], int maxArgs);
@@ -97,32 +98,29 @@ ServiceParameters::~ServiceParameters()
 	if (pathExt != NULL) delete[] (void*)pathExt;
 	if (currentDirectory != NULL) delete[] (void*)currentDirectory;
 
-	if ((jvmOptionCount > 0) && (jvmOptions != NULL))
+	deleteStringArray(jvmOptionCount, jvmOptions);
+	deleteStringArray(startParamCount, startParams);
+	deleteStringArray(stopParamCount, stopParams);
+}
+
+static void deleteStringArray(int& count, const char**& array)
+{
+	if ((count > 0) && (array != NULL))
 	{
-		for (int i = 0; i < jvmOptionCount; i++)
+		for (int i = 0; i < count; i++)
 		{
-			delete[] (void*)jvmOptions[i];
+			const char* ptr = array[i];
+			if (ptr != NULL)
+			{
+				delete[] (void*)ptr;
+				array[i] = NULL;
+			}
 		}
-		delete[] jvmOptions;
+		delete[] array;
+		array = NULL;
+		//DONT DO THIS HERE [YET] count = 0;
 	}
 
-	if ((startParamCount > 0) && (startParams != NULL))
-	{
-		for (int i = 0; i < startParamCount; i++)
-		{
-			delete[] (void*)startParams[i];
-		}
-		delete[] startParams;
-	}
-
-	if ((stopParamCount > 0) && (stopParams != NULL))
-	{
-		for (int i = 0; i < stopParamCount; i++)
-		{
-			delete[] (void*)stopParams[i];
-		}
-		delete[] stopParams;
-	}
 }
 
 //
@@ -444,7 +442,11 @@ static const char** getOptionalArgs(const char** args, int optionCount)
 
 	for (int i = 0; i < optionCount; i++)
 	{
-		optionalArgs[i] = args[i];
+		int arglen = strlen(args[i]);
+		char* arg = new char[arglen + 1];
+		strcpy(arg, args[i]);
+		arg[arglen] = '\0';
+		optionalArgs[i] = arg;
 	}
 
 	optionalArgs[optionCount] = NULL; // end list with null entry
@@ -475,18 +477,41 @@ void ServiceParameters::setJvmOptionCount(int wotCount)
 {
 	if (jvmOptionCount != wotCount) {
 
-		if (jvmOptions != NULL) {
-			delete[] jvmOptions;
-			jvmOptions = NULL;
-		}
+		deleteStringArray(jvmOptionCount, jvmOptions);
 
 		jvmOptionCount = wotCount;
 
 		if (jvmOptionCount > 0)
 		{
 			jvmOptions = (const char**) new char*[jvmOptionCount];
+			for (int i = 0; i < jvmOptionCount; i++)
+			{
+				jvmOptions[i] = NULL;
+			}
 		}
 	}
+}
+
+
+void ServiceParameters::setJvmOptions(const char** wotOptions)
+{
+	deleteStringArray(jvmOptionCount, jvmOptions);
+
+	jvmOptions = wotOptions;
+}
+
+void ServiceParameters::setStartParams(const char** wotParams)
+{
+	deleteStringArray(startParamCount, startParams);
+
+	startParams = wotParams;
+}
+
+void ServiceParameters::setStopParams(const char** wotParams)
+{
+	deleteStringArray(stopParamCount, stopParams);
+
+	stopParams = wotParams;
 }
 
 
@@ -494,16 +519,17 @@ void ServiceParameters::setStartParamCount(int wotCount)
 {
 	if (startParamCount != wotCount) {
 
-		if (startParams != NULL) {
-			delete[] startParams;
-			startParams = NULL;
-		}
+		deleteStringArray(startParamCount, startParams);
 
 		startParamCount = wotCount;
 
 		if (startParamCount > 0)
 		{
 			startParams = (const char**) new char*[startParamCount];
+			for (int i = 0; i < startParamCount; i++)
+			{
+				startParams[i] = NULL;
+			}
 		}
 	}
 }
@@ -513,16 +539,17 @@ void ServiceParameters::setStopParamCount(int wotCount)
 {
 	if (stopParamCount != wotCount) {
 
-		if (stopParams != NULL) {
-			delete[] stopParams;
-			stopParams = NULL;
-		}
+		deleteStringArray(stopParamCount, stopParams);
 
 		stopParamCount = wotCount;
 
 		if (stopParamCount > 0)
 		{
 			stopParams = (const char**) new char*[stopParamCount];
+			for (int i = 0; i < stopParamCount; i++)
+			{
+				stopParams[i] = NULL;
+			}
 		}
 	}
 }
