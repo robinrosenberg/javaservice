@@ -64,6 +64,7 @@
 				<attribute name="Implementation-Title" value="SampleService" />
 				<attribute name="Implementation-Version" value="SampleService V${version}" />
 				<attribute name="Implementation-Vendor" value="Multiplan Consultants Ltd" />
+				<attribute name="Main-Class" value="org.objectweb.javaservice.test.SampleService" />
 			</manifest>
 		</jar>
 	</target>
@@ -84,7 +85,7 @@
 			<header><![CDATA[<strong>JavaService, an ObjectWeb project</strong>]]></header>
 			<doctitle><![CDATA[<h1>JavaService - Sample Service</h1>]]></doctitle>
 			<footer><![CDATA[Project page at <strong><a href="http://javaservice.objectweb.org" target="_top">javaservice.objectweb.org</a></strong>]]></footer>
-			<bottom><![CDATA[<center><em>Copyright &#169; 2004 Multiplan Consultants Ltd.</em></center>]]></bottom>
+			<bottom><![CDATA[<center><em>Copyright &#169; 2005 Multiplan Consultants Ltd.</em></center>]]></bottom>
 		</javadoc>
 
 	</target>
