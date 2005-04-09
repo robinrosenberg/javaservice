@@ -9,13 +9,14 @@ goto ok
 
 echo --------
 echo Usage:
-echo   %0 jdk_home (classic/hotspot/server)
+echo   %0 jdk_home (classic/hotspot/client/server)
 echo --------
 goto eof
 
 :ok
+set jsdev=c:\javaservice\dev
 
-JavaService.exe -install OutputTest %1\jre\bin\%2\jvm.dll -Djava.class.path=d:\javaservice\dev\JavaServiceTest\bin -start OutputTest -stop OutputTest -method systemExit -out d:\javaservice\dev\JavaServiceTest\out.log -err d:\Multiplan\dev\JavaServiceTest\err.log -current d:\javaservice\dev\JavaServiceTest -manual
+JavaService.exe -install OutputTest %1\jre\bin\%2\jvm.dll -Djava.class.path=%jsdev%\JavaServiceTest\bin -start OutputTest -stop OutputTest -method systemExit -out %jsdev%\JavaServiceTest\out.log -err %jsdev%\JavaServiceTest\err.log -current %jsdev%\JavaServiceTest -manual
 
 :eof
 
