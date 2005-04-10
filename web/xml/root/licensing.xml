@@ -14,16 +14,21 @@
 
     <s1 name="Licensing">
 
-	<p>JavaService V1.2 is available under a BSD-style license, as originally provided by
-	Alexandria Software Consulting and subsequently from Multiplan Consultants Ltd.
-	<br />
-	Refer to the download files for copies of this license text.</p>
+	<p>The JavaService software is available for use under <em>Open Source</em> licensing terms, according to the release used.
+	Whichever version is used, refer to the downloaded files for copies of the relevant license text.</p>
 	
-	<p>Subsequent releases of JavaService software are (to be) licensed under the
+	<p><strong>LGPL</strong></p>
+	<p>
+	Recent releases (V1.2.4 and V1.2.5) and future developments (V2.x) of the software are
+	provided for use under the terms of the
 	<a href="http://www.gnu.org/copyleft/lesser.html">GNU Lesser General Public License</a> (LGPL),
 	as published by the Free Software Foundation; either version 2.1 of the license,
 	or (at your option) any later version.</p>
 
+	<p><strong>BSD-style</strong></p>
+	<p>
+	Up to the release of V1.2.3, JavaService software has been provided under a BSD-style license, as originally specified by
+	Alexandria Software Consulting and subsequently from Multiplan Consultants Ltd.</p>
     </s1>
     
   </body>
