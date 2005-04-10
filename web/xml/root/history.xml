@@ -14,8 +14,37 @@
 
     <s1 name="History">
 
-	<subtitle>Current Version: 1.2.3 (Multiplan Consultants Ltd) -
-        Release Date: July 22, 2003</subtitle>
+	<subtitle>Version: 1.2.5 (ObjectWeb/Multiplan Consultants Ltd) -
+        Released: March 10, 2005</subtitle>
+
+        <ul>
+          <li>Updated code to append to existing files when redirecting stdout/stderr streams.
+		  <br/>
+		  <strong>NOTE</strong> this functionality is only available when using a recent Java run-time environment (i.e. JDK 1.4).</li>
+		  <li>Internal implementation uses a new constructor for FileOutputStream class, which was added for Java 1.4 JRE.
+		  If this new constructor is not available from the run-time environment, the application defaults to the previous
+		  mode and uses the standard constructor, which overwrites any existing log files on service startup.</li>
+		  <li>This feature has been tested successfully under JDK 1.4.2_07, which appends to existing log files.
+		  It has also been tested under JDK 1.3.1_07 and appends to existing files in that environment (not as expected).</li>
+		  <li><em>This new release has not yet been tested with an earlier JDK, so the error-handling functionality has not yet
+		  been tested to ensure that overwrite mode will be invoked if the new Java feature is not available at run-time.</em>
+		  <br/>If problems are found with a JDK prior to 1.3.1_07, then please highlight this through the support forums.</li>
+        </ul>
+		
+	<subtitle>Version: 1.2.4 (ObjectWeb/Multiplan Consultants Ltd) -
+        Released: January 29, 2005</subtitle>
+
+        <ul>
+          <li>Added the ability to specify the NT service shutdown timeout.
+		  <br/>An optional parameter &quot;-shutdown&quot; has been added to the installation command line, allowing the user to specify the
+			length of time (in seconds) to allow for the Java method processing on shutdown, before timeout occurs and JVM is terminated.</li>
+		  <li>This value is also stored in the registry (milliseconds value) and can be updated using RegEdit.</li>
+		  <li>If the value is not found in the registry, the original default of 30 seconds will be used.</li>
+		  <li>Decreased the hard-coded value for pause before exit, after JVM has terminated, from 90 to 15 seconds.</li>
+        </ul>
+
+	<subtitle>Version: 1.2.3 (Multiplan Consultants Ltd) -
+        Released: July 22, 2003</subtitle>
 
         <ul>
           <li>Added an alternative command-line parameter <strong>-version</strong> <br/>
@@ -48,7 +77,7 @@
         </ul>
 		
 	<subtitle>Version: 1.2.2 (Multiplan Consultants Ltd) -
-        Release Date: May 17, 2003</subtitle>
+        Released: May 17, 2003</subtitle>
 
         <ul>
           <li>Added the ability to specify automatic or manual service startup mode.<br/>
@@ -61,7 +90,7 @@
 
 
 	<subtitle>Version: 1.2.1 (Multiplan Consultants Ltd) -
-        Release Date: November 03, 2002</subtitle>
+        Released: November 03, 2002</subtitle>
 
         <ul>
           <li>Added the ability to specify an NT service dependency.<br />
@@ -74,7 +103,7 @@
 
 
 	<subtitle>Version: 1.2.0 (Alexandria Software Consulting) -
-          Release Date: April 12, 2001</subtitle>
+          Released: April 12, 2001</subtitle>
 
         <ul>
           <li>Added the ability to have registry values greater than 256 characters. 
@@ -98,14 +127,14 @@
         </ul>
 
 	<subtitle>Version: 1.1.1 (Alexandria Software Consulting) -
-          Release Date: December 21, 2000</subtitle>
+          Released: December 21, 2000</subtitle>
 
         <ul>
           <li>Added a new batch file to install Tomcat 3.2 that was contributed by James Bigler.</li>
         </ul>
 
 	<subtitle>Version: 1.1.0 (Alexandria Software Consulting) -
-          Release Date: October 11, 2000</subtitle>
+          Released: October 11, 2000</subtitle>
 
         <ul>
           <li>Added an exit handler to the JVM so that a message is logged and 
@@ -114,7 +143,7 @@
         </ul>
 
 	<subtitle>Version: 1.0.0 (Alexandria Software Consulting) -
-          Release Date: August 27, 2000</subtitle>
+          Released: August 27, 2000</subtitle>
 
         <ul>
           <li>Modified to work around a bug in the Sun J2SE 1.3 that caused the 
@@ -123,7 +152,7 @@
         </ul>
 
 	<subtitle>Version: 0.9.0 (Alexandria Software Consulting) -
-          Release Date: April 14, 2000</subtitle>
+          Released: April 14, 2000</subtitle>
 
         <ul>
           <li>Initial Release. </li>
