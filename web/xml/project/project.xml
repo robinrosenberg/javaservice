@@ -40,6 +40,7 @@
     <menu>
       <legend>About</legend>
       <menuitem><a href="background.html">Background</a></menuitem>
+      <menuitem><a href="JavaService Brochure.pdf">Brochure (pdf)</a></menuitem>
       <menuitem><a href="licensing.html">Licence</a></menuitem>
       <menuitem><a href="users.html">Users</a></menuitem>
     </menu>
