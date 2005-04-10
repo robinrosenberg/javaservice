@@ -8,7 +8,7 @@
   <title>JavaService</title>
 
   <description>
-    JavaService is an ObjectWeb software utility that runs Java applications in the background as a Windows 'System Services'.
+    JavaService is an ObjectWeb software utility that runs Java applications in the background as Windows NT 'System Services'.
   </description>
 
   <keywords>
@@ -21,7 +21,7 @@
       <legend>Project Links</legend>
       <menuitem><a href="index.html">Home</a></menuitem>
       <menuitem><a href="http://forge.objectweb.org/project/showfiles.php?group_id=137">Download</a></menuitem>
-      <menuitem><a href="docs/index.html">Documentation</a></menuitem>
+      <menuitem><a href="js_doc_frame.html">Documentation</a></menuitem>
       <menuitem><a href="http://forge.objectweb.org/mail/?group_id=137">Mailing Lists</a></menuitem>
       <menuitem><a href="licensing.html">Licence</a></menuitem>
       <menuitem><a href="support.html">Support</a></menuitem>
