@@ -17,7 +17,20 @@
     <TD> 
       <P CLASS="mainBold"><A NAME="Release_Notes"></A>Release Notes</P>
       <BLOCKQUOTE> 
-      <P CLASS="mainBold">Current Version: 1.2.5 (Multiplan Consultants Ltd)<BR>
+      <P CLASS="mainBold">Current Version: 1.2.6 (Multiplan Consultants Ltd)<BR>
+        Release Date: April 30, 2005</P>
+        <UL CLASS="mainNormal">
+          <LI>Added use of <I>CLASSPATH</I> environment variable during service installation, which is added to JVM options
+		  if <I>-Djava.class.path</I> is not specified in the original command line (and if CLASSPATH is defined).</LI>
+		  <LI>This feature has been added to avoid problems where the Windows command-line length is exceeded
+		  for service configurations that have long lists of class path locations.
+		  <BR>
+		  Alternative solutions for earlier versions would require manual editing of Registry entries.</LI>
+		  <LI><I>NOTE</I> if the <I>-cp</I> or <I>-classpath</I> Java options are specified, this is not checked by the
+		  JavaService installation process, so if CLASSPATH exists this will be added as a further option.</LI>
+        </UL>
+		
+      <P CLASS="mainBold">Version: 1.2.5 (Multiplan Consultants Ltd)<BR>
         Release Date: March 10, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Updated code to append to existing files when redirecting stdout/stderr streams.
