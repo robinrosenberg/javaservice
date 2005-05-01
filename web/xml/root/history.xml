@@ -14,6 +14,20 @@
 
     <s1 name="History">
 
+	<subtitle>Version: 1.2.6 (ObjectWeb/Multiplan Consultants Ltd) -
+        Released: April 30, 2005</subtitle>
+
+        <ul>
+          <li>Added use of <strong>CLASSPATH</strong> environment variable during service installation, which is added to JVM options
+		  if <em>-Djava.class.path</em> is not specified in the original command line (and if CLASSPATH is defined).</li>
+		  <li>This feature has been added to avoid problems where the Windows command-line length is exceeded
+		  for service configurations that have long lists of class path locations.
+		  <br/>
+		  Alternative solutions for earlier versions would require manual editing of Registry entries.</li>
+		  <li><strong>NOTE</strong> if the <em>-cp</em> or <em>-classpath</em> Java options are specified, this is not checked by the
+		  JavaService installation process, so if CLASSPATH exists this will be added as a further option.</li>
+        </ul>
+
 	<subtitle>Version: 1.2.5 (ObjectWeb/Multiplan Consultants Ltd) -
         Released: March 10, 2005</subtitle>
 
