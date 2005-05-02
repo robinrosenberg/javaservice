@@ -196,6 +196,15 @@
 			the JVM process will be terminated to allow the service to shutdown completely.<br>
 			<br>
 			</li>
+            <li>-user<i> user_name</i> (optional) - Specify the Windows domain username to be
+			used when running the service (also requires that the password parameter is specified).<br>
+			Note that this should generally be specified in Windows 2000 Active Directory style (i.e.&nbsp;johndoe@foobar.com)<br>
+			<br>
+			</li>
+            <li>-password<i> password</i> (optional) - Specify the Windows password associated with
+			the domain username specified for use when running the service (specify with user parameter).<br>
+			<br>
+			</li>
           </ul>
         </li>
       </ol>

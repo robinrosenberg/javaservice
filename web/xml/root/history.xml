@@ -13,6 +13,22 @@
   <body>
 
     <s1 name="History">
+		
+	<subtitle>Version: 1.2.7 (ObjectWeb/Multiplan Consultants Ltd) -
+        Released: May 02, 2005</subtitle>
+
+        <ul>
+          <li>Added optional parameters to specify username and password to be used when running the service.</li>
+		  <li>Command format now supports &quot;-user username -password password&quot; parameters.
+		  <br/>Both the user and password values must be specified together, or not at all.</li>
+		  <li><strong>NOTE</strong> The username value should be specified as a Windows-2000 Active Directory style entry
+		  (i.e. <em>johndoe@foobar.com)</em> rather than the usual SMTP-style username; using the incorrect username style may
+		  result in &quot;Overlapped I/O operation&quot; errors being reported. The results of this may be different under
+		  earlier (Windows NT) or later (Windows XP/2003) system installations - please report any problems if experienced.</li>
+		  <li>Extended JVM options check to look for &quot;-cp&quot; and &quot;-classpath&quot; as alternatives
+		  to &quot;-Djava.class.path&quot; mechanism, before applying any current CLASSPATH definition to the list of runtime JVM options.
+		  This avoids potential problems that may have arisen with the initial V1.2.6 classpath implementation (below).</li>
+        </ul>
 
 	<subtitle>Version: 1.2.6 (ObjectWeb/Multiplan Consultants Ltd) -
         Released: April 30, 2005</subtitle>
