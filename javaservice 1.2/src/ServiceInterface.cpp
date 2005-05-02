@@ -833,11 +833,15 @@ static int InstallService()
         return -1;
     }
 
-    // loop through the jvmOptions array and find out if java.class.path is set (TODO - could also check for -cp or -classpath)
+    // loop through the jvmOptions array and find out if java.class.path is set
+	// NOTE - could be specified using three different mechanisms, check for all of them
     bool classPathOptionIsSet = false;
     for (int i=0; i<jvmOptionCount; i++)
     {
-        if ( strstr ( jvmOptions[i] , "-Djava.class.path" ) != NULL) {
+        if ((strstr(jvmOptions[i], "-Djava.class.path") != NULL)
+         || (strstr(jvmOptions[i], "-classpath") != NULL)
+         || (strstr(jvmOptions[i], "-cp") != NULL))
+		{
             classPathOptionIsSet = true;
             break;
         }
