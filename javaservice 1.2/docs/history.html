@@ -17,20 +17,40 @@
     <TD> 
       <P CLASS="mainBold"><A NAME="Release_Notes"></A>Release Notes</P>
       <BLOCKQUOTE> 
-      <P CLASS="mainBold">Current Version: 1.2.6 (Multiplan Consultants Ltd)<BR>
+      <P CLASS="mainBold">Current Version: 1.2.7 (ObjectWeb/Multiplan)<BR>
+        Release Date: May 02, 2005</P>
+        <UL CLASS="mainNormal">
+          <LI>Added optional parameters to speficy username and password to be used when running the service.</LI>
+		  
+		  <LI>Command format now supports &quot;-user username -password password&quot; parameters.
+		  <BR/>Both the user and password values must be specified together, or not at all.</LI>
+		  
+		  <LI><strong>NOTE</strong> The username value should be specified as a Windows-2000 Active Directory style entry
+		  (i.e. <em>johndoe@foobar.com)</em> rather than the usual SMTP-style username; using the incorrect username style may
+		  result in &quot;Overlapped I/O operation&quot; errors being reported. The results of this may be different under
+		  earlier (Windows NT) or later (Windows XP/2003) system installations - please report any problems if experienced.</LI>
+
+		  <LI>Extended JVM options check to look for &quot;-cp&quot; and &quot;-classpath&quot; as alternatives
+		  to &quot;-Djava.class.path&quot; mechanism, before applying any current CLASSPATH definition to the list of runtime JVM options.
+		  This avoids potential problems that may have arisen with the initial V1.2.6 classpath implementation (below).</LI>
+        </UL>
+		
+      <P CLASS="mainBold">Version: 1.2.6 (ObjectWeb/Multiplan)<BR>
         Release Date: April 30, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Added use of <I>CLASSPATH</I> environment variable during service installation, which is added to JVM options
 		  if <I>-Djava.class.path</I> is not specified in the original command line (and if CLASSPATH is defined).</LI>
+
 		  <LI>This feature has been added to avoid problems where the Windows command-line length is exceeded
 		  for service configurations that have long lists of class path locations.
 		  <BR>
 		  Alternative solutions for earlier versions would require manual editing of Registry entries.</LI>
+
 		  <LI><I>NOTE</I> if the <I>-cp</I> or <I>-classpath</I> Java options are specified, this is not checked by the
 		  JavaService installation process, so if CLASSPATH exists this will be added as a further option.</LI>
         </UL>
 		
-      <P CLASS="mainBold">Version: 1.2.5 (Multiplan Consultants Ltd)<BR>
+      <P CLASS="mainBold">Version: 1.2.5 (ObjectWeb/Multiplan)<BR>
         Release Date: March 10, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Updated code to append to existing files when redirecting stdout/stderr streams.
@@ -48,7 +68,7 @@
 		  <BR>If problems are found with a JDK prior to 1.3.1_07, then please highlight this through the support forums.</LI>
         </UL>
 		
-      <P CLASS="mainBold">Version: 1.2.4 (Multiplan Consultants Ltd)<BR>
+      <P CLASS="mainBold">Version: 1.2.4 (ObjectWeb/Multiplan)<BR>
         Release Date: January 29, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Added the ability to specify the NT service shutdown timeout.<BR>
@@ -59,7 +79,7 @@
 		  <LI>Decreased the hard-coded value for pause before exit, after JVM has terminated, from 90 to 15 seconds.</LI>
         </UL>		
 		
-      <P CLASS="mainBold">Version: 1.2.3 (Multiplan Consultants Ltd)<BR>
+      <P CLASS="mainBold">Version: 1.2.3 (ObjectWeb/Multiplan)<BR>
         Release Date: July 22, 2003</P>
         <UL CLASS="mainNormal">
           <LI>Added an alternative command-line parameter &quot;-version&quot; <BR>
