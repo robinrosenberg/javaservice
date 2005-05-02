@@ -69,7 +69,7 @@ static bool uninstalling = false;
 static char *serviceName = NULL;
 
 //The location of the jvm library.
-static char *jvmLibrary = NULL;
+static const char *jvmLibrary = NULL;
 
 //The number of jvm options.
 static int jvmOptionCount=0;
@@ -78,10 +78,10 @@ static int jvmOptionCount=0;
 static char **jvmOptions = NULL;
 
 //The start class for the service.
-static char *startClass = NULL;
+static const char *startClass = NULL;
 
 //The start method for the service.
-static char *startMethod = "main";
+static const char *startMethod = "main";
 
 //The number of parameters for the start method.
 static int startParamCount=0;
@@ -90,10 +90,10 @@ static int startParamCount=0;
 static char **startParams = NULL;
 
 //The stop class for the service.
-static char *stopClass = NULL;
+static const char *stopClass = NULL;
 
 //The stop method for the service.
-static char *stopMethod = "main";
+static const char *stopMethod = "main";
 
 //The number of parameters for the stop method.
 static int stopParamCount=0;
@@ -102,16 +102,16 @@ static int stopParamCount=0;
 static char **stopParams = NULL;
 
 //The out redirect file.
-static char *outFile = NULL;
+static const char *outFile = NULL;
 
 //The err redirect file.
-static char *errFile = NULL;
+static const char *errFile = NULL;
 
 //The path extension.
-static char *pathExt = NULL;
+static const char *pathExt = NULL;
 
 //The current directory.
-static char *currentDirectory = NULL;
+static const char *currentDirectory = NULL;
 
 // NT service dependency
 static const char* dependsOn = NULL;
@@ -123,10 +123,10 @@ static bool autoStart = true;
 static long shutdownMsecs = DEFAULT_SHUTDOWN_TIMEOUT_MSECS;
 
 // User ID to run the service
-static char *username = NULL;
+static const char *username = NULL;
 
 // Password for the above User ID
-static char *password = NULL;
+static const char *password = NULL;
 
 
 ////
