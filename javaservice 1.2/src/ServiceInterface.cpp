@@ -26,6 +26,9 @@
 // environment variable if -Djava.class.path is not specified for the service
 // (avoided problem with over-long command line when performing service install)
 //
+// V1.2.7 Enhancement contributed by Ian Huynh, 26/04/2005, to specify the
+// user and password if service is run against a specified account.
+//
 
 #include <windows.h>
 #include <stdio.h>
@@ -118,6 +121,12 @@ static bool autoStart = true;
 
 // Number of seconds to allow for service to shutdown when processing java function
 static long shutdownMsecs = DEFAULT_SHUTDOWN_TIMEOUT_MSECS;
+
+// User ID to run the service
+static char *username = NULL;
+
+// Password for the above User ID
+static char *password = NULL;
 
 
 ////
@@ -595,6 +604,49 @@ static bool ParseArguments(int argc, char* argv[])
             }
 
 
+            //See if there is a user
+            if (nextArg < argc && strcmp(argv[nextArg], "-user") == 0)
+            {
+                //Skip the -user
+                nextArg++;
+
+                //Use the next argument as the user.
+				//NOTE - this should be the Win2K Active Directory username (i.e. user_name@domain.com)
+				// and not the simple SMTP-style username - which gives 'overlapped i/o error' if used
+                if (nextArg < argc)
+                {
+                    username = argv[nextArg++];
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            //See if there is a password
+            if (nextArg < argc && strcmp(argv[nextArg], "-password") == 0 )
+            {
+                //Skip the -password
+                nextArg++;
+
+                //Use the next argument as the password
+                if (nextArg < argc)
+                {
+                    password = argv[nextArg++];
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            // Either both user/password options exist or none at all
+            if (((username == NULL) && (password != NULL))
+			 || ((username != NULL) && (password == NULL)))
+			{
+                return false;
+            }
+
 
             //If there are extra parameters, return false.
             if (nextArg < argc)
@@ -672,6 +724,8 @@ static void PrintUsage()
     printf("\t[-depends other_service]\n");
     printf("\t[-auto | -manual]\n");
     printf("\t[-shutdown seconds]\n");
+    printf("\t[-user user_name]\n");
+    printf("\t[-password password]\n");
     printf("\n");
     printf("To uninstall a service:\n");
     printf("\t-uninstall service_name\n");
@@ -694,6 +748,8 @@ static void PrintUsage()
     printf("other_service:\tSingle service name dependency, must start first.\n");
     printf("auto / manual:\tStartup automatic (default) or manual mode.\n");
     printf("seconds:\tTime for Java method shutdown processing before timeout.\n");
+    printf("user_name:\tDomain user name to run the service, e.g. johndoe@foobar.com.\n");
+    printf("password:\tPassword for the user (specify along with user).\n");
 }
 
 
@@ -795,8 +851,8 @@ static int InstallService()
                                        NULL,                        // lpLoadOrderGroup
                                        NULL,                        // lpdwTagId
                                        dependency,                  // lpDependencies
-                                       NULL,                        // lpServiceStartName
-                                       NULL);                       // lpPassword
+                                       username,                    // lpServiceStartName
+                                       password);                   // lpPassword
 
     // clean up any dependency parameter straight away
     if (dependency != NULL)
@@ -834,7 +890,7 @@ static int InstallService()
     }
 
     // loop through the jvmOptions array and find out if java.class.path is set
-	// NOTE - this could be specified using three different mechanisms, check for all of them
+	// NOTE - could be specified using three different mechanisms, check for all of them
     bool classPathOptionIsSet = false;
     for (int i=0; i<jvmOptionCount; i++)
     {
@@ -864,7 +920,7 @@ static int InstallService()
 
     int totalJVMOptionCount = jvmOptionCount;
 
-    // If user didn't specify java classpath, search for Env Var CLASSPATH and specify that (if defined)
+    // If user didn't set -Djava.class.path, search for Env Var CLASSPATH and specify that (if defined)
     if ( !classPathOptionIsSet )
 	{
         const char *classPathEnvVar = getenv("CLASSPATH");
@@ -893,6 +949,7 @@ static int InstallService()
             free ( classPath );
         }
     }
+
 
     //Set the jvm option count (make sure we use the totalJVMOptionCount instead of jvmOptionCount variable
     if (RegSetValueEx(hKey, "JVM Option Count", 0, REG_DWORD,  (BYTE *)&totalJVMOptionCount, sizeof(DWORD)) != ERROR_SUCCESS)
