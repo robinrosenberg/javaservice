@@ -834,7 +834,7 @@ static int InstallService()
     }
 
     // loop through the jvmOptions array and find out if java.class.path is set
-	// NOTE - could be specified using three different mechanisms, check for all of them
+	// NOTE - this could be specified using three different mechanisms, check for all of them
     bool classPathOptionIsSet = false;
     for (int i=0; i<jvmOptionCount; i++)
     {
@@ -846,7 +846,6 @@ static int InstallService()
             break;
         }
     }
-
 
     //Set the jvm options.
     for (i=0; i<jvmOptionCount; i++)
@@ -865,7 +864,7 @@ static int InstallService()
 
     int totalJVMOptionCount = jvmOptionCount;
 
-    // If user didn't set -Djava.class.path, search for Env Var CLASSPATH and specify that (if defined)
+    // If user didn't specify java classpath, search for Env Var CLASSPATH and specify that (if defined)
     if ( !classPathOptionIsSet )
 	{
         const char *classPathEnvVar = getenv("CLASSPATH");
@@ -894,7 +893,6 @@ static int InstallService()
             free ( classPath );
         }
     }
-
 
     //Set the jvm option count (make sure we use the totalJVMOptionCount instead of jvmOptionCount variable
     if (RegSetValueEx(hKey, "JVM Option Count", 0, REG_DWORD,  (BYTE *)&totalJVMOptionCount, sizeof(DWORD)) != ERROR_SUCCESS)
