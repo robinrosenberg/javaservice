@@ -17,7 +17,22 @@
     <TD> 
       <P CLASS="mainBold"><A NAME="Release_Notes"></A>Release Notes</P>
       <BLOCKQUOTE> 
-      <P CLASS="mainBold">Current Version: 1.2.7 (ObjectWeb/Multiplan)<BR>
+      <P CLASS="mainBold">Current Version: 1.2.8 (ObjectWeb/Multiplan)<BR>
+        Release Date: July 20, 2005</P>
+        <UL CLASS="mainNormal">
+          <LI>Supported use of <I>-classpath</I> and <I>-cp</I> options, not normally handled by JVM.</LI>
+		  
+		  <LI>Command format now detects the use of either &quot;-classpath=value&quot; or &quot;-cp=value&quot; options.
+		  <BR/>If present, this will be replaced with the correct form of option as &quot;-Djava.class.path=value&quot;.</LI>
+		  
+		  <LI>If any of the three explicit methods are used to specify the Java classpath (-cp, -classpath, -Djava.class.path)
+		  then the program does not apply the local CLASSPATH definition, which would otherwise do as a default.</LI>
+		  
+		  <LI>Note that the program works with options <I>-cp=value</I> and <I>-classpath=value</I>
+and this is not the same as the Java command line options <I>-cp value</I> and <I>-classpath value</I>.</LI>
+        </UL>
+		
+      <P CLASS="mainBold">Version: 1.2.7 (ObjectWeb/Multiplan)<BR>
         Release Date: May 02, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Added optional parameters to specify username and password to be used when running the service.</LI>
@@ -29,25 +44,22 @@
 		  (i.e. <em>johndoe@foobar.com)</em> rather than the usual SMTP-style username; using the incorrect username style may
 		  result in &quot;Overlapped I/O operation&quot; errors being reported. The results of this may be different under
 		  earlier (Windows NT) or later (Windows XP/2003) system installations - please report any problems if experienced.</LI>
-
-		  <LI>Extended JVM options check to look for &quot;-cp&quot; and &quot;-classpath&quot; as alternatives
-		  to &quot;-Djava.class.path&quot; mechanism, before applying any current CLASSPATH definition to the list of runtime JVM options.
-		  This avoids potential problems that may have arisen with the initial V1.2.6 classpath implementation (below).</LI>
         </UL>
+		
 		
       <P CLASS="mainBold">Version: 1.2.6 (ObjectWeb/Multiplan)<BR>
         Release Date: April 30, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Added use of <I>CLASSPATH</I> environment variable during service installation, which is added to JVM options
-		  if <I>-Djava.class.path</I> is not specified in the original command line (and if CLASSPATH is defined).</LI>
+		  if <I>-Djava.class.path=</I> is not specified in the original command line (and if CLASSPATH is defined).</LI>
 
 		  <LI>This feature has been added to avoid problems where the Windows command-line length is exceeded
 		  for service configurations that have long lists of class path locations.
 		  <BR>
 		  Alternative solutions for earlier versions would require manual editing of Registry entries.</LI>
 
-		  <LI><I>NOTE</I> if the <I>-cp</I> or <I>-classpath</I> Java options are specified, this is not checked by the
-		  JavaService installation process, so if CLASSPATH exists this will be added as a further option.</LI>
+		  <LI><I>NOTE</I> if the <I>-cp</I> or <I>-classpath</I> Java options are specified, this is detected by the
+		  JavaService installation process, but is not valid for JVM invocations and will be ignored.</LI>
         </UL>
 		
       <P CLASS="mainBold">Version: 1.2.5 (ObjectWeb/Multiplan)<BR>

@@ -22,12 +22,15 @@
 //NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 //EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// V1.2.6 Enhancement contributed by Ian Huynh, 26/04/2005, to use CLASSPATH if
+// V1.2.6 Enhancement contributed by Ian Huynh, 26/04/2005, to use CLASSPATH
 // environment variable if -Djava.class.path is not specified for the service
 // (avoided problem with over-long command line when performing service install)
 //
 // V1.2.7 Enhancement contributed by Ian Huynh, 26/04/2005, to specify the
 // user and password if service is run against a specified account.
+//
+// V1.2.8 Further work on contribution from Ian Huynh, 05/07/2005, now check
+// for -cp= or -classpath= options and replace with -Djava.class.path=
 //
 
 #include <windows.h>
@@ -48,8 +51,12 @@ static const long DEFAULT_SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
 static const long SHUTDOWN_HINT_EXTRA_MSECS = 5000; // 5 seconds
 
 // Number of milliseconds delay after exit handler has been triggered
-// (no obvious use for this, as it the sleep occurs after the JVM has died)
+// (no obvious use for this, as the sleep occurs after the JVM has died)
 static const long EXIT_HANDLER_TIMEOUT_MSECS = 15000; // 15 seconds
+
+// Option to be used when specifying Java class path for JVM invocation
+static const char *DEF_CLASS_PATH = "-Djava.class.path=";
+static const int DEF_CLASS_PATH_LEN = strlen(DEF_CLASS_PATH);
 
 
 ////
@@ -889,18 +896,43 @@ static int InstallService()
         return -1;
     }
 
-    // loop through the jvmOptions array and find out if java.class.path is set
+
+	// see if Java classpath is specified in an environment variable
+	// (if it is, then it can be added to the command options for the JVM
+    const char *classPathEnvVar = getenv("CLASSPATH");
+	const bool classPathEnvVarIsSet = (classPathEnvVar != NULL);
+
+    // loop through the jvmOptions array and find out if java.class.path is set by the caller
 	// NOTE - could be specified using three different mechanisms, check for all of them
     bool classPathOptionIsSet = false;
-    for (int i=0; i<jvmOptionCount; i++)
+    for (int i=0; (i < jvmOptionCount) && !classPathOptionIsSet; i++)
     {
-        if ((strstr(jvmOptions[i], "-Djava.class.path") != NULL)
-         || (strstr(jvmOptions[i], "-classpath") != NULL)
-         || (strstr(jvmOptions[i], "-cp") != NULL))
+        if (strstr(jvmOptions[i], DEF_CLASS_PATH) != NULL)
 		{
+			// if this option explicitly specified, then do nothing extra for classpath
             classPathOptionIsSet = true;
-            break;
         }
+        else if ((strstr(jvmOptions[i], "-classpath") != NULL)
+			 ||  (strstr(jvmOptions[i], "-cp") != NULL))
+		{
+			// these options are not valid for JVM invocation, so if present then replace
+			// option string with the correct environment variable definition option instead
+
+			const char* originalOption = jvmOptions[i];
+			const char* equalsPos = strstr(originalOption, "=");
+			if (equalsPos != NULL)
+			{
+				const char* originalValue = equalsPos + 1;
+				const int newOptionLen = DEF_CLASS_PATH_LEN + strlen(originalValue) + 1;
+
+		        char *newOption = (char *)malloc(newOptionLen);
+		        strcpy(newOption, DEF_CLASS_PATH);
+		        strcat(newOption, originalValue);
+
+				jvmOptions[i] = newOption; // note, this string is not released (minor memory leak)
+	            classPathOptionIsSet = true;
+			}
+		}
     }
 
     //Set the jvm options.
@@ -920,34 +952,28 @@ static int InstallService()
 
     int totalJVMOptionCount = jvmOptionCount;
 
-    // If user didn't set -Djava.class.path, search for Env Var CLASSPATH and specify that (if defined)
-    if ( !classPathOptionIsSet )
+    // If user didn't set -Djava.class.path, and Env Var CLASSPATH is defined, specify that for the JVM
+    if (classPathEnvVarIsSet && !classPathOptionIsSet)
 	{
-        const char *classPathEnvVar = getenv("CLASSPATH");
+		const int newOptionLen = DEF_CLASS_PATH_LEN + strlen(classPathEnvVar) + 1;
 
-        if ( classPathEnvVar != NULL ) {
+        char *classPath = (char *) malloc(newOptionLen);
+        strcpy(classPath, DEF_CLASS_PATH);
+        strcat(classPath, classPathEnvVar);
 
-            const char *classPathOption = "-Djava.class.path=";
-			const int newOptionLen = strlen(classPathEnvVar) + strlen(classPathOption) + 1;
+        //Format the key name, index value incremented in option loop above
+        char keyName[256];
+        sprintf(keyName, "JVM Option Number %d", i);
 
-            char *classPath = (char *) malloc(newOptionLen);
-            strcpy(classPath, classPathOption);
-            strcat(classPath, classPathEnvVar);
-
-            //Format the key name, index value incremented in option loop above
-            char keyName[256];
-            sprintf(keyName, "JVM Option Number %d", i);
-
-            //Set the jvm option value.
-            if (RegSetValueEx(hKey, keyName, 0, REG_SZ,  (BYTE *)classPath, newOptionLen) != ERROR_SUCCESS)
-            {
-                RegCloseKey(hKey);
-                return -1;
-            }
-            totalJVMOptionCount++;
-
-            free ( classPath );
+        //Set the jvm option value.
+        if (RegSetValueEx(hKey, keyName, 0, REG_SZ,  (BYTE *)classPath, newOptionLen) != ERROR_SUCCESS)
+        {
+            RegCloseKey(hKey);
+            return -1;
         }
+        totalJVMOptionCount++;
+
+        free ( classPath );
     }
 
 
