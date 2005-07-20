@@ -14,7 +14,7 @@ echo --------
 goto eof
 
 :ok
-set jsdev=c:\javaservice\dev
+set jsdev=d:\javaservice\dev
 
 JavaService.exe -install OutputTest %1\jre\bin\%2\jvm.dll -Djava.class.path=%jsdev%\JavaServiceTest\bin -start OutputTest -stop OutputTest -method systemExit -out %jsdev%\JavaServiceTest\out.log -err %jsdev%\JavaServiceTest\err.log -current %jsdev%\JavaServiceTest -manual
 
