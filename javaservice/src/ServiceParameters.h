@@ -121,6 +121,12 @@ public:
 	void setShutdownMsecs(int wotMsecs) { shutdownMsecs = wotMsecs; }
 	int getShutdownMsecs() const { return shutdownMsecs; }
 
+	void setServiceUser(const char* wotUser) { updateStringValue(serviceUser, wotUser); }
+	const char* getServiceUser() const { return serviceUser; }
+
+	void setServicePassword(const char* wotPassword) { updateStringValue(servicePassword, wotPassword); }
+	const char* getServicePassword() const { return servicePassword; }
+
 private:
 
 	const char* swVersion;			// Software version number, for reference only
@@ -148,6 +154,9 @@ private:
 	bool autoStart;					// Automatic (default) or manual service startup
 
 	int shutdownMsecs;				// milliseconds shutdown timeout
+
+	const char* serviceUser;		// service username
+	const char* servicePassword;	// service password
 
 	void updateStringValue(const char*& stringRef, const char* newString);
 

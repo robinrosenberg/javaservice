@@ -117,6 +117,7 @@ void HelpCommand::printCommandDetails(const char* forTopic) const
 						 "\t[-depends other_service]\n"
 						 "\t[-auto | -manual]\n"
 						 "\t[-shutdown seconds]\n"
+						 "\t[-user user_name -password password]\n"
 						 "\nWhere:\n"
 						 "  service_name:\tThe name of the service.\n"
 						 "  jvm_library:\tThe location of the JVM DLL used to run the service.\n"
@@ -135,7 +136,9 @@ void HelpCommand::printCommandDetails(const char* forTopic) const
 						 "  extra_path:\tPath additions, for native DLLs etc. (no spaces)\n"
 						 "  other_service:\tSingle service name dependency, must start first.\n"
 						 "  auto / manual:\tStartup automatic (default) or manual mode.\n"
-						 "  seconds:\tTime for Java method shutdown processing before timeout.\n";
+						 "  seconds:\tTime for Java method shutdown processing before timeout.\n"
+						 "  user_name:\tUser specified to execute the service (user@domain).\n"
+						 "  password:\tPassword applicable if user specified to run the service.\n";
 	}
 	else if (!strncmp(forTopic, "queryconfig", 4))
 	{

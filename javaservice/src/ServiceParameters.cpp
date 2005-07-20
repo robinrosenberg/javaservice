@@ -42,6 +42,10 @@
 // Number of milliseconds delay timeout when stopping the service, default value
 static const long DEFAULT_SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
 
+// Option to be used when specifying Java class path for JVM invocation
+static const char *DEF_CLASS_PATH = "-Djava.class.path=";
+static const int DEF_CLASS_PATH_LEN = strlen(DEF_CLASS_PATH);
+
 
 //
 // Local function references
@@ -75,6 +79,8 @@ ServiceParameters::ServiceParameters()
 , dependency(NULL)
 , autoStart(true)
 , shutdownMsecs(DEFAULT_SHUTDOWN_TIMEOUT_MSECS)
+, serviceUser(NULL)
+, servicePassword(NULL)
 {
 	setSwVersion(STRPRODUCTVER);
 	setStartMethod("main");
@@ -97,6 +103,8 @@ ServiceParameters::~ServiceParameters()
 	if (errFile != NULL) delete[] (void*)errFile;
 	if (pathExt != NULL) delete[] (void*)pathExt;
 	if (currentDirectory != NULL) delete[] (void*)currentDirectory;
+	if (serviceUser != NULL) delete[] (void*)serviceUser;
+	if (servicePassword != NULL) delete[] (void*)servicePassword;
 
 	deleteStringArray(jvmOptionCount, jvmOptions);
 	deleteStringArray(startParamCount, startParams);
@@ -150,6 +158,7 @@ static void deleteStringArray(int& count, const char**& array)
 //		[-depends serviceDependency]
 //		[-auto | -manual]
 //		[-shutdown seconds]
+//		[-user user@domain -password password]
 //
 bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 {
@@ -211,7 +220,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 	}
 
 	// list of arguments that will end options lists in calls below
-	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-auto", "-manual", "-shutdown", NULL };
+	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-auto", "-manual", "-shutdown", "-user", "-password", NULL };
 
 	// start method parameters
 
@@ -343,7 +352,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		}
 	}
 
-	// end with optional '-shutdown' service stop timeout
+	// see if optional '-shutdown' service stop timeout is specified
 
 	if (argsOk && (remaining > 1) && (strcmp(*args, "-shutdown") == 0))
 	{
@@ -368,6 +377,39 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 
 	}
 
+	// look for optional service user (user\domain, .\domain or user@domain)
+
+	if (argsOk && (remaining > 1) && (strcmp(*args, "-user") == 0))
+	{
+		args++; // skip -user arg
+		remaining--;
+
+		setServiceUser(*args++); // service user (Win2K Active Directory style user@domain)
+		remaining--;
+	}
+
+	// also look for optional service password (should be defined along with username)
+
+	if (argsOk && (remaining > 1) && (strcmp(*args, "-password") == 0))
+	{
+		args++; // skip -password arg
+		remaining--;
+
+		setServicePassword(*args++); // service user password
+		remaining--;
+	}
+
+	// check that user and password are only ever both specified together
+
+	if (((getServiceUser() == NULL) && (getServicePassword() != NULL))
+	||  ((getServiceUser() != NULL) && (getServicePassword() == NULL)))
+	{
+		cerr << "Invalid service parameters specified for install command" << endl;
+		cerr << "Service user and password must be specified as a pair, not individually" << endl;
+		argsOk = false;
+	}
+
+	// verify that there are no remaining, unrecognised parameters on the command
 
 	if (argsOk && (remaining > 0))
 	{
@@ -514,7 +556,6 @@ void ServiceParameters::setStopParams(const char** wotParams)
 	stopParams = wotParams;
 }
 
-
 void ServiceParameters::setStartParamCount(int wotCount)
 {
 	if (startParamCount != wotCount) {
@@ -533,7 +574,6 @@ void ServiceParameters::setStartParamCount(int wotCount)
 		}
 	}
 }
-
 
 void ServiceParameters::setStopParamCount(int wotCount)
 {
@@ -554,7 +594,6 @@ void ServiceParameters::setStopParamCount(int wotCount)
 	}
 }
 
-
 void ServiceParameters::updateStringValue(const char*& stringRef, const char* newString)
 {
 	if (stringRef != NULL)
@@ -573,7 +612,6 @@ void ServiceParameters::updateStringValue(const char*& stringRef, const char* ne
 		stringRef = allocated;
 	}
 }
-
 
 
 static bool outputConfigString(ostream& os, const char* stringType, const char* stringEntry)
@@ -657,6 +695,10 @@ ostream& operator<< (ostream& os, const ServiceParameters& serviceParams)
 	outputConfigString(os, "Current Directory", serviceParams.getCurrentDirectory());
 
 	outputConfigValue(os, "Shutdown Timeout", serviceParams.getShutdownMsecs());
+
+	outputConfigString(os, "Service User", serviceParams.getServiceUser());
+
+	outputConfigString(os, "Service Password", serviceParams.getServicePassword());
 
 	// dependsOn and autostart only used during installation command processing
 

@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -207,19 +207,19 @@ bool ServiceCommand::createService(const ServiceParameters& serviceParams)
 		DWORD dwStartType = serviceParams.isAutoStart() ? SERVICE_AUTO_START : SERVICE_DEMAND_START;
 
 		// attempt to create the service
-		SC_HANDLE hService = CreateService(hSCM,						// hSCManager
-										   getServiceName(),			// lpServiceName
-										   getServiceName(),			// lpDisplayName
-										   SERVICE_ALL_ACCESS,			// dwDesiredAccess
-										   SERVICE_WIN32_OWN_PROCESS,	// dwServiceType
-										   dwStartType,					// dwStartType
-										   SERVICE_ERROR_NORMAL,		// dwErrorControl
-										   filePath,					// lpBinaryPathName
-										   NULL,						// lpLoadOrderGroup
-										   NULL,						// lpdwTagId
-										   dependency,					// lpDependencies
-										   NULL,						// lpServiceStartName
-										   NULL);						// lpPassword
+		SC_HANDLE hService = CreateService(hSCM,								// hSCManager
+										   getServiceName(),					// lpServiceName
+										   getServiceName(),					// lpDisplayName
+										   SERVICE_ALL_ACCESS,					// dwDesiredAccess
+										   SERVICE_WIN32_OWN_PROCESS,			// dwServiceType
+										   dwStartType,							// dwStartType
+										   SERVICE_ERROR_NORMAL,				// dwErrorControl
+										   filePath,							// lpBinaryPathName
+										   NULL,								// lpLoadOrderGroup
+										   NULL,								// lpdwTagId
+										   dependency,							// lpDependencies
+										   serviceParams.getServiceUser(),		// lpServiceStartName
+										   serviceParams.getServicePassword());	// lpPassword
 
 		if (hService != NULL)
 		{
@@ -243,11 +243,21 @@ static const char* getDependencyString(const char* dependsOn)
 
 	if (dependsOn != NULL)
 	{
-		// set up dependency parameter with extra double null-terminator
+		// set up dependency parameter with double (triple?) null-terminator
 		int dependencyLen = strlen(dependsOn) + 3;
 		dependency = new char[dependencyLen];
-		memset( dependency, 0, dependencyLen );
-		strcpy( dependency, dependsOn );
+		memset(dependency, 0, dependencyLen);
+		strcpy(dependency, dependsOn);
+
+		// comma delimiters can be used for multiple dependencies, so convert
+		// any found in the string to be single null delimiters to form a list
+		for (int i = 0; i < dependencyLen; i++)
+		{
+			if (dependency[i] == ',')
+			{
+				dependency[i] = '\0'; // null delimiter
+			}
+		}
 	}
 
 	return dependency;

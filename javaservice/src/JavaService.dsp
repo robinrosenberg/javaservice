@@ -223,10 +223,6 @@ SOURCE=.\ServiceHandler.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ServiceInterface.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\ServiceLogger.h
 # End Source File
 # Begin Source File
