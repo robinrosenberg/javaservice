@@ -1,5 +1,5 @@
 //Copyright (c) 2000, Alexandria Software Consulting
-//Some enhancements, post V1.2.0, (c) 2003 Multiplan Consultants Ltd
+//Enhancements, post V1.2.0, (c) 2005 Multiplan Consultants Ltd
 //
 //All rights reserved. Redistribution and use in source
 //and binary forms, with or without modification, are permitted provided
@@ -31,6 +31,9 @@
 //
 // V1.2.8 Further work on contribution from Ian Huynh, 05/07/2005, now check
 // for -cp= or -classpath= options and replace with -Djava.class.path=
+//
+// V1.2.9 Convert comma-delimited list of dependencies into null-delimited
+// string list for call to install Windows service
 //
 
 #include <windows.h>
@@ -147,6 +150,7 @@ static void FreeGlobals();
 static int IsServiceInstalled(bool *result);
 static int InstallService();
 static int UninstallService();
+static const char* getDependencyString(const char* dependsOn);
 
 ////
 //// Global function prototypes
@@ -728,7 +732,7 @@ static void PrintUsage()
     printf("\t[-out out_log_file] [-err err_log_file]\n");
     printf("\t[-current current_dir]\n");
     printf("\t[-path extra_path]\n");
-    printf("\t[-depends other_service]\n");
+    printf("\t[-depends other_service[,next_service,...]]\n");
     printf("\t[-auto | -manual]\n");
     printf("\t[-shutdown seconds]\n");
     printf("\t[-user user_name]\n");
@@ -831,15 +835,7 @@ static int InstallService()
     GetModuleFileName(NULL, filePath, sizeof(filePath));
 
     // if service dependency specified, set up correct parameter type here
-    char* dependency = NULL;
-    if (dependsOn != NULL)
-    {
-        // set up dependency parameter with extra double null-terminator
-        int dependencyLen = strlen(dependsOn) + 3;
-        dependency = new char[dependencyLen];
-        memset( dependency, 0, dependencyLen );
-        strcpy( dependency, dependsOn );
-    }
+    const char* dependency = getDependencyString(dependsOn);
 
     // Set up automatic or manual service startup mode
 
@@ -864,7 +860,7 @@ static int InstallService()
     // clean up any dependency parameter straight away
     if (dependency != NULL)
     {
-        delete[] dependency;
+        delete[] (char*)dependency;
     }
 
     //If the function failed, return an error.
@@ -1195,6 +1191,32 @@ static int UninstallService()
     return 0;
 }
 
+
+static const char* getDependencyString(const char* dependsOn)
+{
+	char* dependency = NULL;
+
+	if (dependsOn != NULL)
+	{
+		// set up dependency parameter with double (triple?) null-terminator
+		int dependencyLen = strlen(dependsOn) + 3;
+		dependency = new char[dependencyLen];
+		memset(dependency, 0, dependencyLen);
+		strcpy(dependency, dependsOn);
+
+		// comma delimiters can be used for multiple dependencies, so convert
+		// any found in the string to be single null delimiters to form a list
+		for (int i = 0; i < dependencyLen; i++)
+		{
+			if (dependency[i] == ',')
+			{
+				dependency[i] = '\0'; // null delimiter
+			}
+		}
+	}
+
+	return dependency;
+}
 
 
 
