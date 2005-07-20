@@ -134,6 +134,9 @@
 		     excludes="**/*.zip, **/*.log, **/CVS, **/*.ncb, **/*.plg, **/*.obj, **/*.bsc, **/*.idb, **/*.pch, **/*.pdb, **/*.res, **/*.sbr, **/Debug/*.exe, **/Release/*.exe"
 		     compress="true"
 		     update="false" />
+
+		<checksum file="${srczipfile}" />
+
 	</target>
 
 
@@ -150,6 +153,9 @@
 			<fileset file="${lgpl}" />
 			<fileset file="${license}" />
 		</zip>
+
+		<checksum file="${binzipfile}" />
+
 	</target>
 
 
