@@ -90,7 +90,7 @@
 
 	</target>
 
-	<target name="dist" depends="build, docs" description="Creates zip file holding Sample Service files for download">
+	<target name="dist" depends="build, docs" description="Creates zip file with Sample Service files for download, and md5 hash">
 
 		<zip destfile="${zipfile}"
 		     basedir="../"
@@ -98,6 +98,8 @@
 		     excludes="**/*.zip, **/*.log, **/CVS"
 		     compress="true"
 		     update="false" />
+
+		<checksum file="${zipfile}" />
 	</target>
 
 
