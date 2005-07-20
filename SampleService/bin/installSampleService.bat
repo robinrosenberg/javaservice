@@ -1,4 +1,4 @@
-@echo off
+@rem echo off
 
 if "%1" == "" goto err
 if "%2" == "" goto err
@@ -29,7 +29,7 @@ goto eof
 copy %3\JavaService.exe %2\SampleService.exe > nul
 
 @rem Invoke the executable to install the service
-%2\SampleService.exe -install SampleService %1\jvm.dll -Djava.class.path=%2\; -Xms16M -Xmx64M -start org.objectweb.javaservice.test.SampleService -params start memory -stop org.objectweb.javaservice.test.SampleService -method serviceStop -out %2\stdout.log -err %2\stderr.log -current %2 %4
+%2\SampleService.exe -install SampleService %1\jvm.dll -Djava.class.path=%2\SampleService.jar -Xms16M -Xmx32M -start org.objectweb.javaservice.test.SampleService -params start memory -stop org.objectweb.javaservice.test.SampleService -method serviceStop -out %2\stdout.log -err %2\stderr.log -current %2 %4
 
 @echo .
 @echo .
