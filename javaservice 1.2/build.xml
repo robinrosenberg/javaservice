@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+
+<!--
+ * JavaService - Windows NT Service Daemon for Java applications
+ *
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
+ *
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *
+ * Information about the JavaService software is available at the ObjectWeb
+ * web site. Refer to http://javaservice.objectweb.org for more details.
+ *
+-->
+
+
+<project name="JavaService" default="usage">
+
+	<description>
+	The JavaService utility allows Java applications to be run on Windows
+	NT systems in the background as a System Service (aka Daemon process).
+	This Ant Build script packages up the files for testing and release.
+	</description>
+
+	<property name="version" value="1.2.8"/>
+
+	<property name="srcdir" value="./src"/>
+	<property name="bindir" value="./bin"/>
+	<property name="docdir" value="./docs"/>
+	<property name="rel.exe" value="${bindir}/JavaService.exe"/>
+	<property name="dbg.exe" value="${bindir}/JavaServiceDebug.exe"/>
+	<property name="lgpl" value="./LGPL.txt"/>
+	<property name="license" value="./LICENSE.txt"/>
+	<property name="binzipfile" value="./JavaService-bin-${version}.zip"/>
+	<property name="binmd5file" value="${binzipfile}.MD5"/>
+	<property name="srczipfile" value="./JavaService-src-${version}.zip"/>
+	<property name="srcmd5file" value="${srczipfile}.MD5"/>
+
+
+
+	<target name="usage" description="Provides information on usage of this Ant build file">
+
+		<echo>
+	JavaService V${version}
+		
+	This build script can be invoked by ANT as follows:
+
+	ant dist	 (Creates binary and source release zip files)
+	ant usage	 (Displays this help text)
+	ant -projecthelp (Lists the available targets)
+		</echo>
+	</target>
+
+
+
+
+	<target name="dist" depends="srczip,srcmd5,binzip,binmd5" description="Creates files for application binary and source releases">
+
+		<echo message="ZIP and MD5 files now created for binary and source distributions" />
+
+	</target>
+
+
+
+	<target name="srczip" description="Create source distribution zip file">
+
+		<zip destfile="${srczipfile}"
+		     forceOverwrite="yes"
+		     includes="javaservice/**"
+		     excludes="**/*.zip, **/*.log, **/CVS, **/*.ncb, **/*.plg, **/*.obj, **/*.bsc, **/*.idb, **/*.pch, **/*.pdb, **/*.res, **/*.sbr, **/Debug, **/Release"
+		     compress="true"
+		     update="false" />
+
+	</target>
+
+
+	<target name="srcmd5" description="Create source distribution md5 hash file">
+
+		<checksum file="${srczipfile}" forceoverwrite="yes" />
+
+	</target>
+
+
+	<target name="binzip" description="Create binary distribution zip file">
+
+		<zip destfile="${binzipfile}"
+		     defaultexcludes="true"
+		     excludes="**/*.zip, **/*.log"
+		     compress="true"
+		     update="false">
+			<fileset dir="${bindir}" />
+			<fileset file="${lgpl}" />
+			<fileset file="${license}" />
+		</zip>
+	</target>
+
+	<target name="binmd5" description="Create binary distribution md5 hash file">
+
+		<checksum file="${binzipfile}" forceoverwrite="yes" />
+
+	</target>
+
+	<target name="chkmd5" description="Check md5 hash files">
+
+		<checksum file="${binzipfile}" verifyproperty="binmd5" />
+		<echo message="Binary zip file, MD5 check result = ${binmd5}" />
+
+		<checksum file="${srczipfile}" verifyproperty="srcmd5" />
+		<echo message="Source zip file, MD5 check result = ${srcmd5}" />
+
+	</target>
+
+</project>
