@@ -32,7 +32,7 @@
 	<description>
 	The JavaService utility allows Java applications to be run on Windows
 	NT systems in the background as a System Service (aka Daemon process).
-	This Ant Build script packages up the files for testing and release.
+	This Ant build script packages up the files for testing and release.
 	</description>
 
 	<property name="version" value="2.0.3"/>
@@ -48,7 +48,9 @@
 	<property name="lgpl" value="./LGPL.txt"/>
 	<property name="license" value="./LICENSE.txt"/>
 	<property name="binzipfile" value="./JavaService-bin-${version}.zip"/>
+	<property name="binmd5file" value="${binzipfile}.MD5"/>
 	<property name="srczipfile" value="./JavaService-src-${version}.zip"/>
+	<property name="srcmd5file" value="${srczipfile}.MD5"/>
 
 
 
@@ -61,9 +63,9 @@
 
 	ant clean	 (Deletes earlier distribution output files)
 	ant build	 (Checks that the required build files exist)
-	ant dist	 (Creates binary and source release zip files)
-	ant bin		 (Creates application binary release zip file)
-	ant src		 (Creates application source release zip file)
+	ant dist	 (Creates binary and source zip and MD5 files)
+	ant bin		 (Creates application binary release files)
+	ant src		 (Creates development source zip, for backup)
 	ant smoketest	 (Run simple application 'smoke tests')
 	ant all		 (Performs clean, build, dist and test steps)
 	ant usage	 (Displays this help text)
@@ -79,7 +81,9 @@
 			<fileset dir="${bindir}"
 				 includes="**/*.exe,**/*.jar" />
 			<fileset file="${binzipfile}"/>
+			<fileset file="${binmd5file}"/>
 			<fileset file="${srczipfile}"/>
+			<fileset file="${srcmd5file}"/>
 		</delete>
 
 	</target>
@@ -117,35 +121,35 @@
 
 
 
-	<target name="dist" depends="build, src, bin" description="Creates zip files for application binary and source releases">
+	<target name="dist" depends="build, src, bin" description="Creates distribution files for application binary releases">
 
-		<echo message="ZIP files now created for binary and source distributions" />
+		<echo message="Files now created for application distribution" />
 
 	</target>
 
 
 
-	<target name="src" depends="build" description="Create source distribution zip file">
+	<target name="src" depends="build" description="Create source zip and MD5 files (for backup purposes)">
 
 		<zip destfile="${srczipfile}"
 		     basedir="../"
 		     defaultexcludes="false"
 		     includes="javaservice/**"
-		     excludes="**/*.zip, **/*.log, **/CVS, **/*.ncb, **/*.plg, **/*.obj, **/*.bsc, **/*.idb, **/*.pch, **/*.pdb, **/*.res, **/*.sbr, **/Debug/*.exe, **/Release/*.exe"
+		     excludes="**/*.zip, **/*.log, **/*.MD5, **/CVS, **/*.ncb, **/*.plg, **/*.obj, **/*.bsc, **/*.idb, **/*.pch, **/*.pdb, **/*.res, **/*.sbr, **/Debug/*.exe, **/Release/*.exe"
 		     compress="true"
 		     update="false" />
 
-		<checksum file="${srczipfile}" />
+		<checksum file="${srczipfile}" forceOverwrite="true" />
 
 	</target>
 
 
 
-	<target name="bin" depends="build" description="Create binary distribution zip file">
+	<target name="bin" depends="build" description="Create binary distribution zip and MD5 files">
 
 		<zip destfile="${binzipfile}"
 		     defaultexcludes="true"
-		     excludes="**/*.zip, **/*.log"
+		     excludes="**/*.zip, **/*.log, **/*.MD5"
 		     compress="true"
 		     update="false">
 			<fileset dir="${bindir}" />
@@ -154,40 +158,23 @@
 			<fileset file="${license}" />
 		</zip>
 
-		<checksum file="${binzipfile}" />
+		<checksum file="${binzipfile}" forceOverwrite="true" />
 
 	</target>
 
 
 
 	<target name="smoketest" depends="build" description="Run simple tests against the application">
-
-		<echo message="Displaying application version number" />
-		<exec executable="${rel.exe}" dir="${bindir}" failonerror="true">
-			<arg line="-version" />
-		</exec>
-
 		<echo message="Displaying application licensing text" />
 		<exec executable="${rel.exe}" dir="${bindir}" failonerror="true">
 			<arg line="-licence" />
 		</exec>
 
-		<echo message="Verifying detection of invalid command, to show help" />
-		<!-- Note that invalid command option generates help text, exit success -->
-		<exec executable="${rel.exe}" dir="${bindir}" failonerror="true">
-			<arg line="-no_such_command_option" />
-		</exec>
 
-		<echo message="Verifying service command error, for incomplete command (error = ok)" />
-		<exec executable="${rel.exe}" dir="${bindir}" failonerror="false" resultproperty="test.errorlevel">
-			<arg value="-install" />
-			<arg value="any_old_service_no_jvm" />
+		<echo message="Displaying application version number" />
+		<exec executable="${rel.exe}" dir="${bindir}" failonerror="true">
+			<arg line="-version" />
 		</exec>
-		<fail message="No error reported for invalid service install command">
-			<condition>
-				<equals arg1="${test.errorlevel}" arg2="0" />
-			</condition>
-		</fail>
 
 		<echo message="'Smoke tests' completed successfully" />
 	</target>
