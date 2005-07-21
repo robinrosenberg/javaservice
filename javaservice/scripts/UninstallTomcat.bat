@@ -3,7 +3,7 @@
 rem * JavaService uninstall script for Tomcat Application Server
 rem *
 rem * JavaService - Windows NT Service Daemon for Java applications
-rem * Copyright (C) 2004 Multiplan Consultants Ltd. LGPL Licensing applies
+rem * Copyright (C) 2005 Multiplan Consultants Ltd. LGPL Licensing applies
 rem * Information about the JavaService software is available at the ObjectWeb
 rem * web site. Refer to http://javaservice.objectweb.org for more details.
 
@@ -29,7 +29,7 @@ goto end
 
 
 
-:no_orion
+:no_tomcat
 @echo . JavaService uninstall script requires the Tomcat home directory as a parameter
 goto error_exit
 
