@@ -179,16 +179,18 @@
               found.<br>
               <br>
             </li>
-            <li>-depends<i> other_service</i> (optional) - Another NT service that
+            <li>-depends<i> other_services</i> (optional) - Another NT service (or multiple services,
+			if specified as a comma-separated list) that
 			must be running before this particular java service can start. Will cause
-			the named service to be started automatically if required when starting
-			the java service. Will also stop the java service if the named service is stopped
+			the named service(s) to be started automatically if required when starting
+			the java service. Will also stop the java service if a specified service is stopped
 			(usually with user confirmation first being requested by Windows NT).<br>
 			<br>
 			</li>
             <li>-auto <i>or</i> -manual - Optional parameter indicating whether service
 			should be run automatically on system startup (default mode), or if it should
 			be started on demand using a manual command (i.e. net start service).<br>
+            <br>
 			</li>
             <li>-shutdown<i> seconds</i> (optional) - Specify the amount of time that
 			may be taken during processing of your shutdown/stop method. The value here

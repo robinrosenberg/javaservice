@@ -17,7 +17,26 @@
     <TD> 
       <P CLASS="mainBold"><A NAME="Release_Notes"></A>Release Notes</P>
       <BLOCKQUOTE> 
-      <P CLASS="mainBold">Current Version: 1.2.8 (ObjectWeb/Multiplan)<BR>
+
+      <P CLASS="mainBold">Current Version: 1.2.9 (ObjectWeb/Multiplan)<BR>
+        Release Date: July 21, 2005</P>
+        <UL CLASS="mainNormal">
+          <LI>Supported use of multiple service dependencies.</LI>
+		  
+		  <LI>Optional install parameter <I>-depends otherservices</I> now accepts comma-delimited list
+		  of service nams, or single service name as before (name cannot contain a comma, though).</LI>
+		  
+		  <LI>If the dependency parameter is not specified, service will start up as configured (manual or auto).</LI>
+		  
+		  <LI>If the dependency parameter specifies a single service name, the installed service will only start up after the specified
+		  service is also running (will start both services if command issued to start the dependant service).</LI>
+		  
+		  <LI>If the dependency parameter specifies a list of multiple service dependency names (separated by commas), the installed service
+		  will only start up after all the specified services are also running (will start all services if necessary).</LI>
+		  
+        </UL>
+		
+      <P CLASS="mainBold">Version: 1.2.8 (ObjectWeb/Multiplan)<BR>
         Release Date: July 20, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Supported use of <I>-classpath</I> and <I>-cp</I> options, not normally handled by JVM.</LI>
