@@ -243,7 +243,7 @@ static const char* getDependencyString(const char* dependsOn)
 
 	if (dependsOn != NULL)
 	{
-		// set up dependency parameter with double (triple?) null-terminator
+		// set up dependency parameter with double (triple) null-terminator
 		int dependencyLen = strlen(dependsOn) + 3;
 		dependency = new char[dependencyLen];
 		memset(dependency, 0, dependencyLen);
@@ -255,7 +255,7 @@ static const char* getDependencyString(const char* dependsOn)
 		{
 			if (dependency[i] == ',')
 			{
-				dependency[i] = '\0'; // null delimiter
+				dependency[i] = '\0'; // null delimiter between service names
 			}
 		}
 	}

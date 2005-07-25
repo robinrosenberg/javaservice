@@ -183,7 +183,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 	// following arguments are taken to be JVM options up until '-start' argument
 
 	setJvmOptionCount(countOptionalArgs(args, "-start", remaining));
-
+	// note, count set before corresponding array is set up
 	if (getJvmOptionCount() > 0)
 	{
 		setJvmOptions(getOptionalArgs(args, getJvmOptionCount()));
@@ -220,7 +220,8 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 	}
 
 	// list of arguments that will end options lists in calls below
-	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-auto", "-manual", "-shutdown", "-user", "-password", NULL };
+	//static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-auto", "-manual", "-shutdown", "-user", "-password", NULL };
+	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-path", "-depends", "-auto", "-manual", "-shutdown", "-user", "-password", NULL };
 
 	// start method parameters
 
@@ -537,8 +538,85 @@ void ServiceParameters::setJvmOptionCount(int wotCount)
 
 void ServiceParameters::setJvmOptions(const char** wotOptions)
 {
-	deleteStringArray(jvmOptionCount, jvmOptions);
 
+	// special case handling included for class path definitions
+
+    // loop through the options array and find out if java.class.path is set by the caller
+	// NOTE - could be specified using three different mechanisms, check for all of them
+
+    // accept -cp=xxx or -classpath=xxx as well as -Djava.class.path=xxx
+	// if either of these first two forms exist, convert to the latter
+
+	bool classPathOptionIsSet = false;
+	const int optionCount = getJvmOptionCount(); // note, set before call to setJvmOptions (yuk)
+
+    for (int i=0; (i < optionCount) && !classPathOptionIsSet; i++)
+    {
+        if (strstr(wotOptions[i], DEF_CLASS_PATH) != NULL)
+		{
+			// if this option explicitly specified, then do nothing extra for classpath
+            classPathOptionIsSet = true;
+        }
+        else if ((strstr(wotOptions[i], "-classpath") != NULL)
+			 ||  (strstr(wotOptions[i], "-cp") != NULL))
+		{
+			// these options are not valid for JVM invocation, so if present then replace
+			// option string with the correct environment variable definition option instead
+
+			const char* originalOption = wotOptions[i];
+			const char* equalsPos = strstr(originalOption, "=");
+			if (equalsPos != NULL)
+			{
+				const char* originalValue = equalsPos + 1;
+				const int newOptionLen = DEF_CLASS_PATH_LEN + strlen(originalValue) + 1;
+
+		        char *newOption = (char *)malloc(newOptionLen);
+		        strcpy(newOption, DEF_CLASS_PATH);
+		        strcat(newOption, originalValue);
+
+				wotOptions[i] = newOption; // note, old string is not released (minor memory leak)
+	            classPathOptionIsSet = true;
+			}
+		}
+    }
+
+	// due to command line length issues, CLASSPATH env variable may be used
+	// if class path has not been explicitly included in the options list
+
+	if (!classPathOptionIsSet)
+	{
+		// check for local 'CLASSPATH' definition to be used by the service
+	    const char *classPathEnvVar = getenv("CLASSPATH");
+		const bool classPathEnvVarIsSet = (classPathEnvVar != NULL);
+
+		if (classPathEnvVarIsSet)
+		{
+			// add -Djava.class.path=envDefinition to list of jvm options
+
+			const int newOptionLen = DEF_CLASS_PATH_LEN + strlen(classPathEnvVar) + 1;
+
+	        char *newOption = (char *)malloc(newOptionLen);
+	        strcpy(newOption, DEF_CLASS_PATH);
+	        strcat(newOption, classPathEnvVar);
+
+			// create larger string array, copy elements, add new one
+
+			const char** extendedOptions = new const char*[optionCount + 1];
+
+			for (int i = 0; i < optionCount; i++)
+			{
+				extendedOptions[i] = wotOptions[i];
+			}
+
+			extendedOptions[optionCount] = (const char*) newOption;
+
+			setJvmOptionCount(optionCount + 1); // increment arg count to suit
+		}
+	}
+
+
+	// clean up any existing option array, store supplied list of options instead
+	deleteStringArray(jvmOptionCount, jvmOptions);
 	jvmOptions = wotOptions;
 }
 
