@@ -22,11 +22,14 @@ goto eof
 :ok
 
 @echo .
-@echo .
-@echo .
 
 @rem Copy/rename file so Task Manager displays useful filename
 copy %3\JavaService.exe %2\SampleService.exe > nul
+
+@echo . Using following version of JavaService executable:
+%2\SampleService.exe -version
+
+@echo .
 
 @rem Invoke the executable to install the service
 %2\SampleService.exe -install SampleService %1\jvm.dll -Djava.class.path=%2\SampleService.jar -Xms16M -Xmx32M -start org.objectweb.javaservice.test.SampleService -params start memory -stop org.objectweb.javaservice.test.SampleService -method serviceStop -out %2\stdout.log -err %2\stderr.log -current %2 %4
