@@ -111,16 +111,29 @@
 	<target name="binmd5" description="Create binary distribution md5 hash file">
 
 		<checksum file="${binzipfile}" forceoverwrite="yes" />
-
 	</target>
 
 	<target name="chkmd5" description="Check md5 hash files">
 
-		<checksum file="${binzipfile}" verifyproperty="binmd5" />
-		<echo message="Binary zip file, MD5 check result = ${binmd5}" />
+		<checksum file="${binzipfile}" verifyproperty="binmd5ok" />
 
-		<checksum file="${srczipfile}" verifyproperty="srcmd5" />
-		<echo message="Source zip file, MD5 check result = ${srcmd5}" />
+		<fail message="Binary MD5 checksum is incorrect">
+			<condition>
+				<isfalse value="${binmd5ok}" />
+			</condition>
+		</fail>
+
+
+		<checksum file="${srczipfile}" verifyproperty="srcmd5ok" />
+
+		<fail message="Source MD5 checksum is incorrect">
+			<condition>
+				<isfalse value="${srcmd5ok}" />
+			</condition>
+		</fail>
+
+		<echo message="MD5 checksum files appear valid" />
+
 
 	</target>
 
