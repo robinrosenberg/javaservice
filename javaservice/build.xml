@@ -41,7 +41,6 @@
 	<property name="bindir" value="./bin"/>
 	<property name="docdir" value="./docs"/>
 	<property name="scriptdir" value="./scripts"/>
-	<property name="testdir" value="./test"/>
 	<property name="rel.exe" value="${srcdir}/Release/JavaService.exe"/>
 	<property name="dbg.exe" value="${srcdir}/Debug/JavaServiceDebug.exe"/>
 	<property name="samplejar" value="../SampleService/bin/SampleService.jar"/>
@@ -66,7 +65,7 @@
 	ant dist	 (Creates binary and source zip and MD5 files)
 	ant bin		 (Creates application binary release files)
 	ant src		 (Creates development source zip, for backup)
-	ant smoketest	 (Run simple application 'smoke tests')
+	ant test	 (Run simple application 'smoke tests')
 	ant all		 (Performs clean, build, dist and test steps)
 	ant usage	 (Displays this help text)
 	ant -projecthelp (Lists the available targets)
@@ -121,7 +120,7 @@
 
 
 
-	<target name="dist" depends="build, src, bin" description="Creates distribution files for application binary releases">
+	<target name="dist" depends="build, bin" description="Creates distribution files for application binary releases">
 
 		<echo message="Files now created for application distribution" />
 
@@ -135,11 +134,20 @@
 		     basedir="../"
 		     defaultexcludes="false"
 		     includes="javaservice/**"
-		     excludes="**/*.zip, **/*.log, **/*.MD5, **/CVS, **/*.ncb, **/*.plg, **/*.obj, **/*.bsc, **/*.idb, **/*.pch, **/*.pdb, **/*.res, **/*.sbr, **/Debug/*.exe, **/Release/*.exe"
+		     excludes="**/CVS/**, **/*.zip, **/*.log, **/*.MD5, **/*.ncb, **/*.plg, **/*.obj, **/*.bsc, **/*.idb, **/*.pch, **/*.pdb, **/*.res, **/*.sbr, **/Debug/*.exe, **/Release/*.exe"
 		     compress="true"
 		     update="false" />
 
 		<checksum file="${srczipfile}" forceOverwrite="true" />
+
+
+		<checksum file="${srczipfile}" verifyproperty="srcmd5ok" />
+
+		<fail message="Source MD5 checksum is incorrect">
+			<condition>
+				<isfalse value="${srcmd5ok}" />
+			</condition>
+		</fail>
 
 	</target>
 
@@ -160,11 +168,19 @@
 
 		<checksum file="${binzipfile}" forceOverwrite="true" />
 
+		<checksum file="${binzipfile}" verifyproperty="binmd5ok" />
+
+		<fail message="Binary MD5 checksum is incorrect">
+			<condition>
+				<isfalse value="${binmd5ok}" />
+			</condition>
+		</fail>
+
 	</target>
 
 
 
-	<target name="smoketest" depends="build" description="Run simple tests against the application">
+	<target name="test" depends="build" description="Run simple tests against the application">
 		<echo message="Displaying application licensing text" />
 		<exec executable="${rel.exe}" dir="${bindir}" failonerror="true">
 			<arg line="-licence" />
@@ -181,7 +197,7 @@
 
 
 
-	<target name="all" depends="clean, build, dist, smoketest" description="Regenerate distribution files for release, run simple tests">
+	<target name="all" depends="clean, build, src, bin, dist, test" description="Regenerate distribution files for release, run simple tests">
 
 		<echo>
 	Ant build steps completed.
