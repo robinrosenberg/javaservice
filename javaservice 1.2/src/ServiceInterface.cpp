@@ -35,6 +35,9 @@
 // V1.2.9 Convert comma-delimited list of dependencies into null-delimited
 // string list for call to install Windows service
 //
+// V1.2.10 Specify Windows service status as 'starting', with three-second
+// hint before specifying status as 'running' after thread is started up
+//
 
 #include <windows.h>
 #include <stdio.h>
@@ -46,6 +49,9 @@
 ////
 //// Constant Declarations
 ////
+
+// Number of seconds to specify as a hint for service startup time
+static const long SERVICE_STARTUP_HINT_MSECS = 3000; // three seconds
 
 // Number of milliseconds delay timeout when stopping the service, default value
 static const long DEFAULT_SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
@@ -1264,9 +1270,12 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
     status.dwCheckPoint = 0;
     status.dwWaitHint = 0;
 
-    //Mark the service as running.
-    status.dwCurrentState = SERVICE_RUNNING;
+    //Mark the service as starting up, with a hint that this could take a few seconds.
+    status.dwWaitHint = SERVICE_STARTUP_HINT_MSECS;
+    status.dwCurrentState = SERVICE_START_PENDING;
     SetServiceStatus(hServiceStatus, &status);
+    status.dwWaitHint = 0;
+
 
     //Start the service thread.
     DWORD id;
@@ -1309,6 +1318,11 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
                 HANDLE handles[2];
                 handles[0] = hWaitForStart;
                 handles[1] = hWaitForStop;
+
+				//Mark the service as running (Should wait for startup thread/event really)
+			    status.dwWaitHint = 0;
+				status.dwCurrentState = SERVICE_RUNNING;
+				SetServiceStatus(hServiceStatus, &status);
 
                 //Wait until we are supposed to stop.
                 WaitForMultipleObjects(2, handles, TRUE, INFINITE);
