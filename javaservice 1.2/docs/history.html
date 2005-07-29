@@ -18,7 +18,34 @@
       <P CLASS="mainBold"><A NAME="Release_Notes"></A>Release Notes</P>
       <BLOCKQUOTE> 
 
-      <P CLASS="mainBold">Current Version: 1.2.9 (ObjectWeb/Multiplan)<BR>
+      <P CLASS="mainBold">Current Version: 1.2.10 (ObjectWeb/Multiplan)<BR>
+        Release Date: July 29, 2005</P>
+        <UL CLASS="mainNormal">
+          <LI>Correct notification of service startup states to Windows Service Manager.</LI>
+
+		  <LI>Internally, the previous versions of JavaService all reported the service status
+		  to Windows as 'RUNNING' as soon as the startup request was received.
+		  This version now reports the service status as 'STARTING' when first receiving the request,
+		  followed by a subsequent report of service status as 'RUNNING' after firing the startup thread.</LI>
+		  
+		  <LI>The installation and user interface to JavaService is unchanged for this internal update.</LI>
+		  
+		  <LI>A 'hint' is passed to Windows Service Manager to indicate that service startup may take
+		  three seconds before completion. This value is not configurable and is coded within the program.</LI>
+		  
+		  <LI>Note that JavaService does not wait for the startup thread to complete, so it is likely
+		  that the final state transition will be notified shortly after the first report. This is a
+		  limitation in the coding of the JavaService utility and is unlikely to be changed. As a
+		  result, this update to the application meets the rules of Windows Services better, but
+		  is not expected to have any impact on the startup processing of any actual services.</LI>
+
+		  <LI>If a startup delay is absolutely required from JavaService, the recommendation is that
+		  the source distribution is modified locally to include a hard-coded delay in the C++
+		  code. This would be included between creation of the startup thread and notification of
+		  the 'RUNNING' service status.</LI>		  
+        </UL>
+		
+      <P CLASS="mainBold">Version: 1.2.9 (ObjectWeb/Multiplan)<BR>
         Release Date: July 21, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Supported use of multiple service dependencies.</LI>
