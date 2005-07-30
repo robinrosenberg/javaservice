@@ -36,8 +36,8 @@ typedef jint (JNICALL *JNICREATEPROC)(JavaVM **, void **, void *);
 ////
 
 //Methods for redirecting out and err.
-static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile);
-static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile);
+static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile, bool overwriteFile);
+static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile, bool overwriteFile);
 
 ////
 //// Local variable definitions
@@ -71,7 +71,7 @@ static BOOL WINAPI ConsoleControlHandler(DWORD dwCtrlType)
 //
 // Global function invoked when JVM and configured class is to be invoked as a service thread
 //
-bool StartJavaService(HANDLE hEventSource, char *jvmDllPath, int jvmOptionCount, char* jvmOptions[], char *startClass, char *startMethod, int startParamCount, char *startParams[], char *outFile, char *errFile)
+bool StartJavaService(HANDLE hEventSource, char *jvmDllPath, int jvmOptionCount, char* jvmOptions[], char *startClass, char *startMethod, int startParamCount, char *startParams[], char *outFile, char *errFile, bool overwriteFiles)
 {
 	//Load a jvm DLL.
 	HINSTANCE jvmDll = LoadLibrary(jvmDllPath);
@@ -144,7 +144,7 @@ bool StartJavaService(HANDLE hEventSource, char *jvmDllPath, int jvmOptionCount,
 	//Redirect System.out, if necessary.
 	if (outFile != NULL)
 	{
-		if (!redirectSystemOut(hEventSource, env, outFile))
+		if (!redirectSystemOut(hEventSource, env, outFile, overwriteFiles))
 		{
 			FreeLibrary(jvmDll);
 			return false;
@@ -154,7 +154,7 @@ bool StartJavaService(HANDLE hEventSource, char *jvmDllPath, int jvmOptionCount,
 	//Redirect System.err, if necessary.
 	if (errFile != NULL)
 	{
-		if (!redirectSystemErr(hEventSource, env, errFile))
+		if (!redirectSystemErr(hEventSource, env, errFile, overwriteFiles))
 		{
 			FreeLibrary(jvmDll);
 			return false;
@@ -315,8 +315,42 @@ static bool exceptionRaised(JNIEnv *env)
 	}
 }
 
+// Get reference to FileOutputStream constructor - two versions may apply
+// Older (pre JDK1.4) version accepts (String name) parameters only
+// Later version also accepts (String name, boolean append) parameter pattern
+// If append mode function is found, set flag to indicate call parameter to be added
+static jmethodID getStreamConstructor(JNIEnv *env, jclass& fileOutputStreamClass, bool overwriteModeOnly, bool& useAppendParam)
+{
 
-static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile)
+	jmethodID fileOutputStreamConstructor = NULL;
+	useAppendParam = false;
+   
+	if (!overwriteModeOnly)
+	{
+		fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;Z)V");
+
+		// if this form of constructor not found (pre 1.4 JVM) then use simpler (String name) form instead
+		if (exceptionRaised(env) || (fileOutputStreamConstructor == NULL))
+		{
+			useAppendParam = false; // wanted later version, but not available in this JVM
+		}
+		else // found later constructor to use for appending to output file
+		{
+			useAppendParam = true;
+		}
+	}
+
+	// if not using later form of constructor, look for simpler (String name) form instead, no append
+    if (overwriteModeOnly || !useAppendParam)
+	{
+	    fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;)V");
+	}
+
+	return fileOutputStreamConstructor;
+
+}
+
+static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile, bool overwriteFile)
 {
 	//Create a String for the path.
 	jstring pathString = env->NewStringUTF(outFile);
@@ -356,16 +390,12 @@ static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile)
 		return false;
     }
 
+	// Find the relevant FileOutputStream constructor - flag set if append parameter to be specified
 
-	//Find the FileOutputStream constructor - look for JDK1.4 version first, of (String name, boolean append) format
-	bool useAppendParam = true;
-    jmethodID fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;Z)V");
-	// if this form of constructor not found (pre 1.4 JVM) then use simpler (String name) form instead, no append
-    if (exceptionRaised(env) || (fileOutputStreamConstructor == NULL))
-	{
-		useAppendParam = false;
-	    fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;)V");
-	}
+	bool useAppendParam = false;
+
+	jmethodID fileOutputStreamConstructor = getStreamConstructor(env, fileOutputStreamClass, overwriteFile, useAppendParam);
+
 	if (env->ExceptionCheck() == JNI_TRUE)
 	{
 		LPTSTR messages[1];
@@ -515,7 +545,7 @@ static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, char *outFile)
 
 
 
-static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile)
+static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile, bool overwriteFile)
 {
 	//Create a String for the path.
 	jstring pathString = env->NewStringUTF(errFile);
@@ -555,15 +585,12 @@ static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, char *errFile)
 		return false;
     }
 
-	//Find the FileOutputStream constructor - look for JDK1.4 version first, of (String name, boolean append) format
-	bool useAppendParam = true;
-    jmethodID fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;Z)V");
-	// if this form of constructor not found (pre 1.4 JVM) then use simpler (String name) form instead, no append
-    if (exceptionRaised(env) || (fileOutputStreamConstructor == NULL))
-	{
-		useAppendParam = false;
-	    fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;)V");
-	}
+	// Find the relevant FileOutputStream constructor - flag set if append parameter to be specified
+
+	bool useAppendParam = false;
+
+	jmethodID fileOutputStreamConstructor = getStreamConstructor(env, fileOutputStreamClass, overwriteFile, useAppendParam);
+
 	if (env->ExceptionCheck() == JNI_TRUE)
 	{
 		LPTSTR messages[1];

@@ -18,7 +18,22 @@
       <P CLASS="mainBold"><A NAME="Release_Notes"></A>Release Notes</P>
       <BLOCKQUOTE> 
 
-      <P CLASS="mainBold">Current Version: 1.2.10 (ObjectWeb/Multiplan)<BR>
+      <P CLASS="mainBold">Current Version: 1.2.11 (ObjectWeb/Multiplan)<BR>
+        Release Date: July 30, 2005</P>
+        <UL CLASS="mainNormal">
+          <LI>Allow output log file mode to be specified as either <I>append</I> or <I>overwrite</I></LI>
+
+		  <LI>Default mode, since V1.2.5 is to append to existing output log files (for both stdout and stderr).</LI>
+		  
+		  <LI>If the optional end parameter is specified as <I>-overwrite</I> then this behaviour is changed
+		  and both output and error log files will be overwritten with new content when the service starts.</LI>
+
+		  <LI>Following on from V1.2.10: If a startup delay is absolutely required from JavaService, the
+		  source distribution should be modified and rebuilt locally to specify a non-zero delay in the C++
+		  code. This is supported by a constant definition within ServiceInterface.cpp (set to zero for release).</LI>		  
+        </UL>
+		
+      <P CLASS="mainBold">Version: 1.2.10 (ObjectWeb/Multiplan)<BR>
         Release Date: July 29, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Correct notification of service startup states to Windows Service Manager.</LI>

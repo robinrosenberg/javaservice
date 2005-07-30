@@ -38,6 +38,10 @@
 // V1.2.10 Specify Windows service status as 'starting', with three-second
 // hint before specifying status as 'running' after thread is started up
 //
+// V1.2.11 Accept parameter to specify whether output files are appended or overwritten
+// Also included hard-coded zero second delay before flagging startup complete
+// (allow easier change to source if a startup delay is required in any build)
+//
 
 #include <windows.h>
 #include <stdio.h>
@@ -52,6 +56,10 @@
 
 // Number of seconds to specify as a hint for service startup time
 static const long SERVICE_STARTUP_HINT_MSECS = 3000; // three seconds
+
+// Number of seconds to pause between state transition 'starting' to 'running'
+// if non-zero, JavaService sleeps this long after firing off the startup thread
+static const long SERVICE_STARTUP_DELAY_MSECS = 0; // no delay
 
 // Number of milliseconds delay timeout when stopping the service, default value
 static const long DEFAULT_SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
@@ -144,6 +152,8 @@ static const char *username = NULL;
 // Password for the above User ID
 static const char *password = NULL;
 
+// Flag controlling append/overwrite mode for stdout/stderr log files
+static bool overwriteFiles = false; // default is to append to existing files
 
 ////
 //// Local function prototypes
@@ -665,6 +675,20 @@ static bool ParseArguments(int argc, char* argv[])
             }
 
 
+            //See if overwrite or append mode is specified for log file output (defaults to append mode)
+            if (nextArg < argc && strcmp(argv[nextArg], "-append") == 0)
+            {
+                //Skip the -append parameter
+                nextArg++;
+                overwriteFiles = false; // reset the flag, although this is default anyway
+            }
+            else if (nextArg < argc && strcmp(argv[nextArg], "-overwrite") == 0)
+            {
+                //Skip the -overwrite parameter
+                nextArg++;
+                overwriteFiles = true; // set the flag, overwrite existing files
+            }
+
             //If there are extra parameters, return false.
             if (nextArg < argc)
             {
@@ -743,6 +767,7 @@ static void PrintUsage()
     printf("\t[-shutdown seconds]\n");
     printf("\t[-user user_name]\n");
     printf("\t[-password password]\n");
+    printf("\t[-append | -overwrite]\n");
     printf("\n");
     printf("To uninstall a service:\n");
     printf("\t-uninstall service_name\n");
@@ -762,11 +787,12 @@ static void PrintUsage()
     printf("current_dir:\tThe current working directory for the service.\n");
     printf("\t\tRelative paths will be relative to this directory.\n");
     printf("extra_path:\tPath additions, for native DLLs etc.\n");
-    printf("other_service:\tSingle service name dependency, must start first.\n");
+    printf("other_service:\tService name dependencies, must start first.\n");
     printf("auto / manual:\tStartup automatic (default) or manual mode.\n");
     printf("seconds:\tTime for Java method shutdown processing before timeout.\n");
     printf("user_name:\tDomain user name to run the service, e.g. johndoe@foobar.com.\n");
     printf("password:\tPassword for the user (specify along with user).\n");
+    printf("append / overwrite:\tAppend to log files (default) or overwrite each time.\n");
 }
 
 
@@ -1110,6 +1136,14 @@ static int InstallService()
         return -1;
     }
 
+    // Set the overwrite files flag value
+	long overwriteFilesFlag = (overwriteFiles ? 1 : 0);
+    if (RegSetValueEx(hKey, "Overwrite Files Flag", 0, REG_DWORD,  (BYTE *)&overwriteFilesFlag, sizeof(overwriteFilesFlag)) != ERROR_SUCCESS)
+    {
+        RegCloseKey(hKey);
+        return -1;
+    }
+
     //Close the registry.
     RegCloseKey(hKey);
 
@@ -1319,7 +1353,16 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
                 handles[0] = hWaitForStart;
                 handles[1] = hWaitForStop;
 
+				//NOTE - if hard-coded value is non-zero, pause for specified time period
+				// after initiating startup thread and before notifying service as running
+				// (has been set to 3000ms to allow for JBoss startup time in testing)
+				if (SERVICE_STARTUP_DELAY_MSECS > 0)
+				{
+					Sleep(SERVICE_STARTUP_DELAY_MSECS);
+				}
+
 				//Mark the service as running (Should wait for startup thread/event really)
+
 			    status.dwWaitHint = 0;
 				status.dwCurrentState = SERVICE_RUNNING;
 				SetServiceStatus(hServiceStatus, &status);
@@ -1737,11 +1780,25 @@ static DWORD WINAPI StartService(LPVOID lpParam)
         shutdownMsecs = regShutdownMsecs; // use whatever value was found in the registry (legal or not)
     }
 
+	// Get flag value that may indicate log file overwrite, rather than append mode (default)
+	bool overwriteOutputFiles = false;
+    long regOverwriteFlag = 0;
+    DWORD regOverwriteFlagLength = sizeof(regOverwriteFlag);
+    if ((regRet=RegQueryValueEx(hKey, "Overwrite Files Flag", NULL, NULL,  (BYTE *)&regOverwriteFlag, &regOverwriteFlagLength)) != ERROR_SUCCESS)
+    {
+        // value was not initially stored in registry, so use default value to append to files if possible
+        overwriteOutputFiles = false;
+    }
+    else
+    {
+        overwriteOutputFiles = (regOverwriteFlag != 0); // non-zero value indicates overwrite flag = true
+    }
+
     //Close the registry.
     RegCloseKey(hKey);
 
     //Run the java service.
-    serviceStartedSuccessfully = StartJavaService(hEventSource, regJvmLibrary, regJvmOptionCount, regJvmOptions, regStartClass, regStartMethod, regStartParamCount, regStartParams, regOutFileValue, regErrFileValue);
+    serviceStartedSuccessfully = StartJavaService(hEventSource, regJvmLibrary, regJvmOptionCount, regJvmOptions, regStartClass, regStartMethod, regStartParamCount, regStartParams, regOutFileValue, regErrFileValue, overwriteOutputFiles);
 
     //Free the buffers.
     if (regJvmLibrary != NULL) delete[] regJvmLibrary;

@@ -4,10 +4,10 @@
 #ifndef __VERSION_NO_H__
 #define __VERSION_NO_H__
 
-#define FILEVER         1,2,10,0
-#define PRODUCTVER      1,2,10,0
-#define STRFILEVER     "1,2,10,0\0"
-#define STRPRODUCTVER  "1,2,10,0\0"
+#define FILEVER         1,2,11,0
+#define PRODUCTVER      1,2,11,0
+#define STRFILEVER     "1,2,11,0\0"
+#define STRPRODUCTVER  "1,2,11,0\0"
 
 
 #endif // __VERSION_NO_H__
