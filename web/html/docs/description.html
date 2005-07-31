@@ -207,6 +207,11 @@
 			the domain username specified for use when running the service (specify with user parameter).<br>
 			<br>
 			</li>
+            <li>-append <i>or</i> -overwrite - Optional parameter indicating whether output
+			and error log files are to be appended to, or overwritten, on each service startup.
+			If not specified, the default is to append to existing log files.<br>
+            <br>
+			</li>
           </ul>
         </li>
       </ol>
@@ -352,7 +357,8 @@
 			-err {ORION_HOME}\log\stderr.log<br>
 			-current {ORION_HOME}<br>
 			-depends mysql<br>
-			-manual</span> </li>
+			-manual<br>
+			-append</span> </li>
         <li>To remove the registered service, run the following command from the same directory:<br>
           <span class="textCode">OrionServer.exe -uninstall Orion</span><br> </li>
       </ol>
@@ -387,7 +393,8 @@
 			-err {JBOSS_BIN}\stderr.log<br>
 			-current {JBOSS_BIN}<br>
 			-depends mysql<br>
-			-manual</span> </li>
+			-manual<br>
+			-overwrite</span> </li>
         <li>To remove the registered service, run the following command from the same directory:<br>
           <span class="textCode">JBossService.exe -uninstall JBoss</span><br> </li>
       </ol>

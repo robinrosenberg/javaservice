@@ -15,7 +15,25 @@
   </TR>
   <TR> 
     <TD> 
-      <P CLASS="mainBold">Current Version: 1.2.10 (ObjectWeb/Multiplan)<BR>
+      <P CLASS="mainBold"><A NAME="Release_Notes"></A>Release Notes</P>
+      <BLOCKQUOTE> 
+
+      <P CLASS="mainBold">Current Version: 1.2.11 (ObjectWeb/Multiplan)<BR>
+        Release Date: July 30, 2005</P>
+        <UL CLASS="mainNormal">
+          <LI>Allow output log file mode to be specified as either <I>append</I> or <I>overwrite</I></LI>
+
+		  <LI>Default mode, since V1.2.5 is to append to existing output log files (for both stdout and stderr).</LI>
+		  
+		  <LI>If the optional end parameter is specified as <I>-overwrite</I> then this behaviour is changed
+		  and both output and error log files will be overwritten with new content when the service starts.</LI>
+
+		  <LI>Following on from V1.2.10: If a startup delay is absolutely required from JavaService, the
+		  source distribution should be modified and rebuilt locally to specify a non-zero delay in the C++
+		  code. This is supported by a constant definition within ServiceInterface.cpp (set to zero for release).</LI>		  
+        </UL>
+		
+      <P CLASS="mainBold">Version: 1.2.10 (ObjectWeb/Multiplan)<BR>
         Release Date: July 29, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Correct notification of service startup states to Windows Service Manager.</LI>
@@ -74,10 +92,8 @@
 		  <LI>Note that the program works with options <I>-cp=value</I> and <I>-classpath=value</I>
 and this is not the same as the Java command line options <I>-cp value</I> and <I>-classpath value</I>.</LI>
         </UL>
-
-      <P CLASS="mainBold"><A NAME="Release_Notes"></A>Release Notes</P>
-      <BLOCKQUOTE> 
-      <P CLASS="mainBold">Current Version: 1.2.7 (ObjectWeb/Multiplan)<BR>
+		
+      <P CLASS="mainBold">Version: 1.2.7 (ObjectWeb/Multiplan)<BR>
         Release Date: May 02, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Added optional parameters to specify username and password to be used when running the service.</LI>
@@ -89,21 +105,20 @@ and this is not the same as the Java command line options <I>-cp value</I> and <
 		  (i.e. <em>johndoe@foobar.com)</em> rather than the usual SMTP-style username; using the incorrect username style may
 		  result in &quot;Overlapped I/O operation&quot; errors being reported. The results of this may be different under
 		  earlier (Windows NT) or later (Windows XP/2003) system installations - please report any problems if experienced.</LI>
-
-		  <LI>Extended JVM options check to look for &quot;-cp&quot; and &quot;-classpath&quot; as alternatives
-		  to &quot;-Djava.class.path&quot; mechanism, before applying any current CLASSPATH definition to the list of runtime JVM options.
-		  This avoids potential problems that may have arisen with the initial V1.2.6 classpath implementation (below).</LI>
         </UL>
+		
 		
       <P CLASS="mainBold">Version: 1.2.6 (ObjectWeb/Multiplan)<BR>
         Release Date: April 30, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Added use of <I>CLASSPATH</I> environment variable during service installation, which is added to JVM options
-		  if <I>-Djava.class.path</I> is not specified in the original command line (and if CLASSPATH is defined).</LI>
+		  if <I>-Djava.class.path=</I> is not specified in the original command line (and if CLASSPATH is defined).</LI>
+
 		  <LI>This feature has been added to avoid problems where the Windows command-line length is exceeded
 		  for service configurations that have long lists of class path locations.
 		  <BR>
 		  Alternative solutions for earlier versions would require manual editing of Registry entries.</LI>
+
 		  <LI><I>NOTE</I> if the <I>-cp</I> or <I>-classpath</I> Java options are specified, this is detected by the
 		  JavaService installation process, but is not valid for JVM invocations and will be ignored.</LI>
         </UL>
@@ -125,7 +140,7 @@ and this is not the same as the Java command line options <I>-cp value</I> and <
 		  </I>
 		  <BR>If problems are found with a JDK prior to 1.3.1_07, then please highlight this through the support forums.</LI>
         </UL>
-
+		
       <P CLASS="mainBold">Version: 1.2.4 (ObjectWeb/Multiplan)<BR>
         Release Date: January 29, 2005</P>
         <UL CLASS="mainNormal">
@@ -135,7 +150,7 @@ and this is not the same as the Java command line options <I>-cp value</I> and <
           <LI>This value is also stored in the registry (milliseconds value) and can be updated using RegEdit.</LI>
 		  <LI>If the value is not found in the registry, the original default of 30 seconds will be used.</LI>
 		  <LI>Decreased the hard-coded value for pause before exit, after JVM has terminated, from 90 to 15 seconds.</LI>
-        </UL>
+        </UL>		
 		
       <P CLASS="mainBold">Version: 1.2.3 (Multiplan Consultants Ltd)<BR>
         Release Date: July 22, 2003</P>
