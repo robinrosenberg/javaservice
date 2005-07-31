@@ -55,6 +55,10 @@ static const char* const SERV_LOGGING_REG_KEY_PREFIX = "SYSTEM\\CurrentControlSe
 	
 static const DWORD EVENT_LOG_TYPES = EVENTLOG_ERROR_TYPE | EVENTLOG_WARNING_TYPE | EVENTLOG_INFORMATION_TYPE;
 
+// constants to be stored for flag values in a registry numeric value (zero = false, one = true)
+static const DWORD DWORD_BOOL_FALSE = 0;
+static const DWORD DWORD_BOOL_TRUE = 1;
+
 
 
 static const char* const REG_KEY_SW_VERSION = "JavaService Version"; // note, new value added for V2 software
@@ -75,6 +79,7 @@ static const char* const REG_KEY_SYSTEM_ERR = "System.err File";
 static const char* const REG_KEY_CURRENT_DIR = "Current Directory";
 static const char* const REG_KEY_PATH_EXT = "Path";
 static const char* const REG_KEY_SHUTDOWN_TIMEOUT = "Shutdown Timeout"; // value added from V1.2.4 release
+static const char* const REG_KEY_OVERWRITE_FILES_FLAG = "Overwrite Files Flag"; // value added from V1.2.11
 
 
 static const char* const REG_KEY_EVENT_MESSAGE_FILE = "EventMessageFile";
@@ -247,6 +252,14 @@ bool RegistryHandler::writeServiceParams(const ServiceParameters& serviceParams)
 	{
 		written = false;
 	}
+
+	// Set the overwite file flag (true for overwrite, false for append mode)
+
+	if (written && !storeRegValueBoolean(hKey, REG_KEY_OVERWRITE_FILES_FLAG, serviceParams.getFileOverwriteFlag()))
+	{
+		written = false;
+	}
+	
 
 	if (hKey != NULL)
 	{
@@ -447,6 +460,13 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 		{
 			serviceParams.setShutdownMsecs(tempNumber); // else ctor default
 		}
+
+		if (getRegValueDword(hKey, REG_KEY_OVERWRITE_FILES_FLAG, &tempNumber))
+		{
+			bool tempBoolean = (tempNumber != DWORD_BOOL_FALSE); // non-zero = true
+			serviceParams.setFileOverwriteFlag(tempBoolean); // else ctor default
+		}
+
 	}
 
 	if (hKey != NULL)
@@ -638,6 +658,15 @@ bool RegistryHandler::storeRegValueDword(HKEY hRegKey, const char* entryKey, con
 
 }
 
+bool RegistryHandler::storeRegValueBoolean(HKEY hRegKey, const char* entryKey, const bool entryValue)
+{
+	// boolean values stored in registry by JavaService as zero/one DWORD values
+
+	const DWORD dwordValue = (entryValue ? DWORD_BOOL_TRUE : DWORD_BOOL_FALSE);
+
+	return storeRegValueDword(hRegKey, entryKey, dwordValue);
+
+}
 
 bool RegistryHandler::getRegValueString(HKEY hRegKey, const char* entryKey, char** entryValue)
 {
@@ -682,6 +711,23 @@ bool RegistryHandler::getRegValueDword(HKEY hRegKey, const char* entryKey, int* 
 	LONG regStatus = RegQueryValueEx(hRegKey, entryKey, NULL /*lpReserved*/, NULL /*lpType*/, (BYTE*)entryValue, &entryLength);
 
 	return ((regStatus == ERROR_SUCCESS) && (entryLength > 0));
+}
+
+bool RegistryHandler::getRegValueBoolean(HKEY hRegKey, const char* entryKey, bool* entryValue)
+{
+
+	// boolean values stored in registry by JavaService as zero/one DWORD values
+
+	int dwordValue = DWORD_BOOL_FALSE;
+	bool gotValue = getRegValueDword(hRegKey, entryKey, &dwordValue);
+
+	if (gotValue)
+	{
+		*entryValue = (dwordValue == DWORD_BOOL_TRUE); // explicit value for true, else false
+	}
+	// note, entry value left unchanged if registry entry not found (caller sets default)
+
+	return gotValue;
 }
 
 

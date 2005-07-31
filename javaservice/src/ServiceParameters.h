@@ -127,6 +127,9 @@ public:
 	void setServicePassword(const char* wotPassword) { updateStringValue(servicePassword, wotPassword); }
 	const char* getServicePassword() const { return servicePassword; }
 
+	void setFileOverwriteFlag(const bool wotFlagValue) { fileOverwriteFlag = wotFlagValue; }
+	bool getFileOverwriteFlag() const { return fileOverwriteFlag; }
+
 private:
 
 	const char* swVersion;			// Software version number, for reference only
@@ -157,6 +160,8 @@ private:
 
 	const char* serviceUser;		// service username
 	const char* servicePassword;	// service password
+
+	bool fileOverwriteFlag;			// Overwrite or append to output log files
 
 	void updateStringValue(const char*& stringRef, const char* newString);
 

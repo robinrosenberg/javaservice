@@ -81,6 +81,7 @@ ServiceParameters::ServiceParameters()
 , shutdownMsecs(DEFAULT_SHUTDOWN_TIMEOUT_MSECS)
 , serviceUser(NULL)
 , servicePassword(NULL)
+, fileOverwriteFlag(FALSE)
 {
 	setSwVersion(STRPRODUCTVER);
 	setStartMethod("main");
@@ -159,6 +160,7 @@ static void deleteStringArray(int& count, const char**& array)
 //		[-auto | -manual]
 //		[-shutdown seconds]
 //		[-user user@domain -password password]
+//		[-append | -overwrite]
 //
 bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 {
@@ -220,8 +222,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 	}
 
 	// list of arguments that will end options lists in calls below
-	//static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-auto", "-manual", "-shutdown", "-user", "-password", NULL };
-	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-path", "-depends", "-auto", "-manual", "-shutdown", "-user", "-password", NULL };
+	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-path", "-depends", "-auto", "-manual", "-shutdown", "-user", "-password", "-append", "-overwrite", NULL };
 
 	// start method parameters
 
@@ -408,6 +409,24 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		cerr << "Invalid service parameters specified for install command" << endl;
 		cerr << "Service user and password must be specified as a pair, not individually" << endl;
 		argsOk = false;
+	}
+
+	// check for optional '-append' or '-overwrite' startup control flag
+
+	if (argsOk && (remaining > 0))
+	{
+		if (strcmp(*args, "-append") == 0)
+		{
+			setFileOverwriteFlag(false); // clear the flag, although this is defaulted already
+			args++;
+			remaining--;
+		}
+		else if (strcmp(*args, "-overwrite") == 0)
+		{
+			setFileOverwriteFlag(true); // set the flag, always create new output files
+			args++;
+			remaining--;
+		}
 	}
 
 	// verify that there are no remaining, unrecognised parameters on the command
@@ -768,17 +787,21 @@ ostream& operator<< (ostream& os, const ServiceParameters& serviceParams)
 
 	outputConfigString(os, "Stderr File", serviceParams.getErrFile());
 
+	outputConfigString(os, "Output File Mode", (serviceParams.getFileOverwriteFlag()
+												? "Overwrite with new files"
+												: "Append to existing files"));
+
 	outputConfigString(os, "Path Extension", serviceParams.getPathExt());
 
 	outputConfigString(os, "Current Directory", serviceParams.getCurrentDirectory());
 
 	outputConfigValue(os, "Shutdown Timeout", serviceParams.getShutdownMsecs());
 
-	outputConfigString(os, "Service User", serviceParams.getServiceUser());
-
-	outputConfigString(os, "Service Password", serviceParams.getServicePassword());
-
 	// dependsOn and autostart only used during installation command processing
+
+	//ditto: outputConfigString(os, "Service User", serviceParams.getServiceUser());
+
+	//ditto: outputConfigString(os, "Service Password", serviceParams.getServicePassword());
 
 	os << flush;
 

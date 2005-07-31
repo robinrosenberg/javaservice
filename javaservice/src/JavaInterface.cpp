@@ -43,15 +43,15 @@
 //// Local function prototypes
 ////
 
-static bool StartJavaService(HANDLE hEventSource, const char *jvmDllPath, int jvmOptionCount, const char* jvmOptions[], const char *startClass, const char *startMethod, int startParamCount, const char *startParams[], const char *outFile, const char *errFile);
+static bool StartJavaService(HANDLE hEventSource, const char *jvmDllPath, int jvmOptionCount, const char* jvmOptions[], const char *startClass, const char *startMethod, int startParamCount, const char *startParams[], const char *outFile, const char *errFile, bool overwriteFiles);
 static bool StopJavaService(HANDLE hEventSource, const char *stopClass, const char *stopMethod, int stopParamCount, const char *stopParams[]);
 
 
 static bool invokeClassMethod(HANDLE hEventSource, JNIEnv *env, const char* className, const char* methodName, int paramCount, const char** params);
 
-static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, const char *outFile);
-static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, const char *errFile);
-static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamFile, bool isStdout);
+static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, const char *outFile, const bool overwriteMode);
+static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, const char *errFile, const bool overwriteMode);
+static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamFile, bool isStdout, const bool overwriteMode);
 
 static bool exceptionRaised(JNIEnv *jniEnv);
 
@@ -112,14 +112,15 @@ bool StartJavaService(HANDLE hEventSource, const ServiceParameters* serviceParam
 									serviceParams->getStartParamCount(),
 									serviceParams->getStartParams(),
 									serviceParams->getOutFile(),
-									serviceParams->getErrFile());
+									serviceParams->getErrFile(),
+									serviceParams->getFileOverwriteFlag());
 
 	ServiceLogger::write(started ? "StartJavaService successful\n" : "StartJavaService failed\n");
 	return started;
 }
 
 
-static bool StartJavaService(HANDLE hEventSource, const char *jvmDllPath, int jvmOptionCount, const char* jvmOptions[], const char *startClass, const char *startMethod, int startParamCount, const char *startParams[], const char *outFile, const char *errFile)
+static bool StartJavaService(HANDLE hEventSource, const char *jvmDllPath, int jvmOptionCount, const char* jvmOptions[], const char *startClass, const char *startMethod, int startParamCount, const char *startParams[], const char *outFile, const char *errFile, bool overwriteFiles)
 {
 	//Load a jvm DLL.
 	HINSTANCE jvmDll = LoadLibrary(jvmDllPath);
@@ -185,7 +186,7 @@ static bool StartJavaService(HANDLE hEventSource, const char *jvmDllPath, int jv
 	//Redirect System.out, if necessary.
 	if (outFile != NULL)
 	{
-		if (!redirectSystemOut(hEventSource, env, outFile))
+		if (!redirectSystemOut(hEventSource, env, outFile, overwriteFiles))
 		{
 			FreeLibrary(jvmDll);
 			return false;
@@ -195,7 +196,7 @@ static bool StartJavaService(HANDLE hEventSource, const char *jvmDllPath, int jv
 	//Redirect System.err, if necessary.
 	if (errFile != NULL)
 	{
-		if (!redirectSystemErr(hEventSource, env, errFile))
+		if (!redirectSystemErr(hEventSource, env, errFile, overwriteFiles))
 		{
 			FreeLibrary(jvmDll);
 			return false;
@@ -270,20 +271,20 @@ static bool StopJavaService(HANDLE hEventSource, const char *stopClass, const ch
 }
 
 
-static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, const char *outFile)
+static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, const char *outFile, const bool overwriteMode)
 {
-	return redirectStream(hEventSource, env, outFile, true);
+	return redirectStream(hEventSource, env, outFile, true, overwriteMode);
 }
 
 
 
-static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, const char *errFile)
+static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, const char *errFile, const bool overwriteMode)
 {
-	return redirectStream(hEventSource, env, errFile, false);
+	return redirectStream(hEventSource, env, errFile, false, overwriteMode);
 }
 
 
-static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamFile, bool isStdout)
+static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamFile, bool isStdout, bool overwriteMode)
 {
 	const char* wotStream = isStdout ? "System.out" : "System.err";
 
@@ -303,15 +304,38 @@ static bool redirectStream(HANDLE hEventSource, JNIEnv *env, const char *streamF
 		return false;
     }
 
-	//Find the FileOutputStream constructor - look for JDK1.4 version first, of (String name, boolean append) format
-	bool useAppendParam = true;
-    jmethodID fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;Z)V");
-	// if this form of constructor not found (pre 1.4 JVM) then use simpler (String name) form instead, no append
-    if (exceptionRaised(env) || (fileOutputStreamConstructor == NULL))
+	// two forms of output stream constructor may be used
+	// later (JDK1.4) version may be available to allow append mode on existing files
+	// earlier version otherwise used will overwrite any existing files each time
+	// parameter specifies whether overwrite mode is to be used in any case
+
+	bool useAppendParam = false; // flag set if longer constructor is being used
+	jmethodID fileOutputStreamConstructor = NULL; // reference to either ctor
+
+	if (!overwriteMode)
 	{
-		useAppendParam = false;
+		// try to get reference to two-parameter JDK 1.4 constructor, allowing append mode
+		fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;Z)V");
+
+		// ensure that exception check is included first here, to reset any error found
+		if (exceptionRaised(env) || (fileOutputStreamConstructor == NULL))
+		{
+			useAppendParam = false; // could not found the desired long form of constructor
+		}
+	    else
+		{
+			useAppendParam = true; // found the later form of constructor, so use append param
+		}
+	}
+
+	if (overwriteMode || !useAppendParam)
+	{
+		// either wanted overwrite mode, or could not get later constructor reference
+		// get reference to single-parameter constructor, will overwrite any existing files
+
 	    fileOutputStreamConstructor = env->GetMethodID(fileOutputStreamClass, "<init>", "(Ljava/lang/String;)V");
 	}
+
     if (exceptionRaised(env) || (fileOutputStreamConstructor == NULL))
 	{
 		logError(hEventSource, "Could not find the FileOutputStream constructor for redirect of ", wotStream);
