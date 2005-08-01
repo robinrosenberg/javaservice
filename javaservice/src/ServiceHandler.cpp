@@ -44,8 +44,8 @@
 //// Constant Declarations
 ////
 
-// Extra period of time on shutdown notification to service manager
-static const long SHUTDOWN_HINT_EXTRA_MSECS = 5000; // 5 seconds
+// Extra period of time on status change notification to service manager
+static const long SERVICE_HINT_EXTRA_MSECS = 3000; // 3 seconds
 
 // Number of milliseconds delay after exit handler has been triggered
 // (no obvious use for this, as it the sleep occurs after the JVM has died)
@@ -152,13 +152,15 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 	}
 
 
-	ServiceLogger::write("Logging service event start[ed] event...\n");
+	ServiceLogger::write("Logging service event start[ed] event (starting now)...\n");
 	//Log that we have started. (TODO, or are starting - jvm may fail, thread may fail, class start may fail)
 
 	processGlobals->logServiceEvent(EVENT_SERVICE_STARTED);
 
 	// mark the service as pending startup, so service manager knows we are here
-
+	// specify hint value according to any configured delay
+	const long startupDelay = processGlobals->getServiceParameters()->getStartupMsecs();
+	processGlobals->setStatusWaitHint(startupDelay + SERVICE_HINT_EXTRA_MSECS);
 	processGlobals->updateServiceStatus(SERVICE_START_PENDING);
 
 	// start the background service thread and wait until the service ends
@@ -167,7 +169,17 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 
 	if (hServiceThread != NULL)
 	{
+		// if a startup delay is configured to allow Java thread completion in the background,
+		// sleep for the specified amount of time - assume configured with useful figure...
+
+		if (startupDelay > 0)
+		{
+			ServiceLogger::write("Service delaying whilst startup thread runs in the background\n");
+			Sleep(startupDelay);
+		}
+
 		// thread created, so now mark service status as running
+		processGlobals->setStatusWaitHint(0);
 		processGlobals->updateServiceStatus(SERVICE_RUNNING);
 
 		ServiceLogger::write("Service Main waiting for event flags to be set\n");
@@ -222,7 +234,7 @@ static void WINAPI ServiceControlHandler(DWORD opcode)
 
 			// Tell the service manager that stop is pending, and may take longer than the usual 20-sec shutdown
 
-			const long maxShutdownMsecs = processGlobals->getServiceParameters()->getShutdownMsecs() + SHUTDOWN_HINT_EXTRA_MSECS;
+			const long maxShutdownMsecs = processGlobals->getServiceParameters()->getShutdownMsecs() + SERVICE_HINT_EXTRA_MSECS;
 			processGlobals->setStatusWaitHint(maxShutdownMsecs);
 			processGlobals->updateServiceStatus(SERVICE_STOP_PENDING);
 

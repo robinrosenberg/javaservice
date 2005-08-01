@@ -56,8 +56,8 @@ static const char* const SERV_LOGGING_REG_KEY_PREFIX = "SYSTEM\\CurrentControlSe
 static const DWORD EVENT_LOG_TYPES = EVENTLOG_ERROR_TYPE | EVENTLOG_WARNING_TYPE | EVENTLOG_INFORMATION_TYPE;
 
 // constants to be stored for flag values in a registry numeric value (zero = false, one = true)
-static const DWORD DWORD_BOOL_FALSE = 0;
-static const DWORD DWORD_BOOL_TRUE = 1;
+static const DWORD_BOOL_FALSE = 0;
+static const DWORD_BOOL_TRUE = 1;
 
 
 
@@ -302,6 +302,7 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 
 	char* tempString = NULL;
 	int tempNumber;
+	bool tempBoolean;
 
 	if (getRegValueString(hKey, REG_KEY_SW_VERSION, &tempString))
 	{
@@ -469,9 +470,8 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 			serviceParams.setShutdownMsecs(tempNumber); // else ctor default
 		}
 
-		if (getRegValueDword(hKey, REG_KEY_OVERWRITE_FILES_FLAG, &tempNumber))
+		if (getRegValueBoolean(hKey, REG_KEY_OVERWRITE_FILES_FLAG, &tempBoolean))
 		{
-			bool tempBoolean = (tempNumber != DWORD_BOOL_FALSE); // non-zero = true
 			serviceParams.setFileOverwriteFlag(tempBoolean); // else ctor default
 		}
 

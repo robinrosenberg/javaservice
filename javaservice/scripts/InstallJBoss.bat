@@ -52,7 +52,7 @@ SET jbossexe="%JBOSS_HOME%\bin\JBossService.exe"
 
 copy JavaService.exe "%jbossexe%" > nul
 
-"%jbossexe%" -install JBoss "%jvmdll%" -Djava.class.path="%jbossjar%;%toolsjar%" -start org.jboss.Main -stop org.jboss.Main -method systemExit -out "%JBOSS_HOME%\bin\out.log" -err "%JBOSS_HOME%\bin\err.log" -current "%JBOSS_HOME%\bin" %dependency% %svcmode% -overwrite
+"%jbossexe%" -install JBoss "%jvmdll%" -Djava.class.path="%jbossjar%;%toolsjar%" -start org.jboss.Main -stop org.jboss.Main -method systemExit -out "%JBOSS_HOME%\bin\out.log" -err "%JBOSS_HOME%\bin\err.log" -current "%JBOSS_HOME%\bin" %dependency% %svcmode% -overwrite -startup 6
 
 if ERRORLEVEL 1 goto js_error
 
