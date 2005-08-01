@@ -32,7 +32,7 @@ copy %3\JavaService.exe %2\SampleService.exe > nul
 @echo .
 
 @rem Invoke the executable to install the service
-%2\SampleService.exe -install SampleService %1\jvm.dll -Djava.class.path=%2\SampleService.jar -Xms16M -Xmx32M -start org.objectweb.javaservice.test.SampleService -params start memory -stop org.objectweb.javaservice.test.SampleService -method serviceStop -out %2\stdout.log -err %2\stderr.log -current %2 %4
+%2\SampleService.exe -install SampleService %1\jvm.dll -Djava.class.path=%2\SampleService.jar -Xms16M -Xmx32M -start org.objectweb.javaservice.test.SampleService -params start memory -stop org.objectweb.javaservice.test.SampleService -method serviceStop -out %2\stdout.log -err %2\stderr.log -current %2 %4 -append -startup 3
 
 @echo .
 @echo .
