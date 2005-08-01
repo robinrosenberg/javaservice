@@ -190,7 +190,7 @@
             <li>-auto <i>or</i> -manual - Optional parameter indicating whether service
 			should be run automatically on system startup (default mode), or if it should
 			be started on demand using a manual command (i.e. net start service).<br>
-            <br>
+	            <br>
 			</li>
             <li>-shutdown<i> seconds</i> (optional) - Specify the amount of time that
 			may be taken during processing of your shutdown/stop method. The value here
@@ -210,7 +210,16 @@
             <li>-append <i>or</i> -overwrite - Optional parameter indicating whether output
 			and error log files are to be appended to, or overwritten, on each service startup.
 			If not specified, the default is to append to existing log files.<br>
-            <br>
+	            <br>
+			</li>
+            <li>-startup<i> seconds</i> (optional) - Specify the amount of time that the main JavaService
+			thread should pause during processing of your startup method. The value here
+			is used as an absolute period of time in which the main process will sleep,
+			allowing the Java startup thread to continue in the background.
+			If the startup thread completes sooner, the main thread will still wait for the specified
+			period of time. Upon completion of this time period, Windows will be notified that
+			the service is now 'Running'.<br>
+			<br>
 			</li>
           </ul>
         </li>
@@ -394,7 +403,8 @@
 			-current {JBOSS_BIN}<br>
 			-depends mysql<br>
 			-manual<br>
-			-overwrite</span> </li>
+			-overwrite<br>
+			-startup 10</span> </li>
         <li>To remove the registered service, run the following command from the same directory:<br>
           <span class="textCode">JBossService.exe -uninstall JBoss</span><br> </li>
       </ol>

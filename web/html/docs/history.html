@@ -18,7 +18,26 @@
       <P CLASS="mainBold"><A NAME="Release_Notes"></A>Release Notes</P>
       <BLOCKQUOTE> 
 
-      <P CLASS="mainBold">Current Version: 1.2.11 (ObjectWeb/Multiplan)<BR>
+      <P CLASS="mainBold">Current Version: 1.2.12 (ObjectWeb/Multiplan)<BR>
+        Release Date: August 1, 2005</P>
+        <UL CLASS="mainNormal">
+          <LI>Allow startup delay to be specified with <I>-startup seconds</I> optional parameter.</LI>
+
+		  <LI>Default is for no startup delay to be performed by the process.</LI>
+		  
+		  <LI>If a delay is specified, this begins after the startup thread is invoked, allowing for a period
+			of time to pass between the initial 'Starting' service status notification and the subsequent
+			'Running' notification to Windows. If the startup thread completes sooner, the delay will still
+			continue for the specified amount of time.</LI>
+
+		  <LI>The only expected use for a startup delay is if it is known that the Java application takes a finite
+			amount of time in performing startup operations, and the user wants Windows to return control only
+			after that time period has passed. In this case, specify the number of seconds delay to apply
+			and the JavaService main thread will pause (sleep) for that duration after the Java startup
+			thread has been invoked.</LI>		  
+        </UL>
+		
+      <P CLASS="mainBold">Version: 1.2.11 (ObjectWeb/Multiplan)<BR>
         Release Date: July 30, 2005</P>
         <UL CLASS="mainNormal">
           <LI>Allow output log file mode to be specified as either <I>append</I> or <I>overwrite</I></LI>
