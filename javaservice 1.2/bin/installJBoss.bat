@@ -27,7 +27,7 @@ goto eof
 
 copy JavaService.exe %2\bin\JBossService.exe > nul
 
-%2\bin\JBossService.exe -install JBoss %1\jre\bin\%3\jvm.dll -Djava.class.path=%1\lib\tools.jar;%2\bin\run.jar -start org.jboss.Main -stop org.jboss.Main -method systemExit -out %2\bin\out.log -err %2\bin\err.log -current %2\bin -depends %4 %5 -overwrite
+%2\bin\JBossService.exe -install JBoss %1\jre\bin\%3\jvm.dll -Djava.class.path=%1\lib\tools.jar;%2\bin\run.jar -start org.jboss.Main -stop org.jboss.Main -method systemExit -out %2\bin\out.log -err %2\bin\err.log -current %2\bin -depends %4 %5 -overwrite -startup 10
 
 goto eof
 

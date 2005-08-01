@@ -42,6 +42,10 @@
 // Also included hard-coded zero second delay before flagging startup complete
 // (allow easier change to source if a startup delay is required in any build)
 //
+// V1.2.12 Accept optional parameter to specify startup sleep delay, if required
+// Default is for no delay. Windows service state change 'hint' specified as the
+// delay value plus three seconds. Sleep invoked if non-zero delay specified.
+//
 
 #include <windows.h>
 #include <stdio.h>
@@ -54,25 +58,21 @@
 //// Constant Declarations
 ////
 
-// Number of seconds to specify as a hint for service startup time
-static const long SERVICE_STARTUP_HINT_MSECS = 3000; // three seconds
+// Extra period of time on startup/shutdown notification 'hint' to service manager
+static const long SERVICE_HINT_EXTRA_MSECS = 3000; // 3 seconds
 
-// Number of seconds to pause between state transition 'starting' to 'running'
-// if non-zero, JavaService sleeps this long after firing off the startup thread
-static const long SERVICE_STARTUP_DELAY_MSECS = 0; // no delay
+// Number of milliseconds delay when starting the service, default of no delay
+static const long DEFAULT_STARTUP_DELAY_MSECS = 0; // zero seconds
 
 // Number of milliseconds delay timeout when stopping the service, default value
 static const long DEFAULT_SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
-
-// Extra period of time on shutdown notification to service manager
-static const long SHUTDOWN_HINT_EXTRA_MSECS = 5000; // 5 seconds
 
 // Number of milliseconds delay after exit handler has been triggered
 // (no obvious use for this, as the sleep occurs after the JVM has died)
 static const long EXIT_HANDLER_TIMEOUT_MSECS = 15000; // 15 seconds
 
 // Option to be used when specifying Java class path for JVM invocation
-static const char *DEF_CLASS_PATH = "-Djava.class.path=";
+static const char* const DEF_CLASS_PATH = "-Djava.class.path=";
 static const int DEF_CLASS_PATH_LEN = strlen(DEF_CLASS_PATH);
 
 
@@ -145,6 +145,10 @@ static bool autoStart = true;
 
 // Number of seconds to allow for service to shutdown when processing java function
 static long shutdownMsecs = DEFAULT_SHUTDOWN_TIMEOUT_MSECS;
+
+// Number of seconds to pause between state transition 'starting' to 'running'
+// if non-zero, JavaService sleeps this long after firing off the startup thread
+static long startupMsecs = DEFAULT_STARTUP_DELAY_MSECS;
 
 // User ID to run the service
 static const char *username = NULL;
@@ -689,6 +693,35 @@ static bool ParseArguments(int argc, char* argv[])
                 overwriteFiles = true; // set the flag, overwrite existing files
             }
 
+            //See if startup delay value is specified (hard-coded default otherwise)
+            if (nextArg < argc && strcmp(argv[nextArg], "-startup") == 0)
+            {
+                //Skip the -startup
+                nextArg++;
+
+                //Use the next argument as the number of seconds to allow
+                if (nextArg < argc)
+                {
+                    const char* startupString = argv[nextArg++];
+
+                    // parse the string and convert to milliseconds value, if valid
+                    const int startupSeconds = atoi(startupString);
+
+                    if (startupSeconds >= 0)
+                    {
+                        startupMsecs = startupSeconds * 1000; // millisecs value held in registry
+                    }
+                    else
+                    {
+                        return false; // negative value is invalid (accept zero though)
+                    }
+                }
+                else
+                {
+                    return false; // cannot have startup param without it's value
+                }
+            }
+
             //If there are extra parameters, return false.
             if (nextArg < argc)
             {
@@ -768,6 +801,7 @@ static void PrintUsage()
     printf("\t[-user user_name]\n");
     printf("\t[-password password]\n");
     printf("\t[-append | -overwrite]\n");
+    printf("\t[-startup seconds]\n");
     printf("\n");
     printf("To uninstall a service:\n");
     printf("\t-uninstall service_name\n");
@@ -789,7 +823,7 @@ static void PrintUsage()
     printf("extra_path:\tPath additions, for native DLLs etc.\n");
     printf("other_service:\tService name dependencies, must start first.\n");
     printf("auto / manual:\tStartup automatic (default) or manual mode.\n");
-    printf("seconds:\tTime for Java method shutdown processing before timeout.\n");
+    printf("seconds:\tJava method processing time (startup:sleep, shutdown:timeout).\n");
     printf("user_name:\tDomain user name to run the service, e.g. johndoe@foobar.com.\n");
     printf("password:\tPassword for the user (specify along with user).\n");
     printf("append / overwrite:\tAppend to log files (default) or overwrite each time.\n");
@@ -1144,6 +1178,13 @@ static int InstallService()
         return -1;
     }
 
+    // Set the startup sleep value
+    if (RegSetValueEx(hKey, "Startup Sleep", 0, REG_DWORD,  (BYTE *)&startupMsecs, sizeof(startupMsecs)) != ERROR_SUCCESS)
+    {
+        RegCloseKey(hKey);
+        return -1;
+    }
+
     //Close the registry.
     RegCloseKey(hKey);
 
@@ -1271,6 +1312,53 @@ static HANDLE hWaitForStart = NULL;
 static HANDLE hWaitForStop = NULL;
 static bool serviceStartedSuccessfully = false;
 
+static long getStartupDelayMsecs(const char* svcName)
+{
+	long startupDelayMsecs = 0;
+
+    //Open the registry for this service's parameters.
+    LONG regRet;
+    char key[256];
+    HKEY hKey = NULL;
+    strcpy(key, "SYSTEM\\CurrentControlSet\\Services\\");
+    strcat(key, svcName);
+    strcat(key, "\\Parameters");
+    if ((regRet=RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hKey)) != ERROR_SUCCESS)
+    {
+        LPTSTR messages[2];
+        messages[0] = "RegOpenKeyEx";
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS, NULL, regRet, MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPTSTR)&messages[1], 0, NULL);
+        ReportEvent(hEventSource, EVENTLOG_ERROR_TYPE, 0, EVENT_FUNCTION_FAILED, NULL, 2, 0, (const char **)messages, NULL);
+        LocalFree(messages[1]);
+        if (hWaitForStart != NULL && hWaitForStop != NULL)
+        {
+            SetEvent(hWaitForStart);
+            SetEvent(hWaitForStop);
+        }
+        return -1;
+    }
+
+    //Get the startup pause value, if specified
+    long regStartupMsecs = 0;
+    DWORD regStartupMsecsLength = sizeof(regStartupMsecs);
+    if ((regRet=RegQueryValueEx(hKey, "Startup Sleep", NULL, NULL,  (BYTE *)&regStartupMsecs, &regStartupMsecsLength)) != ERROR_SUCCESS)
+    {
+        // value was not initially stored in registry, so use default value as before
+        startupDelayMsecs = DEFAULT_STARTUP_DELAY_MSECS;
+    }
+    else
+    {
+        startupDelayMsecs = regStartupMsecs; // use whatever value was found in the registry (legal or not)
+    }
+
+    //Close the registry.
+    RegCloseKey(hKey);
+
+	return startupDelayMsecs;
+}
+
+
+
 
 static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 {
@@ -1295,6 +1383,10 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
     //Register the control request handler
     hServiceStatus = RegisterServiceCtrlHandler(serviceName, ServiceHandler);
 
+
+	// Read the registry for the one value we need right now, any configured startup delay
+	startupMsecs = getStartupDelayMsecs(serviceName);
+
     //Initialize the status structure.
     status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
     status.dwCurrentState = SERVICE_STOPPED;
@@ -1304,8 +1396,8 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
     status.dwCheckPoint = 0;
     status.dwWaitHint = 0;
 
-    //Mark the service as starting up, with a hint that this could take a few seconds.
-    status.dwWaitHint = SERVICE_STARTUP_HINT_MSECS;
+    //Mark the service as starting up, with a hint that this could take some seconds.
+    status.dwWaitHint = startupMsecs + SERVICE_HINT_EXTRA_MSECS;
     status.dwCurrentState = SERVICE_START_PENDING;
     SetServiceStatus(hServiceStatus, &status);
     status.dwWaitHint = 0;
@@ -1355,10 +1447,9 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 
 				//NOTE - if hard-coded value is non-zero, pause for specified time period
 				// after initiating startup thread and before notifying service as running
-				// (has been set to 3000ms to allow for JBoss startup time in testing)
-				if (SERVICE_STARTUP_DELAY_MSECS > 0)
+				if (startupMsecs > 0)
 				{
-					Sleep(SERVICE_STARTUP_DELAY_MSECS);
+					Sleep(startupMsecs);
 				}
 
 				//Mark the service as running (Should wait for startup thread/event really)
@@ -1410,7 +1501,7 @@ static void WINAPI ServiceHandler(DWORD opcode)
     case SERVICE_CONTROL_SHUTDOWN:
         //Tell the service mamanger that stop is pending, with hint as to how long it may take
         status.dwCurrentState = SERVICE_STOP_PENDING;
-        status.dwWaitHint = shutdownMsecs + SHUTDOWN_HINT_EXTRA_MSECS;
+        status.dwWaitHint = shutdownMsecs + SERVICE_HINT_EXTRA_MSECS;
         SetServiceStatus(hServiceStatus, &status);
 
         //Start the stop method in another thread.
@@ -1792,6 +1883,19 @@ static DWORD WINAPI StartService(LPVOID lpParam)
     else
     {
         overwriteOutputFiles = (regOverwriteFlag != 0); // non-zero value indicates overwrite flag = true
+    }
+
+    //Get the startup pause value, if specified
+    long regStartupMsecs = 0;
+    DWORD regStartupMsecsLength = sizeof(regStartupMsecs);
+    if ((regRet=RegQueryValueEx(hKey, "Startup Sleep", NULL, NULL,  (BYTE *)&regStartupMsecs, &regStartupMsecsLength)) != ERROR_SUCCESS)
+    {
+        // value was not initially stored in registry, so use default value as before
+        startupMsecs = DEFAULT_STARTUP_DELAY_MSECS;
+    }
+    else
+    {
+        startupMsecs = regStartupMsecs; // use whatever value was found in the registry (legal or not)
     }
 
     //Close the registry.
