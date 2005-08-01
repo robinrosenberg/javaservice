@@ -12,7 +12,7 @@
 	".\StatusCommand.h"\
 	".\UninstallCommand.h"\
 	".\VersionCommand.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\DaemonCommand.cpp : \
@@ -23,8 +23,9 @@
 
 .\EventLogger.cpp : \
 	".\EventLogger.h"\
+	".\Messages.h"\
 	".\ServiceLogger.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\HelpCommand.cpp : \
@@ -38,7 +39,7 @@
 	".\RegistryHandler.h"\
 	".\ServiceCommand.h"\
 	".\ServiceParameters.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\JavaInterface.cpp : \
@@ -46,21 +47,24 @@
 	"..\..\j2sdk\include\win32\jni_md.h"\
 	".\EventLogger.h"\
 	".\JavaInterface.h"\
+	".\Messages.h"\
 	".\ServiceHandler.h"\
 	".\ServiceLogger.h"\
 	".\ServiceParameters.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\JavaService.cpp : \
 	".\CommandFactory.h"\
 	".\CommandInterface.h"\
 	".\ServiceHandler.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\JavaService.rc : \
 	".\JavaService.rc2"\
+	".\Messages.rc"\
+	".\MSG00001.bin"\
 	".\VersionNo.h"\
 	
 
@@ -73,7 +77,7 @@
 	".\EventLogger.h"\
 	".\ProcessGlobals.h"\
 	".\ServiceParameters.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\QueryCommand.cpp : \
@@ -81,31 +85,32 @@
 	".\QueryCommand.h"\
 	".\ServiceCommand.h"\
 	".\ServiceParameters.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\RegistryHandler.cpp : \
 	".\RegistryHandler.h"\
 	".\ServiceParameters.h"\
 	".\VersionNo.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\ServiceCommand.cpp : \
 	".\CommandInterface.h"\
 	".\ServiceCommand.h"\
 	".\ServiceParameters.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\ServiceHandler.cpp : \
 	".\EventLogger.h"\
 	".\JavaInterface.h"\
+	".\Messages.h"\
 	".\ProcessGlobals.h"\
 	".\ServiceHandler.h"\
 	".\ServiceLogger.h"\
 	".\ServiceParameters.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\ServiceLogger.cpp : \
@@ -116,7 +121,7 @@
 	".\RegistryHandler.h"\
 	".\ServiceParameters.h"\
 	".\VersionNo.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\StatusCommand.cpp : \
@@ -124,7 +129,7 @@
 	".\ServiceCommand.h"\
 	".\ServiceParameters.h"\
 	".\StatusCommand.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\UninstallCommand.cpp : \
@@ -132,7 +137,7 @@
 	".\RegistryHandler.h"\
 	".\ServiceCommand.h"\
 	".\UninstallCommand.h"\
-	"g:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	"c:\program files\microsoft visual studio\vc98\include\basetsd.h"\
 	
 
 .\VersionCommand.cpp : \

@@ -153,9 +153,9 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 
 
 	ServiceLogger::write("Logging service event start[ed] event (starting now)...\n");
-	//Log that we have started. (TODO, or are starting - jvm may fail, thread may fail, class start may fail)
+	//Log that we are starting - jvm may fail, thread may fail, class start may fail
 
-	processGlobals->logServiceEvent(EVENT_SERVICE_STARTED);
+	processGlobals->logServiceEvent(EVENT_SERVICE_STARTING);
 
 	// mark the service as pending startup, so service manager knows we are here
 	// specify hint value according to any configured delay
@@ -182,6 +182,7 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 		processGlobals->setStatusWaitHint(0);
 		processGlobals->updateServiceStatus(SERVICE_RUNNING);
 
+		processGlobals->logServiceEvent(EVENT_SERVICE_STARTED);
 		ServiceLogger::write("Service Main waiting for event flags to be set\n");
 
 		// wait (indefinitely) until start and stop event flags are both set
@@ -231,6 +232,8 @@ static void WINAPI ServiceControlHandler(DWORD opcode)
     case SERVICE_CONTROL_SHUTDOWN:
 		{
 			ServiceLogger::write("Service control stop/shutdown requested\n");
+
+			processGlobals->logServiceEvent(EVENT_SERVICE_STOPPING);
 
 			// Tell the service manager that stop is pending, and may take longer than the usual 20-sec shutdown
 

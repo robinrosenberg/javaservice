@@ -33,7 +33,7 @@ INTDIR=.\Release
 OutDir=.\Release
 # End Custom Macros
 
-ALL : "$(OUTDIR)\JavaService.exe" "$(OUTDIR)\JavaService.bsc"
+ALL : ".\MSG00001.bin" ".\Messages.rc" ".\Messages.h" "$(OUTDIR)\JavaService.exe" "$(OUTDIR)\JavaService.bsc"
 
 
 CLEAN :
@@ -77,6 +77,9 @@ CLEAN :
 	-@erase "$(INTDIR)\VersionCommand.sbr"
 	-@erase "$(OUTDIR)\JavaService.bsc"
 	-@erase "$(OUTDIR)\JavaService.exe"
+	-@erase ".\Messages.h"
+	-@erase ".\Messages.rc"
+	-@erase ".\MSG00001.bin"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -179,7 +182,7 @@ INTDIR=.\Debug
 OutDir=.\Debug
 # End Custom Macros
 
-ALL : ".\MSG00001.bin" ".\Messages.rc" ".\Messages.h" "$(OUTDIR)\JavaServiceDebug.exe" "$(OUTDIR)\JavaService.bsc"
+ALL : "$(OUTDIR)\JavaServiceDebug.exe" "$(OUTDIR)\JavaService.bsc"
 
 
 CLEAN :
@@ -225,9 +228,6 @@ CLEAN :
 	-@erase "$(OUTDIR)\JavaService.bsc"
 	-@erase "$(OUTDIR)\JavaServiceDebug.exe"
 	-@erase "$(OUTDIR)\JavaServiceDebug.pdb"
-	-@erase ".\Messages.h"
-	-@erase ".\Messages.rc"
-	-@erase ".\MSG00001.bin"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -347,7 +347,7 @@ SOURCE=.\DaemonCommand.cpp
 
 SOURCE=.\EventLogger.cpp
 
-"$(INTDIR)\EventLogger.obj"	"$(INTDIR)\EventLogger.sbr" : $(SOURCE) "$(INTDIR)" ".\Messages.h"
+"$(INTDIR)\EventLogger.obj"	"$(INTDIR)\EventLogger.sbr" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\HelpCommand.cpp
@@ -362,7 +362,7 @@ SOURCE=.\InstallCommand.cpp
 
 SOURCE=.\JavaInterface.cpp
 
-"$(INTDIR)\JavaInterface.obj"	"$(INTDIR)\JavaInterface.sbr" : $(SOURCE) "$(INTDIR)" ".\Messages.h"
+"$(INTDIR)\JavaInterface.obj"	"$(INTDIR)\JavaInterface.sbr" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\JavaService.cpp
@@ -372,7 +372,7 @@ SOURCE=.\JavaService.cpp
 
 SOURCE=.\JavaService.rc
 
-"$(INTDIR)\JavaService.res" : $(SOURCE) "$(INTDIR)" ".\Messages.rc" ".\MSG00001.bin"
+"$(INTDIR)\JavaService.res" : $(SOURCE) "$(INTDIR)"
 	$(RSC) $(RSC_PROJ) $(SOURCE)
 
 
@@ -403,7 +403,7 @@ SOURCE=.\ServiceCommand.cpp
 
 SOURCE=.\ServiceHandler.cpp
 
-"$(INTDIR)\ServiceHandler.obj"	"$(INTDIR)\ServiceHandler.sbr" : $(SOURCE) "$(INTDIR)" ".\Messages.h"
+"$(INTDIR)\ServiceHandler.obj"	"$(INTDIR)\ServiceHandler.sbr" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\ServiceLogger.cpp

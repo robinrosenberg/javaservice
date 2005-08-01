@@ -25,17 +25,33 @@ The %1 Java service has been uninstalled.
 MessageId=0x0004
 Severity=Informational
 Facility=Application
-SymbolicName=EVENT_SERVICE_STARTED
+SymbolicName=EVENT_SERVICE_STARTING
 Language=English
-The %1 service has started.
+The %1 service is being started.
 .
 
 MessageId=0x0005
 Severity=Informational
 Facility=Application
+SymbolicName=EVENT_SERVICE_STARTED
+Language=English
+The %1 service has been started.
+.
+
+MessageId=0x0006
+Severity=Informational
+Facility=Application
+SymbolicName=EVENT_SERVICE_STOPPING
+Language=English
+The %1 service is being stopped.
+.
+
+MessageId=0x0007
+Severity=Informational
+Facility=Application
 SymbolicName=EVENT_SERVICE_STOPPED
 Language=English
-The %1 service has stopped.
+The %1 service has been stopped.
 .
 
 MessageId=0x1000
