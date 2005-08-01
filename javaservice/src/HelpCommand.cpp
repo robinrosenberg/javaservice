@@ -119,6 +119,7 @@ void HelpCommand::printCommandDetails(const char* forTopic) const
 						 "\t[-shutdown seconds]\n"
 						 "\t[-user user_name -password password]\n"
 						 "\t[-append | -overwrite]\n"
+						 "\t[-startup seconds]\n"
 						 "\nWhere:\n"
 						 "  service_name:\tThe name of the service.\n"
 						 "  jvm_library:\tThe location of the JVM DLL used to run the service.\n"
@@ -137,7 +138,7 @@ void HelpCommand::printCommandDetails(const char* forTopic) const
 						 "  extra_path:\tPath additions, for native DLLs etc. (no spaces)\n"
 						 "  other_service:\tSingle service name dependency, must start first.\n"
 						 "  auto / manual:\tStartup automatic (default) or manual mode.\n"
-						 "  seconds:\tTime for Java method shutdown processing before timeout.\n"
+						 "  seconds:\tJava method processing time (startup:sleep, shutdown:timeout).\n"
 						 "  user_name:\tUser specified to execute the service (user@domain).\n"
 						 "  password:\tPassword applicable if user specified to run the service.\n"
 						 "  append / overwrite:\tLog file output mode, append (default) or overwrite.\n";

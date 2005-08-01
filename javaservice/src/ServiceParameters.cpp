@@ -39,6 +39,9 @@
 // Local constant definitions
 //
 
+// Number of milliseconds sleep delay when starting the service, default of no delay
+static const long DEFAULT_STARTUP_DELAY_MSECS = 0; // zero seconds
+
 // Number of milliseconds delay timeout when stopping the service, default value
 static const long DEFAULT_SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
 
@@ -82,6 +85,7 @@ ServiceParameters::ServiceParameters()
 , serviceUser(NULL)
 , servicePassword(NULL)
 , fileOverwriteFlag(FALSE)
+, startupMsecs(DEFAULT_STARTUP_DELAY_MSECS)
 {
 	setSwVersion(STRPRODUCTVER);
 	setStartMethod("main");
@@ -161,6 +165,7 @@ static void deleteStringArray(int& count, const char**& array)
 //		[-shutdown seconds]
 //		[-user user@domain -password password]
 //		[-append | -overwrite]
+//		[-startup seconds]
 //
 bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 {
@@ -222,7 +227,7 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 	}
 
 	// list of arguments that will end options lists in calls below
-	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-path", "-depends", "-auto", "-manual", "-shutdown", "-user", "-password", "-append", "-overwrite", NULL };
+	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-path", "-depends", "-auto", "-manual", "-shutdown", "-user", "-password", "-append", "-overwrite", "-startup", NULL };
 
 	// start method parameters
 
@@ -429,6 +434,31 @@ bool ServiceParameters::loadFromArguments(int argc, char* argv[])
 		}
 	}
 
+	// see if optional '-startup' service startup delay is specified
+
+	if (argsOk && (remaining > 1) && (strcmp(*args, "-startup") == 0))
+	{
+		args++; // skip -startup arg
+		remaining--;
+
+		// get string value, parse to get number and validate that before using it
+		const char* startupString = *args;
+		const int startupSeconds = atoi(startupString);
+
+		if (startupSeconds >= 0)
+		{
+			setStartupMsecs(startupSeconds * 1000); // startup milliseconds delay
+			args++;
+			remaining--;
+		}
+		else
+		{
+			cerr << "'-startup seconds' parameter not present on install command" << endl;
+			argsOk = false;
+		}
+
+	}
+
 	// verify that there are no remaining, unrecognised parameters on the command
 
 	if (argsOk && (remaining > 0))
@@ -557,7 +587,6 @@ void ServiceParameters::setJvmOptionCount(int wotCount)
 
 void ServiceParameters::setJvmOptions(const char** wotOptions)
 {
-
 	// special case handling included for class path definitions
 
     // loop through the options array and find out if java.class.path is set by the caller
@@ -796,6 +825,8 @@ ostream& operator<< (ostream& os, const ServiceParameters& serviceParams)
 	outputConfigString(os, "Current Directory", serviceParams.getCurrentDirectory());
 
 	outputConfigValue(os, "Shutdown Timeout", serviceParams.getShutdownMsecs());
+
+	outputConfigValue(os, "Startup Delay", serviceParams.getStartupMsecs());
 
 	// dependsOn and autostart only used during installation command processing
 

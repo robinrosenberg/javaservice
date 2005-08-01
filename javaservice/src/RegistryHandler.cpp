@@ -80,6 +80,7 @@ static const char* const REG_KEY_CURRENT_DIR = "Current Directory";
 static const char* const REG_KEY_PATH_EXT = "Path";
 static const char* const REG_KEY_SHUTDOWN_TIMEOUT = "Shutdown Timeout"; // value added from V1.2.4 release
 static const char* const REG_KEY_OVERWRITE_FILES_FLAG = "Overwrite Files Flag"; // value added from V1.2.11
+static const char* const REG_KEY_STARTUP_DELAY = "Startup Sleep"; // value added from V1.2.12
 
 
 static const char* const REG_KEY_EVENT_MESSAGE_FILE = "EventMessageFile";
@@ -260,6 +261,13 @@ bool RegistryHandler::writeServiceParams(const ServiceParameters& serviceParams)
 		written = false;
 	}
 	
+	// Set the startup delay
+
+	if (written && !storeRegValueDword(hKey, REG_KEY_STARTUP_DELAY, serviceParams.getStartupMsecs()))
+	{
+		written = false;
+	}
+
 
 	if (hKey != NULL)
 	{
@@ -465,6 +473,11 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 		{
 			bool tempBoolean = (tempNumber != DWORD_BOOL_FALSE); // non-zero = true
 			serviceParams.setFileOverwriteFlag(tempBoolean); // else ctor default
+		}
+
+		if (getRegValueDword(hKey, REG_KEY_STARTUP_DELAY, &tempNumber))
+		{
+			serviceParams.setStartupMsecs(tempNumber); // else ctor default
 		}
 
 	}

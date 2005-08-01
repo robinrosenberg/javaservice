@@ -109,6 +109,9 @@ public:
 	void setPathExt(const char* wotPathExtension) { updateStringValue(pathExt, wotPathExtension); }
 	const char* getPathExt() const { return pathExt; }
 
+	void setFileOverwriteFlag(const bool wotFlagValue) { fileOverwriteFlag = wotFlagValue; }
+	bool getFileOverwriteFlag() const { return fileOverwriteFlag; }
+
 	void setCurrentDirectory(const char* wotDirectory) { updateStringValue(currentDirectory, wotDirectory); }
 	const char* getCurrentDirectory() const { return currentDirectory; }
 
@@ -121,14 +124,14 @@ public:
 	void setShutdownMsecs(int wotMsecs) { shutdownMsecs = wotMsecs; }
 	int getShutdownMsecs() const { return shutdownMsecs; }
 
+	void setStartupMsecs(int wotMsecs) { startupMsecs = wotMsecs; }
+	int getStartupMsecs() const { return startupMsecs; }
+
 	void setServiceUser(const char* wotUser) { updateStringValue(serviceUser, wotUser); }
 	const char* getServiceUser() const { return serviceUser; }
 
 	void setServicePassword(const char* wotPassword) { updateStringValue(servicePassword, wotPassword); }
 	const char* getServicePassword() const { return servicePassword; }
-
-	void setFileOverwriteFlag(const bool wotFlagValue) { fileOverwriteFlag = wotFlagValue; }
-	bool getFileOverwriteFlag() const { return fileOverwriteFlag; }
 
 private:
 
@@ -151,17 +154,21 @@ private:
 
 	const char *outFile;			// java stdout redirect file
 	const char *errFile;			// java stderr redirect file
+
+	bool fileOverwriteFlag;			// Overwrite or append to output log files
+
 	const char *pathExt;			// path extension
 	const char *currentDirectory;	// run-time directory
+
 	const char* dependency;			// service dependency
 	bool autoStart;					// Automatic (default) or manual service startup
 
 	int shutdownMsecs;				// milliseconds shutdown timeout
+	int startupMsecs;				// milliseconds startup delay
 
 	const char* serviceUser;		// service username
 	const char* servicePassword;	// service password
 
-	bool fileOverwriteFlag;			// Overwrite or append to output log files
 
 	void updateStringValue(const char*& stringRef, const char* newString);
 
