@@ -79,6 +79,8 @@
 		<delete includeEmptyDirs="true" quiet="true">
 			<fileset dir="${bindir}"
 				 includes="**/*.exe,**/*.jar" />
+			<fileset dir="${bindir}"
+				 includes="**/docs/**" />
 			<fileset file="${binzipfile}"/>
 			<fileset file="${binmd5file}"/>
 			<fileset file="${srczipfile}"/>
@@ -116,6 +118,11 @@
 		<copy file="${dbg.exe}" todir="${bindir}" />
 		<copy file="${samplejar}" todir="${bindir}" />
 
+		<!-- also copy documents directory to bin, for inclusion in distribution -->
+		<copy todir="${bindir}/docs">
+			<fileset dir="${docdir}" defaultexcludes="true" />
+		</copy>
+
 	</target>
 
 
@@ -134,12 +141,11 @@
 		     basedir="../"
 		     defaultexcludes="false"
 		     includes="javaservice/**"
-		     excludes="**/CVS/**, **/*.zip, **/*.log, **/*.MD5, **/*.ncb, **/*.plg, **/*.obj, **/*.bsc, **/*.idb, **/*.pch, **/*.pdb, **/*.res, **/*.sbr, **/Debug/*.exe, **/Release/*.exe"
+		     excludes="**/CVS/**, **/*.zip, **/*.log, **/*.MD5, **/*.ncb, **/*.plg, **/*.obj, **/*.bsc, **/*.idb, **/*.pch, **/*.pdb, **/*.res, **/*.sbr, **/Debug/*.exe, **/Release/*.exe, **/bin/docs/**"
 		     compress="true"
 		     update="false" />
 
 		<checksum file="${srczipfile}" forceOverwrite="true" />
-
 
 		<checksum file="${srczipfile}" verifyproperty="srcmd5ok" />
 
