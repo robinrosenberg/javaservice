@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+	<meta content="en" http-equiv="Content-Language">
+
+	<title>JavaService - Windows Service adaptor for Java</title>
+
+	<meta name="Robots" content="index, follow">
+
+	<link type="text/css" href="../javaservice.css" rel="stylesheet" id="stylesheet">
+	<link type="image/x-icon" href="../favicon.ico" rel="icon">
+	<link type="image/x-icon" href="../favicon.ico" rel="shortcut icon">
+</head>
+<body bgcolor="#FFFFFF">
+
+<TABLE WIDTH="90%" BORDER="0" CELLSPACING="0" CELLPADDING="0" ALIGN="center">
+  <TR> 
+    <TD><h2>JavaService - Overview</h2></TD>
+  </TR>
+  <TR> 
+    <TD> 
+      <P>Java provides developers with a platform independent 
+        programming API. This allows programs to be written and compiled for distinct 
+        operating systems and architectures, such as Windows, Solaris, and Linux.</P>
+      <P>Windows NT/2000 includes a set of tools and APIs that 
+        allow the creation and management of programs that run as background tasks, 
+        or services. Services typically run without any user interaction. This 
+        is especially useful when running programs, such as web servers, that 
+        should start automatically when the operating systems starts. Also, a 
+        service can be manually stopped, started, or paused using the service 
+        control manager that is included with the operating system.</P>
+      <P>JavaService is a Win32 executable that allows any 
+        Java class to be run as an NT service. It uses JNI's invocation API to 
+        create a Java Virtual Machine using any JNI compliant Java implementation. 
+        JavaService can call the typical entry method</P>
+      <BLOCKQUOTE> 
+        <P CLASS="mainCode">static void main(String[])</P>
+      </BLOCKQUOTE>
+      <P>in order to start the service, or any other method 
+        you choose. In order to stop the service it can call another method or 
+        simply terminate the JVM.</P>
+      <P>JavaService is free software. It is distributed using 
+        an open source license. This means that you can do whatever you want with 
+        it, provided you follow a <A HREF="../licence.html">few simple rules</A> 
+        about distribution.</P>
+       </TD>
+  </TR>
+</TABLE>
+</BODY>
+</HTML>
