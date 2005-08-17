@@ -3,3 +3,4 @@
 *.exe
 SampleService*.zip
 *.MD5
+logs

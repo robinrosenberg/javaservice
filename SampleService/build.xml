@@ -11,6 +11,8 @@
 	<property name="version" value="2.0.3"/>
 	<property name="srcdir" value="./src"/>
 	<property name="bindir" value="./bin"/>
+	<property name="tstdir" value="./test"/>
+	<property name="logdir" value="./logs"/>
 	<property name="docdir" value="./docs"/>
 	<property name="jarfile" value="${bindir}/SampleService.jar"/>
 	<property name="zipfile" value="./SampleService-${version}.zip"/>
@@ -22,11 +24,12 @@
 	This build script can be invoked by ANT as follows:
 
 	ant build		(Compiles the Java application and creates JAR archive)
+	ant test		(Invokes unit tests against the Java application code)
 	ant clean		(Deletes earlier log, class, javadoc and zip files)
 	ant docs		(Generates JavaDoc files for the project)
 	ant dist		(Creates zip file containing project release files)
 	ant rebuild		(Performs clean and build steps in turn)
-	ant all			(Performs clean, build, docs and dist steps in turn)
+	ant all			(Performs clean, build, test, docs and dist steps in turn)
 	ant usage		(Displays this help text)
 	ant -projecthelp	(Lists the available targets)
 
@@ -40,7 +43,9 @@
 				 includes="**/*.class, **/*/.log" />
 			<fileset dir="${docdir}/api"/>
 			<fileset file="${zipfile}"/>
+			<fileset file="${zipfile}.MD5"/>
 			<fileset file="${jarfile}"/>
+			<fileset dir="${logdir}" includes="*.txt" />
 		</delete>
 
 	</target>
@@ -52,7 +57,7 @@
 		<jar destfile="${jarfile}"
 		     basedir="${bindir}"
 		     includes="org/objectweb/**"
-		     excludes="**/CVS"
+		     excludes="**/CVS,**/Test*.class"
 		     index="true"
 		     compress="true"
 		     update="false">
@@ -67,6 +72,22 @@
 				<attribute name="Main-Class" value="org.objectweb.javaservice.test.SampleService" />
 			</manifest>
 		</jar>
+
+		<javac srcdir="${tstdir}" destdir="${bindir}" debug="on" />
+	</target>
+
+
+	<target name="test" depends="build" description="Invoke unit tests against Java code">
+
+		<junit printsummary="yes" haltonfailure="true">
+			<formatter type="plain" />
+			<classpath>
+				<pathelement location="${bindir}"/>
+			</classpath>
+			<test name="org.objectweb.javaservice.test.TestEntryPoints" todir="${logdir}" />
+		</junit>
+
+		<echo message="Unit tests completed successfully for SampleService code" />
 	</target>
 
 
@@ -80,6 +101,7 @@
 
 			<fileset dir="${srcdir}" defaultexcludes="yes">
 				<include name="org/objectweb/**" />
+				<exclude name="org/objectweb/Test**" /> <!-- not in srcdir anyway -->
 			</fileset>
 
 			<header><![CDATA[<strong>JavaService, an ObjectWeb project</strong>]]></header>
@@ -95,7 +117,7 @@
 		<zip destfile="${zipfile}"
 		     basedir="../"
 		     includes="SampleService/**"
-		     excludes="**/*.zip, **/*.log, **/CVS"
+		     excludes="**/*.zip, **/*.log, **/CVS, **/Test*.class"
 		     compress="true"
 		     update="false" />
 
@@ -108,7 +130,7 @@
 	</target>
 
 
-	<target name="all" depends="clean, build, docs, dist" description="Deletes previous build results, builds class, javadoc and zip files">
+	<target name="all" depends="clean, build, test, docs, dist" description="Deletes previous build results, builds class, javadoc and zip files">
 
 	</target>
 
