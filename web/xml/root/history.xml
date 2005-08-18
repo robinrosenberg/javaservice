@@ -13,7 +13,7 @@
   <body>
     <s1 name="History">
 
-	<subtitle>Version: 1.2.12 (ObjectWeb/Multiplan Consultants Ltd) -
+	<subtitle>Version: 1.2.12 (ObjectWeb/Multiplan) -
         Released: August 01, 2005</subtitle>
 
         <ul>
@@ -33,7 +33,7 @@
 			thread has been invoked.</li>
         </ul>
 
-	<subtitle>Version: 1.2.11 (ObjectWeb/Multiplan Consultants Ltd) -
+	<subtitle>Version: 1.2.11 (ObjectWeb/Multiplan) -
         Released: July 30, 2005</subtitle>
 
         <ul>
@@ -49,7 +49,7 @@
 		  code. This is supported by a constant definition within ServiceInterface.cpp (set to zero for release).</li>		  
         </ul>
 		
-	<subtitle>Version: 1.2.10 (ObjectWeb/Multiplan Consultants Ltd) -
+	<subtitle>Version: 1.2.10 (ObjectWeb/Multiplan) -
         Released: July 29, 2005</subtitle>
 
         <ul>
@@ -77,7 +77,7 @@
 		  the 'RUNNING' service status.</li>		  
         </ul>
 		
-	<subtitle>Version: 1.2.9 (ObjectWeb/Multiplan Consultants Ltd) -
+	<subtitle>Version: 1.2.9 (ObjectWeb/Multiplan) -
         Released: July 21, 2005</subtitle>
 
         <ul>
@@ -96,7 +96,7 @@
 		  
         </ul>
 		
-	<subtitle>Version: 1.2.8 (ObjectWeb/Multiplan Consultants Ltd) -
+	<subtitle>Version: 1.2.8 (ObjectWeb/Multiplan) -
         Released: July 20, 2005</subtitle>
 
         <ul>
@@ -112,7 +112,7 @@
 and this is not the same as the Java command line options <em>-cp value</em> and <em>-classpath value</em>.</li>
         </ul>
 	
-	<subtitle>Version: 1.2.7 (ObjectWeb/Multiplan Consultants Ltd) -
+	<subtitle>Version: 1.2.7 (ObjectWeb/Multiplan) -
         Released: May 02, 2005</subtitle>
 
         <ul>
@@ -125,7 +125,7 @@ and this is not the same as the Java command line options <em>-cp value</em> and
 		  earlier (Windows NT) or later (Windows XP/2003) system installations - please report any problems if experienced.</li>
         </ul>
 
-	<subtitle>Version: 1.2.6 (ObjectWeb/Multiplan Consultants Ltd) -
+	<subtitle>Version: 1.2.6 (ObjectWeb/Multiplan) -
         Released: April 30, 2005</subtitle>
 
         <ul>
@@ -139,7 +139,7 @@ and this is not the same as the Java command line options <em>-cp value</em> and
 		  JavaService installation process, so if CLASSPATH exists this will be added as a further option.</li>
         </ul>
 
-	<subtitle>Version: 1.2.5 (ObjectWeb/Multiplan Consultants Ltd) -
+	<subtitle>Version: 1.2.5 (ObjectWeb/Multiplan) -
         Released: March 10, 2005</subtitle>
 
         <ul>
