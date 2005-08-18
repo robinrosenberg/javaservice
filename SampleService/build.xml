@@ -78,6 +78,7 @@
 
 
 	<target name="test" depends="build" description="Invoke unit tests against Java code">
+		<mkdir dir="${logdir}" />
 
 		<junit printsummary="yes" haltonfailure="true">
 			<formatter type="plain" />
