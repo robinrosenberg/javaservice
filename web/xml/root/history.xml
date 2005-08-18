@@ -11,9 +11,107 @@
   </properties>
 
   <body>
-
     <s1 name="History">
+
+	<subtitle>Version: 1.2.12 (ObjectWeb/Multiplan Consultants Ltd) -
+        Released: August 01, 2005</subtitle>
+
+        <ul>
+          <li>Allow startup delay to be specified with <em>-startup seconds</em> optional parameter.</li>
+
+		  <li>Default is for no startup delay to be performed by the process.</li>
+		  
+		  <li>If a delay is specified, this begins after the startup thread is invoked, allowing for a period
+			of time to pass between the initial 'Starting' service status notification and the subsequent
+			'Running' notification to Windows. If the startup thread completes sooner, the delay will still
+			continue for the specified amount of time.</li>
+
+		  <li>The only expected use for a startup delay is if it is known that the Java application takes a finite
+			amount of time in performing startup operations, and the user wants Windows to return control only
+			after that time period has passed. In this case, specify the number of seconds delay to apply
+			and the JavaService main thread will pause (sleep) for that duration after the Java startup
+			thread has been invoked.</li>
+        </ul>
+
+	<subtitle>Version: 1.2.11 (ObjectWeb/Multiplan Consultants Ltd) -
+        Released: July 30, 2005</subtitle>
+
+        <ul>
+          <li>Allow output log file mode to be specified as either <em>append</em> or <em>overwrite</em></li>
+
+		  <li>Default mode, since V1.2.5 is to append to existing output log files (for both stdout and stderr).</li>
+		  
+		  <li>If the optional end parameter is specified as <em>-overwrite</em> then this behaviour is changed
+		  and both output and error log files will be overwritten with new content when the service starts.</li>
+
+		  <li>Following on from V1.2.10: If a startup delay is absolutely required from JavaService, the
+		  source distribution should be modified and rebuilt locally to specify a non-zero delay in the C++
+		  code. This is supported by a constant definition within ServiceInterface.cpp (set to zero for release).</li>		  
+        </ul>
 		
+	<subtitle>Version: 1.2.10 (ObjectWeb/Multiplan Consultants Ltd) -
+        Released: July 29, 2005</subtitle>
+
+        <ul>
+          <li>Correct notification of service startup states to Windows Service Manager.</li>
+
+		  <li>Internally, the previous versions of JavaService all reported the service status
+		  to Windows as 'RUNNING' as soon as the startup request was received.
+		  This version now reports the service status as 'STARTING' when first receiving the request,
+		  followed by a subsequent report of service status as 'RUNNING' after firing the startup thread.</li>
+		  
+		  <li>The installation and user interface to JavaService is unchanged for this internal update.</li>
+		  
+		  <li>A 'hint' is passed to Windows Service Manager to indicate that service startup may take
+		  three seconds before completion. This value is not configurable and is coded within the program.</li>
+		  
+		  <li>Note that JavaService does not wait for the startup thread to complete, so it is likely
+		  that the final state transition will be notified shortly after the first report. This is a
+		  limitation in the coding of the JavaService utility and is unlikely to be changed. As a
+		  result, this update to the application meets the rules of Windows Services better, but
+		  is not expected to have any impact on the startup processing of any actual services.</li>
+
+		  <li>If a startup delay is absolutely required from JavaService, the recommendation is that
+		  the source distribution is modified locally to include a hard-coded delay in the C++
+		  code. This would be included between creation of the startup thread and notification of
+		  the 'RUNNING' service status.</li>		  
+        </ul>
+		
+	<subtitle>Version: 1.2.9 (ObjectWeb/Multiplan Consultants Ltd) -
+        Released: July 21, 2005</subtitle>
+
+        <ul>
+          <li>Supported use of multiple service dependencies.</li>
+		  
+		  <li>Optional install parameter <em>-depends otherservices</em> now accepts comma-delimited list
+		  of service nams, or single service name as before (name cannot contain a comma, though).</li>
+		  
+		  <li>If the dependency parameter is not specified, service will start up as configured (manual or auto).</li>
+		  
+		  <li>If the dependency parameter specifies a single service name, the installed service will only start up after the specified
+		  service is also running (will start both services if command issued to start the dependant service).</li>
+		  
+		  <li>If the dependency parameter specifies a list of multiple service dependency names (separated by commas), the installed service
+		  will only start up after all the specified services are also running (will start all services if necessary).</li>
+		  
+        </ul>
+		
+	<subtitle>Version: 1.2.8 (ObjectWeb/Multiplan Consultants Ltd) -
+        Released: July 20, 2005</subtitle>
+
+        <ul>
+          <li>Supported use of <em>-classpath</em> and <em>-cp</em> options, not normally handled by JVM.</li>
+		  
+		  <li>Command format now detects the use of either &quot;-classpath=value&quot; or &quot;-cp=value&quot; options.
+		  <br/>If present, this will be replaced with the correct form of option as &quot;-Djava.class.path=value&quot;.</li>
+		  
+		  <li>If any of the three explicit methods are used to specify the Java classpath (-cp, -classpath, -Djava.class.path)
+		  then the program does not apply the local CLASSPATH definition, which would otherwise do as a default.</li>
+		  
+		  <li>Note that the program works with options <em>-cp=value</em> and <em>-classpath=value</em>
+and this is not the same as the Java command line options <em>-cp value</em> and <em>-classpath value</em>.</li>
+        </ul>
+	
 	<subtitle>Version: 1.2.7 (ObjectWeb/Multiplan Consultants Ltd) -
         Released: May 02, 2005</subtitle>
 
@@ -25,9 +123,6 @@
 		  (i.e. <em>johndoe@foobar.com)</em> rather than the usual SMTP-style username; using the incorrect username style may
 		  result in &quot;Overlapped I/O operation&quot; errors being reported. The results of this may be different under
 		  earlier (Windows NT) or later (Windows XP/2003) system installations - please report any problems if experienced.</li>
-		  <li>Extended JVM options check to look for &quot;-cp&quot; and &quot;-classpath&quot; as alternatives
-		  to &quot;-Djava.class.path&quot; mechanism, before applying any current CLASSPATH definition to the list of runtime JVM options.
-		  This avoids potential problems that may have arisen with the initial V1.2.6 classpath implementation (below).</li>
         </ul>
 
 	<subtitle>Version: 1.2.6 (ObjectWeb/Multiplan Consultants Ltd) -
@@ -185,11 +280,10 @@
           Released: April 14, 2000</subtitle>
 
         <ul>
-          <li>Initial Release. </li>
+          <li>Initial Release.</li>
         </ul>
 
     </s1>
     
   </body>
-  
 </document>
