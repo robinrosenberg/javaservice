@@ -103,7 +103,7 @@
           <LI>Supported use of <I>-classpath</I> and <I>-cp</I> options, not normally handled by JVM.</LI>
 		  
 		  <LI>Command format now detects the use of either &quot;-classpath=value&quot; or &quot;-cp=value&quot; options.
-		  <BR/>If present, this will be replaced with the correct form of option as &quot;-Djava.class.path=value&quot;.</LI>
+		  <BR>If present, this will be replaced with the correct form of option as &quot;-Djava.class.path=value&quot;.</LI>
 		  
 		  <LI>If any of the three explicit methods are used to specify the Java classpath (-cp, -classpath, -Djava.class.path)
 		  then the program does not apply the local CLASSPATH definition, which would otherwise do as a default.</LI>
@@ -118,7 +118,7 @@ and this is not the same as the Java command line options <I>-cp value</I> and <
           <LI>Added optional parameters to specify username and password to be used when running the service.</LI>
 		  
 		  <LI>Command format now supports &quot;-user username -password password&quot; parameters.
-		  <BR/>Both the user and password values must be specified together, or not at all.</LI>
+		  <BR>Both the user and password values must be specified together, or not at all.</LI>
 		  
 		  <LI><strong>NOTE</strong> The username value should be specified as a Windows-2000 Active Directory style entry
 		  (i.e. <em>johndoe@foobar.com)</em> rather than the usual SMTP-style username; using the incorrect username style may
@@ -200,7 +200,6 @@ and this is not the same as the Java command line options <I>-cp value</I> and <
 			<LI>Updated Orion sample script to specify initial/maximum heap sizes.</LI>
 			<LI>An initial FAQ has been defined to assist in early fault-finding efforts.</LI>
 			</UL>
-		  </LI>
           </li>
         </UL>
 		
@@ -213,7 +212,6 @@ and this is not the same as the Java command line options <I>-cp value</I> and <
 			service startup is specified, it will only run when issuing a command of the form 'net start service'.</LI>
           <LI>Added an example of using the JavaService program to run the JBoss server software.</LI>
           <LI>Further changes to printf statements to show the service name used.</LI>
-          </li>
         </UL>
         <P CLASS="mainBold">Version: 1.2.1 (Multiplan Consultants Ltd)<BR>
           Release Date: November 03, 2002</P>

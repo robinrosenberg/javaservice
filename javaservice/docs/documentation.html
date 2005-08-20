@@ -15,71 +15,113 @@
 	<link type="text/css" href="javaservice.css" rel="stylesheet" id="stylesheet">
 	<link type="image/x-icon" href="favicon.ico" rel="icon">
 	<link type="image/x-icon" href="favicon.ico" rel="shortcut icon">
+
+<!--
+<script language="JavaScript" type="text/javascript">
+-->
+<!--
+	var frameWarningText = '';
+	
+	function checkForFrame()
+	{
+		if (self.parent.frames.length == 0) // not framed?
+		{
+			frameWarningText = '<p><em>'
+			+	'This particular page should be displayed below the common documentation menu.'
+			+	'<br>If it is not, then <a href="index.html" target="_top">please click here</a>'
+			+	' (unless your browser does not support frames).'
+			+	'</em></p>';
+		}
+	}
+
+	checkForFrame(); // check for frame and set up warning text if not present
+//-->
+<!--
+</script>
+-->
+
 </head>
 <body bgcolor="#FFFFFF">
 
 
 <h2>Document Sets</h2>
 <p>
-The JavaService documentation is included as part of the software
-distribution, and is also available for reference on the Internet.
+JavaService documentation is included in html format as part of the software download distribution.
 </p>
 
 <p>
-Documentation is split into different areas of interest, with some common
-documents being referenced from both areas.
-<br>
-These sections are briefly described below
-and are accessed using the documentation menu above, or from the links below.
+If you are reading this from your local drive, then you already have this documentation!
 </p>
 
-<h3>Current Documentation</h3>
+<!-- following text is empty when page is already framed -->
+<!--
+<script type="text/javascript" language="JavaScript">
+-->
+<!--
+document.write( frameWarningText );
+//-->
+<!--
+</script>
+-->
 
+<p>
+The documentation is split to cover different areas of interest, for 'end users' and 'developers'
+making use of the JavaService software.
+</p>
+
+<a href="./usrdocs/usrmenu.html" target="menuFrame"><h3>User Documentation</h3></a>
+
+<p>
 <!-- TODO - include document link image rather than use textual links here -->
-<h4><a href="./usrdocs/usrmenu.html" target="menuFrame">&nbsp;&#149;&nbsp;</a>&nbsp;User Documentation</h4>
-<p>
-<a href="./usrdocs/usrmenu.html" target="menuFrame">This documentation</a> is provided to explain how the software
-is seen by the end user.
+<a href="./usrdocs/usrmenu.html" target="menuFrame">User documentation</a> describes
+how the software is seen by the end user when used in a Windows environment.
 <br>
 It lists the commands available from the utility for installing,
-querying and removing a Java application as a service within the Windows environment.
+querying and removing a Java application as a service under Windows NT.
 </p>
 
-<h4><a href="./devdocs/devmenu.html" target="menuFrame">&nbsp;&#149;&nbsp;</a>&nbsp;Developer Documentation</h4>
+<a href="./devdocs/devmenu.html" target="menuFrame"><h3>Developer Documentation</h3></a>
+
 <p>
-<a href="./devdocs/devmenu.html" target="menuFrame">This documentation</a> is intended for technical users
+<a href="./devdocs/devmenu.html" target="menuFrame">Developer documentation</a> is intended for technical users
 who may be developing a Java application to be run as a service.
 <br>
-It specifies the
-lower-level mechanisms used by the software and defines the application interface that is uses.
+It specifies the lower-level mechanisms used by the software and defines the application interface that it uses.
 </p>
 
-<h3>Previous Documentation</h3>
+<a href="./v1docs/index.html" target="docFrame"><h3>Older Documents</h3></a>
 
-<h4><a href="./v1docs/index.html" target="docFrame">&nbsp;&#149;&nbsp;</a>&nbsp;Version 1.2 Documents</h4>
 <p>
-<a href="./v1docs/index.html" target="docFrame">This documentation</a> is included for reference only, being a
-copy of the earlier document set provided with earler (pre-V2) releases of JavaService.
+<a href="./v1docs/index.html" target="docFrame">Version 1.2 documentation</a> is included for reference only, being a
+copy of the older document set provided with earler (pre-V2) releases of JavaService.
 </p>
 
-<h3>Internet Information</h3>
+<h2>Internet Information</h2>
 
-<h4><a href="http://javaservice.objectweb.org" target="_top">&nbsp;&#149;&nbsp;</a>&nbsp;ObjectWeb Project Page</h4>
+<a href="http://javaservice.objectweb.org" target="_top"><h3>ObjectWeb Project Page</h3></a>
 <p>
 The <a href="http://javaservice.objectweb.org" target="_top">JavaService Project Homepage</a> 
 is hosted as part of the ObjectWeb Consortium open source initiative. This site has copies of
 the documentation set for JavaService, plus additional information and links to the source forge.
 </p>
 
-<h4><a href="http://forge.objectweb.org/projects/javaservice/" target="_top">&nbsp;&#149;&nbsp;</a>&nbsp;ObjectWeb Source Forge</h4>
+<a href="http://forge.objectweb.org/projects/javaservice/" target="_top"><h3>ObjectWeb Source Forge</h3></a>
 <p>
 The <a href="http://forge.objectweb.org/projects/javaservice/" target="_top">JavaService Source Forge</a> on ObjectWeb
 provides access to the source file repository, software downloads, news items, mailing lists and support forums.
 </p>
 
-<h3>&nbsp;</h3>
-<p style="text-align: center">
-<em>Copyright (c) 2005 Multiplan Consultants Ltd. All Rights Reserved</em>
+<hr>
+<p align="center">
+Copyright (c) 2005 Multiplan Consultants Ltd.
+</p>
+
+<p align="center" style="font-size: x-small">
+All names and trademarks ar the property of their respective owners.
+<br>
+Java and all Java-based trademarks are trademarks or registered trademarks of Sun Micrososystems, Inc in the U.S. and other countries.
+<br>
+ObjectWeb is independent of Sun Microsystems, Inc. ObjectWeb is a consortium hosted by INRI.
 </p>
 
 </body>
