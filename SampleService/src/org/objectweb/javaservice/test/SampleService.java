@@ -260,6 +260,10 @@ public class SampleService
 			{
 				// create an object of some useful size, losing any earlier ref
 				objectRef = new StringBuffer(i * 100);
+				if ((objectRef == null) || (objectRef.getClass() == null))
+				{
+					throw new RuntimeException("Failed to assign string buffer to temporary object reference!");
+				}
 			}
 
 			x += i;
