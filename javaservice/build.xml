@@ -45,7 +45,6 @@
 	<property name="dbg.exe" value="${srcdir}/Debug/JavaServiceDebug.exe"/>
 	<property name="samplejar" value="../SampleService/bin/SampleService.jar"/>
 	<property name="lgpl" value="./LGPL.txt"/>
-	<property name="license" value="./LICENSE.txt"/>
 	<property name="binzipfile" value="./JavaService-bin-${version}.zip"/>
 	<property name="binmd5file" value="${binzipfile}.MD5"/>
 	<property name="srczipfile" value="./JavaService-src-${version}.zip"/>
@@ -169,7 +168,6 @@
 			<fileset dir="${bindir}" />
 			<fileset dir="${scriptdir}" />
 			<fileset file="${lgpl}" />
-			<fileset file="${license}" />
 		</zip>
 
 		<checksum file="${binzipfile}" forceOverwrite="true" />
