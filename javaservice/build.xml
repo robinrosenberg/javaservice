@@ -45,7 +45,7 @@
 	<property name="dbg.exe" value="${srcdir}/Debug/JavaServiceDebug.exe"/>
 	<property name="samplejar" value="../SampleService/bin/SampleService.jar"/>
 	<property name="lgpl" value="./LGPL.txt"/>
-	<property name="binzipfile" value="./JavaService-bin-${version}.zip"/>
+	<property name="binzipfile" value="./JavaService-${version}.zip"/>
 	<property name="binmd5file" value="${binzipfile}.MD5"/>
 	<property name="srczipfile" value="./JavaService-src-${version}.zip"/>
 	<property name="srcmd5file" value="${srczipfile}.MD5"/>
