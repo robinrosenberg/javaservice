@@ -13,6 +13,29 @@
   <body>
     <s1 name="History">
 
+	<subtitle>Version: 2.0.4 (ObjectWeb/Multiplan) -
+        Released: August 21, 2005</subtitle>
+
+        <ul>
+          <li>New release based on refactored/rewritten Version 2 code base.</li>
+
+		  <li>Compatible with earlier V1.2 releases - both scripts and registry configurations.</li>
+		  
+		  <li>Includes new command <em>-queryconfig servicename</em> to display configuration
+		  details of the specified Java service.</li>
+
+		  <li>Includes new command <em>-status servicename</em> to interrogate
+		  the current execution status of the specified service.</li>
+
+		  <li>JavaService <em>-help command</em> extensions to show structured help topics.</li>
+
+		  <li>Added <em>-licence</em> command to display the LGPL text applicable to JavaService.</li>
+
+		  <li>Improved internal code structure to reduce code duplication and to improve integration
+		  with the Windows Service Manager.</li>
+        </ul>
+
+
 	<subtitle>Version: 1.2.12 (ObjectWeb/Multiplan) -
         Released: August 01, 2005</subtitle>
 

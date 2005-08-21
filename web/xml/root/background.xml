@@ -31,12 +31,12 @@
 	The project administrator at this time is John Rutter, of Multiplan Consultants, so this does provide for a
 	level of continuity from the updates of previous years.</p>
 
-	<p>Further development of the software is planned to incorporate further enhancements and functionality, and to
-	increase the level of documentation supporting this software. The community features of the ObjectWeb Forge
+	<p>Ongoing development of the software incorporates further enhancements and functionality.
+	The community features of the ObjectWeb Forge
 	will also allow for easier exchange of comments and ideas relating to the project.
 	<br />
 	For all releases of JavaService from the ObjectWeb project, the 
-	<a href="http://www.gnu.org/copyleft/lesser.html">GNU Lesser General Public License</a> (LGPL) will apply.</p>
+	<a href="http://www.gnu.org/copyleft/lesser.html">GNU Lesser General Public License</a> (LGPL) now applies.</p>
 
 	<p>Further, it is the intention that the JavaService utility will be the preferred method to be used by all ObjectWeb
 	projects when they are installed and used on a Windows NT-type system. It is hoped that this adoption over time will

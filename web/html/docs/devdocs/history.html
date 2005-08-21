@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+	<meta content="en" http-equiv="Content-Language">
+
+	<title>JavaService - Version History</title>
+
+	<meta name="Robots" content="index, follow">
+
+	<link type="text/css" href="../resources/javaservice.css" rel="stylesheet" id="stylesheet">
+	<link type="image/x-icon" href="../favicon.ico" rel="icon">
+	<link type="image/x-icon" href="../favicon.ico" rel="shortcut icon">
+</head>
+<body bgcolor="#FFFFFF">
+
+<h2>JavaService - Release History</h2>
+
+<h3>Latest Release</h4>
+<h4>Version 2.0.4 - 21st August 2005</h4>
+
+<p>
+This release of JavaService is based on the new Version 2 code base.
+<br>
+Hence it should initially be viewed as 'release candidate' status and not used for production software
+environment until suitable testing and verification has been performed.
+</p>
+<p>
+This version incorporates refactored code and additional commands, whilst maintaining complete
+backwards compatibility with V1.2 commands and configuration entries. The benefits of the new
+code base are aimed to support easier enhancements with new functionality. There is also a reduction of
+code duplication, which should in turn reduce the possibilities for errors and improve the
+maintainability of the application software.
+</p>
+<p>
+The following new commands are included in this release:-
+</p>
+<dl>
+<dt>-queryconfig servicename</dt>
+<dd>To view the configuration entries for the named Java service</dd>
+<dt>-status servicename</dt>
+<dd>To display the current execution status of the named Java service</dd>
+<dt>-licence</dt>
+<dd>To output the LGPL licence text from JavaService</dd>
+<dt>-help command</dt>
+<dd>Displaying further help details for the specified command</dd>
+</dl>
+<p>
+The software has been tested using the SampleService code and has undergone debug testing to
+verify internal operation. The interface at the Windows Service level has been improved, whilst
+maintaining the same Registry and Java JNI interfaces as used by previous releases of JavaService.
+</p>
+
+
+<h3>Previous Release</h3>
+<h4>Version 1.2.12 - 1st August 2005</h4>
+
+<p>
+This is the final planned release of the JavaService utility from the Version 1.x code base.
+</p>
+<p>
+It can be viewed as a 'stable' release, with the code having been used in essentially the
+same form for a number of years, with only minor internal changes at each release level.
+</p>
+<p>
+Refer to V1.x documentation for release notes and prior change history.
+</p>
+
+<h3>Version Numbering</h3>
+
+<p>
+Releases of the JavaService product code are given a three-part version number, which is
+incorporated in the binary image of the program as well as being used in the source control system.
+There is a fourth part to the version number, used for internal build release tracking only.
+</p>
+<p>
+The meaning of each part of the version number is explained below, using V2.0.4.0 as an example:
+</p>
+
+<table>
+<tr>
+<td><strong>Version Part</strong></td><td><strong>Description</strong></td>
+</tr>
+<tr>
+<td>First (2)</td><td>Major version number indicating codebase of the software</td>
+</tr>
+<tr>
+<td>Second (0)</td><td>Minor version number for directly-compatible releases</td>
+</tr>
+<tr>
+<td>Third (4)</td><td>Incremental version number for patch releases of software</td>
+</tr>
+<tr>
+<td>Fourth (0)</td><td>Build tracking number, may be used for custom builds</td>
+</tr>
+</table>
+
+<p>
+Compatibility will be maintained between releases of software with the same major version numbers,
+unless there is a particular problem identified and resolved in the later release. Software releases
+with the same major and minor release numbers shall be compatible in all cases (accepting that
+additional functionality may be included in the later release).
+</p>
+
+<p>&nbsp;</p>
+
+</body>
+</html>

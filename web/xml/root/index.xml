@@ -45,8 +45,12 @@ controlled from the Windows command prompt with the commands:
 	net stop MyService
 ]]>	</source>
 	
+	<p>
+	Extensive documentation is included that describes the functionality of the JavaService
+	utility software. This documentation can also be <a href="js_doc_frame.html">"viewed on this web site</a>.
+	</p>
 
-	<copyright>Original source copyright Alexandria Software Consulting.<br /> Updated source copyright Multiplan Consultants Ltd.</copyright>
+	<copyright>Version 2.x code base - Copyright Multiplan Consultants Ltd.</copyright>
 
     </s1>
   </body>
