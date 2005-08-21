@@ -2,47 +2,26 @@
 <head>
 <title>JavaService - Java NT Service Adaptor</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" href="javaservice.css" type="text/css">
-<link rel="stylesheet" href="styles.css" type="text/css">
+<link rel="stylesheet" href="../javaservice.css" type="text/css">
 </head>
 
 <body bgcolor="#FFFFFF">
 <table border="0" cellspacing="0" cellpadding="0" align="center">
   <tr> 
-    <td nowrap class="mainTitle"><h2>JavaService - Description</h2></td>
+    <td nowrap class="mainTitle"><h2>JavaService - Developer Commands</h2></td>
   </tr>
   <tr> 
     <td> 
       <h3>Contents</h3>
       <blockquote> 
-        <p class="mainNormal"><a href="#Requirements">Requirements</a> <br>
-          <a href="#Overview">Overview</a> <br>
+        <p class="mainNormal">
           <a href="#Installing">Installing</a> <br>
           <a href="#UnInstalling">UnInstalling</a><br>
           <a href="#Version_Query">Version Query</a><br>
           <a href="#Registry_Settings">Registry Settings</a><br>
           <a href="#Event_Logging">Event Logging</a><br>
-          <a href="#Tomcat_Example">Example (Tomcat)</a><br>
-		  <a href="#Orion_Example">Example (Orion)</a><br>
-		  <a href="#JBoss_Example">Example (JBoss 3.0)</a></p>
       </blockquote>
-      <p class="mainBold"><a name="Requirements"></a>Requirements</p>
-      <p class="mainNormal">JavaService requires a JNI 1.2 compliant 
-        Java Virtual Machine. This includes the Sun Java 2 SDK versions 1.2, 1.3 and 
-        1.4. It does not support the older JDK 1.1.x.</p>
-      <p class="mainBold"><a name="Overview"></a>Overview</p>
-      <p class="mainNormal">JavaService can be used to run any Java classes as 
-        an NT Service. It can start the service using the standard
-		<span class="textCode">static void main(String[] args)</span> method,
-		or any other static method that 
-        takes a <span class="textCode">String[]</span> as its only parameter. 
-        In its simplest incarnation JavaService will simply terminate the JVM 
-        to stop the service, but you can optionally have it call another static 
-        method inside the JVM. If JavaService calls another method it will wait 
-        either until both the start and the stop methods have returned or until 
-        a 30 second timeout has expired before terminating the JVM. JavaService 
-        can also optionally redirect the System.out and/or the System.err streams 
-        into a file.</p>
+
       <p class="mainBold"><a name="Installing"></a>Installing</p>
       <p class="mainNormal">The JavaService executable has no dependencies on 
         any files or directories. This was intentional so that it could easily 
@@ -225,6 +204,7 @@
         a String array of length 0 (no parameters). Anything written to System.err 
         would be redirected into the file c:\app\stderr.txt.<br>
       </p>
+
       <p class="mainBold"><a name="UnInstalling"></a>UnInstalling</p>
       <ol class="mainNormal">
         <li>Start a command prompt and change to the directory where the JavaService.exe 
@@ -232,6 +212,7 @@
         <li>Type <span class="textCode">'JavaService.exe -uninstall'</span> followed 
           by the name of the service.</li>
       </ol>
+
       <p class="mainBold"><a name="Version_Query"></a>Version Query</p>
       <p class="mainNormal">There are two ways to determine the version number of this program.
 	  <br>First:</p>
@@ -249,6 +230,7 @@
 	 <li>The version number and copyright information for the program can then be viewed from the property tabs
 		  displayed by Windows.</li>
       </ol>
+
       <p class="mainBold"><a name="Registry_Settings"></a>Registry Settings</p>
       <p class="mainNormal">JavaService stores the configuration information for 
         installed services in the registry. The location is </p>
@@ -294,6 +276,7 @@
         <p class="mainNormal">Shutdown Timeout - The number of milliseconds to allow for
 		the Java Stop method to complete, before timeout and JVM forced termination.</p>
       </blockquote>
+
       <p class="mainBold"><a name="Event_Logging"></a>Event Logging</p>
       <p class="mainNormal">JavaService logs both informational events and errors 
         into the Application portion of the NT Event Log. Informational messages 
@@ -304,103 +287,6 @@
         Log to see if any errors were reported. Additionally you can check the 
         redirected System.err file, as any Java exceptions will be written there 
         by the Virtual Machine.</p>
-      <p class="mainBold"><a name="Tomcat_Example"></a>Example (Tomcat)</p>
-      <p class="mainNormal"><a href="http://jakarta.apache.org">Tomcat</a> is 
-        a JSP engine and was the primary reason that JavaService was created. 
-        It is a pure Java application that is ideally used as a service, but comes 
-        with no native ability to do so. The following example shows how JavaService 
-        can be used to run Tomcat 3.1 as an NT service. The ideas shown here apply 
-        to using JavaService with any Java application that needs to run as an 
-        NT service. {JDK_HOME} is the location of your JDK and {TOMCAT_HOME} is 
-        the location of your Tomcat installation.</p>
-      <ol class="mainNormal">
-        <li>Copy the JavaService.exe file into the {TOMCAT_HOME}\bin directory as tomcat.exe.</li>
-        <li>Start a command prompt and change to the directory {TOMCAT_HOME}\bin.</li>
-        <li>Run the following command:<br>
-          <span class="textCode">tomcat.exe -install Tomcat<br>
-          {JDK_HOME}\jre\bin\{hotspot|server|classic}\jvm.dll<br>
-          -Djava.class.path={TOMCAT_HOME}\bin\bootstrap.jar;{TOMCAT_HOME}\bin\servlet.jar;{JDK_HOME}\lib\tools.jar 
-          <br>
-          -Dcatalina.home={TOMCAT_HOME}<br>
-          -start org.apache.catalina.startup.Bootstrap<br>
-          -params start<br>
-          -stop org.apache.catalina.startup.Bootstrap<br>
-          -params stop<br>
-          -out {TOMCAT_HOME}\logs\stdout.log<br>
-          -err {TOMCAT_HOME}\logs\stderr.log</span> </li>
-      </ol>
-
-      <p class="mainBold"><a name="Orion_Example"></a>Example (Orion)</p>
-      <p class="mainNormal">The <a href="http://www.orionserver.com">Orion</a> Application Server
-	  is a J2EE-compliant product that runs under the Java run-time environment. The JavaService
-	  utility provides a convenient mechanism to run this program as an NT Service.
-	  As the application server requires that an associated database server is already running, there
-	  is a need to add a Windows NT Service dependency to the Orion Java Service. The example below
-	  shows how this can be defined, with a dependency on the MySql database service in this case.
-	  {JDK_HOME} is the location of your JDK and {ORION_HOME} is the location of your Orion
-	  installation. The administrator username and password fields also need to be substituted in this command.
-	  Please note that this has been used successfully against the V1.5.2 OrionServer release,
-	  but is in any case provided 'as is'.</p>
-      <ol class="mainNormal">
-        <li>Copy the JavaService.exe file into the {ORION_HOME} directory as OrionServer.exe.</li>
-        <li>Start a command prompt and change to the directory {ORION_HOME}.</li>
-        <li>Run the following command:<br>
-          <span class="textCode">OrionServer.exe -install Orion<br>
-			{JDK_HOME}\jre\bin\{hotspot|server|classic}\jvm.dll<br>
-			-Djava.class.path={ORION_HOME}\orion.jar;{JDK_HOME}\lib\tools.jar -Xms64M -Xmx256M<br>
-			-start com.evermind.server.ApplicationServer<br>
-			-stop com.evermind.client.orion.OrionConsoleAdmin<br>
-			-params "ormi://localhost admin_username admin_password -shutdown"<br>
-			-out {ORION_HOME}\log\stdout.log<br>
-			-err {ORION_HOME}\log\stderr.log<br>
-			-current {ORION_HOME}<br>
-			-depends mysql<br>
-			-manual<br>
-			-append</span> </li>
-        <li>To remove the registered service, run the following command from the same directory:<br>
-          <span class="textCode">OrionServer.exe -uninstall Orion</span><br> </li>
-      </ol>
-      <p class="mainNormal">The Orion service can then be started by issuing the following command,
-	   which will also start the MySql service beforehand if it is not already running:<br>
-	  <span class="textCode">net start orion</span></p>
-      <p class="mainNormal">The Orion service can then be stopped by issuing the following command:<br>
-	  <span class="textCode">net stop orion</span></p>
-      <p class="mainNormal">The MySql database service may be stopped as normal by issuing the following command:<br>
-	  <span class="textCode">net start mysql</span><br>
-	  This will first stop the Orion service, if it is currently running, following user confirmation.</p>
-	  
-      <p class="mainBold"><a name="JBoss_Example"></a>Example (JBoss 3.0)</p>
-      <p class="mainNormal">The <a href="http://www.jboss.org">JBoss</a> server software provides a Java
-	  run-time environment that can be used for JSP and J2EE applications. In this use, it often needs to
-	  be run as a Windows NT System Service, for which the JavaService utility is designed.
-	  Depending on configuration, JBoss may require that an associated database server is already running, which
-	  should be set up as a Windows NT Service dependency, with the example below set up against the MySql database.
-	  {JDK_HOME} is the location of your JDK and {JBOSS_BIN} is the location of your JBoss binaries installation.
-	  These instructions are based on information in the JBoss 3.0 quick-start guide,
-	  but are in any case provided 'as is'.</p>
-      <ol class="mainNormal">
-        <li>Copy the JavaService.exe file into the {JBOSS_BIN} directory as JBossService.exe.</li>
-        <li>Start a command prompt and change to the directory {JBOSS_BIN}.</li>
-        <li>Run the following command:<br>
-          <span class="textCode">JBossService.exe -install JBoss<br>
-			{JDK_HOME}\jre\bin\{hotspot|server|classic}\jvm.dll<br>
-			-Djava.class.path={JDK_HOME}\lib\tools.jar;{JBOSS_BIN}\run.jar<br>
-			-start org.jboss.Main<br>
-			-stop org.jboss.Main -method systemExit<br>
-			-out {JBOSS_BIN}\stdout.log<br>
-			-err {JBOSS_BIN}\stderr.log<br>
-			-current {JBOSS_BIN}<br>
-			-depends mysql<br>
-			-manual<br>
-			-overwrite</span> </li>
-        <li>To remove the registered service, run the following command from the same directory:<br>
-          <span class="textCode">JBossService.exe -uninstall JBoss</span><br> </li>
-      </ol>
-      <p class="mainNormal">The JBoss service can then be started by issuing the following command,
-	   which will also start the MySql service beforehand if it is not already running:<br>
-	  <span class="textCode">net start jboss</span></p>
-      <p class="mainNormal">The service can then be stopped by issuing the following command:<br>
-	  <span class="textCode">net stop jboss</span></p>
 	  
     </td>
   </tr>
