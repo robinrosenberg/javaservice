@@ -191,12 +191,11 @@ used around an parameters that contain spaces to avoid run-time failures.
 <h5>Example Command</h5>
       <p >A simple example might look like the following:</p>
       <blockquote> 
-        <p class="mainCode">JavaService.exe -install &quot;My Service&quot; c:\jdk\jre\bin\classic\jvm.dll 
-          -Djava.class.path=c:\app\classes.jar -start com.my.ExampleClass -err 
-          c:\app\stderr.txt</p>
+        <p class="mainCode">JavaService.exe -install &quot;My Service&quot; c:\j2sdk\jre\bin\server\jvm.dll 
+          -Djava.class.path=c:\app\classes.jar -start&nbsp;com.my.ExampleClass -err&nbsp;c:\app\stderr.txt</p>
       </blockquote>
       <p >This would create a service that, when started, would 
-        create a JVM from the JDK in c:\jdk setting the classpath to be c:\app\classes.jar.
+        create a JVM from the JDK in c:\j2sdk using a classpath set to be c:\app\classes.jar.
         It would then call the main method of the com.my.ExampleClass class with 
         a String array of length 0 (no parameters). Anything written to System.err 
         would be redirected into the file c:\app\stderr.txt.<br>
@@ -217,48 +216,115 @@ would be clearer than two entries for <code>JavaService.exe</code> if renaming i
 
 <h4>Starting a Service</h4>
 
+<p>
+Once a service has been installed with a given name, there are three ways in which service execution may be started.
+</p>
+
+<h5>Automatic Startup</h5>
+
+<p>
+If a service is specified with <em>automatic</em> startup, it will be executed when the Windows system is booted and started up.
+Automatic startup mode is the default when installing services using JavaService. This can be overridden with the <code>-manual</code>
+option on the install command. It may also be changed using the Windows administrative tools, to switch from <em>automatic</em> to
+<em>manual</em> startup mode.
+</p>
+
+<h5>Net Start Command</h5>
+
+<p>
+The standard Windows command for starting system services is the 'net start' command.
+This can be issued from a Windows prompt, specifying the service name as shown in the following example:
+<br>
+<code>net start myservice</code>
+</p>
+
+<h5>Service Management Tool</h5>
+
+<p>
+Windows provides a system management utility to provide control of system services from a graphical front-end.
+This is available from the Start Menu or Control Panel <em>Administrative Tools</em> list, as the <em>Service</em> utility.
+</p>
+<p>
+This utility lists all configured services, indicating their startup mode and current status.
+Tasks and menu options are available to start or stop service execution, or to disable a service entirely.
+</p>
+
 <h4>Stopping a Service</h4>
+
+<p>
+There are two ways in which a currently executing service may be stopped.
+</p>
+
+<h5>Net Stop Command</h5>
+
+<p>
+The standard Windows command for stopping executiong of system services is the 'net stop' command.
+This can be issued from a Windows prompt, specifying the service name as shown in the following example:
+<br>
+<code>net stop myservice</code>
+</p>
+
+<h5>Service Management Tool</h5>
+
+<p>
+The Windows <em>Services</em> utility is available from the Start Menu or Control Panel.
+It displays the status of all configured services and provides tasks and menu options
+to stop services that are currently running within the system.
+</p>
 
 
 <h4>Removing a Service</h4>
-      <p class="mainBold"><a name="UnInstalling"></a>UnInstalling</p>
-      <ol >
-        <li>Start a command prompt and change to the directory where the JavaService.exe 
-          is located.</li>
-        <li>Type <span class="textCode">'JavaService.exe -uninstall'</span> followed 
-          by the name of the service.</li>
-      </ol>
+
+<p>
+JavaService provides a command to enable configuration of a Java service to be correctly removed from the system.
+</p>
+<p>
+From a Windows command prompt, or a suitably defined script file, enter the command:
+<br>
+<code>JavaService -uninstall <i>service_name</i></code>
+<br>
+Where:
+</p>
+<ul>
+	<li><i>service_name</i> (mandatory) - The name of the service that is to be removed.<br>
+	  <br>
+	</li>
+</ul>
+
 
 <h4>Version Number Query</h4>
 
-      <p >There are two ways to determine the version number of this program.
-	  <br>First:</p>
-      <ol >
-        <li>Start a command prompt and change to the directory where the JavaService.exe 
-          is located.</li>
-        <li>Type <span class="textCode">'JavaService.exe -version'</span> 
-          and the program will display version and copyright information.</li>
-      </ol>
-      <p >Alternatively:</p>
-      <ol >
-	  <li>Locate and select the file <em>JavaService.exe</em> in Windows Explorer.</li>
-      <li>View the properties of this executable file by either pressing <em>Alt+Enter</em>
-		  or by using the right-click menu and selecting <em>Properties</em> from the list.</li>
-	 <li>The version number and copyright information for the program can then be viewed from the property tabs
-		  displayed by Windows.</li>
-      </ol>
+<p>
+The version number of the JavaService software is available using either of two methods on the Windows platform.
+</p>
+<p>
+One method is to enter the command
+<code>JavaService -version</code>
+<br>
+when the program will display version and copyright information.
+</p>
+
+<p>
+An alternative method is to locate and select the <em>JavaService.exe</em> file in Windows Explorer and select
+the <em>Properties</em> option from the right-click menu, or press <em>Alt+Enter</em> as a shortcut.
+<br>
+The version number and copyright information for the program can then be viewed from the property tabs
+displayed by Windows.
+</p>
+
 
 <h3>Registry Settings</h3>
 
-      <p >JavaService stores the configuration information for 
-        installed services in the registry. The location is </p>
-      <blockquote> 
-        <p >HKEY_LOCAL_MACHINE\ SYSTEM\ CurrentControlSet\ Services\ 
-          {SERVICE_NAME}\ Parameters</p>
-      </blockquote>
-      <p >The following keys are used and may be changed after 
-        service installation to modify the behavior of the service.</p>
-      <blockquote> 
+<p >JavaService stores the configuration information for installed services in the Windows system registry,
+under the location:
+</p>
+<p>
+<code>HKEY_LOCAL_MACHINE\ SYSTEM\ CurrentControlSet\ Services\ {SERVICE_NAME}\ Parameters</code>
+</p>
+<p>
+The following keys are used and may be changed after service installation to modify the behaviour of the service.
+</p>
+<blockquote> 
         <p >Current Directory - The current working directory 
           for the service.</p>
         <p >JVM Library - The location of the jvm.dll library 
@@ -293,19 +359,31 @@ would be clearer than two entries for <code>JavaService.exe</code> if renaming i
           be redirected. If this key is absent, System.out will not be redirected.</p>
         <p >Shutdown Timeout - The number of milliseconds to allow for
 		the Java Stop method to complete, before timeout and JVM forced termination.</p>
-      </blockquote>
+</blockquote>
 
 <h3>Event Log Messages</h3>
 
-      <p >JavaService logs both informational events and errors 
-        into the Application portion of the NT Event Log. Informational messages 
-        include a message when the service is started and one when it is stopped. 
-        Error messages may be logged because of a configuration problem or other 
-        system error. If you are having trouble getting JavaService to run your 
-        application, you should first check the Application portion of the Event 
-        Log to see if any errors were reported. Additionally you can check the 
-        redirected System.err file, as any Java exceptions will be written there 
-        by the Virtual Machine.</p>
+<p>
+JavaService logs both informational events and errors 
+into the Application portion of the Windows Event Log.
+</p>
+<p>
+Informational messages record events when the service is started and one when it is stopped.
+Error messages may be logged because of a configuration problem or other system error.
+</p>
+<p>
+If you are having trouble getting JavaService to run your 
+application, you should first check the Application portion of the Event 
+Log to see if any errors were reported. Additionally you can check the 
+redirected System.err file, as any Java exceptions will be written there 
+by the Virtual Machine of the run-time environment.
+</p>
+<p>
+Note that if the JavaService executable used at service installation is deleted from the system,
+the content of the event log messages cannot be displayed by the Event Viewer. Instead, the
+message id value will be shown with some Microsoft error text, plus any parameter values that
+would normally be included in the formatted message text.
+</p>
 
 <p>&nbsp;</p>	  
 
