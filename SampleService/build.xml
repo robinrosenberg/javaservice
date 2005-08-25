@@ -45,7 +45,8 @@
 			<fileset file="${zipfile}"/>
 			<fileset file="${zipfile}.MD5"/>
 			<fileset file="${jarfile}"/>
-			<fileset dir="${logdir}" includes="*.txt" />
+			<fileset dir="${logdir}/html" />
+			<fileset dir="${logdir}" includes="*.txt, *.xml, *.log" />
 		</delete>
 
 	</target>
@@ -78,17 +79,37 @@
 
 
 	<target name="test" depends="build" description="Invoke unit tests against Java code">
+
+		<delete includeEmptyDirs="true" quiet="true">
+			<fileset dir="${logdir}/html" />
+			<fileset dir="${logdir}" includes="*.txt, *.xml, *.log" />
+		</delete>
+
 		<mkdir dir="${logdir}" />
 
-		<junit printsummary="yes" haltonfailure="true">
-			<formatter type="plain" />
+		<junit printsummary="yes" showoutput="false" haltonfailure="false" haltonerror="false" failureproperty="unit.tests.failed" dir="${logdir}" fork="true" >
+			<formatter type="xml" />
 			<classpath>
 				<pathelement location="${bindir}"/>
 			</classpath>
 			<test name="org.objectweb.javaservice.test.TestEntryPoints" todir="${logdir}" />
 		</junit>
+		
+		<junitreport todir="${logdir}">
+			<fileset dir="${logdir}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report format="frames" todir="${logdir}/html"/>
+		</junitreport>
 
-		<echo message="Unit tests completed successfully for SampleService code" />
+		<fail message="Unit tests failed for SampleService, see generated HTML report">
+			<condition>
+				<isset property="unit.tests.failed" />
+			</condition>
+		</fail>
+		
+		<echo message="Unit tests completed successfully for SampleService. HTML report generated." />
+
 	</target>
 
 
