@@ -47,16 +47,6 @@ public:
 	~ServiceParameters();
 
 	//
-	// Load parameters based on arguments supplied to install command
-	//
-	bool loadFromArguments(int argc, char* argv[]);
-	
-	//
-	// Load parameters from registry, based on service name
-	//
-	bool readFromRegistry(const char* serviceName);
-
-	//
 	// Data members all have read-only get accessors and copy-type set modifiers
 	//
 
@@ -179,10 +169,41 @@ private:
 };
 
 
+// factory class to create/populate instances of ServiceParameters objecs
+
+class ServiceParametersFactory
+{
+public:
+
+	//
+	// Load parameters based on arguments supplied to install command
+	// Returns null pointer if load fails (i.e. arguments not valid)
+	//
+	static ServiceParameters* createFromArguments(int argc, char* argv[]);
+	
+	//
+	// Load parameters from registry, based on service name
+	// Returns null pointer if load fails (i.e. service not found)
+	//
+	static ServiceParameters* createFromRegistry(const char* serviceName);
+
+
+private:
+
+	// private access copy functions, not implemented / not used
+	ServiceParametersFactory(const ServiceParametersFactory& other);
+	ServiceParametersFactory& operator=(const ServiceParametersFactory& other);
+	ServiceParametersFactory(); // same for default ctor - don't create any
+};
+
+
+
+
 // output stream handler, gives formatted output of object contents
 
 class ostream;
 
 ostream& operator<< (ostream& os, const ServiceParameters&);
+
 
 #endif // __SERVICE_PARAMETERS_H__

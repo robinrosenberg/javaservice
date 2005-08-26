@@ -48,20 +48,19 @@ int QueryCommand::execute()
 	}
 	else if (isInstalled)
 	{
-		ServiceParameters* serviceParams = new ServiceParameters();
+		ServiceParameters* serviceParams = ServiceParametersFactory::createFromRegistry(getServiceName());
 
-		bool gotConfig = serviceParams->readFromRegistry(getServiceName());
+		bool gotConfig = (serviceParams != NULL);
 
 		if (gotConfig)
 		{
 			cout << (*serviceParams);
+			delete serviceParams;
 		}
 		else
 		{
 			cout << "Failed to load service parameters from registry, for service '" << getServiceName() << "'" << endl;
 		}
-
-		delete serviceParams;
 	}
 	else
 	{

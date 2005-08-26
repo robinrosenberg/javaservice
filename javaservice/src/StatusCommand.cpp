@@ -59,14 +59,13 @@ int StatusCommand::execute()
 
 		cout << getServiceName() << " " << serviceStatusText << endl;
 
-		ServiceParameters* serviceParams = new ServiceParameters();
+		ServiceParameters* serviceParams = ServiceParametersFactory::createFromRegistry(getServiceName());
 
-		bool gotConfig = serviceParams->readFromRegistry(getServiceName());
-
-		delete serviceParams;
+		bool gotConfig = (serviceParams != NULL);
 
 		if (gotConfig)
 		{
+			delete serviceParams;
 			cout << "Service configuration parameters are defined in the registry" << endl;
 		}
 		else

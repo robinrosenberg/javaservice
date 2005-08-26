@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -147,14 +147,18 @@ ProcessGlobals::~ProcessGlobals()
 
 bool ProcessGlobals::loadServiceParameters()
 {
-	serviceParams = new ServiceParameters();
+	ServiceParameters* params = ServiceParametersFactory::createFromRegistry(serviceName);
 
-	bool gotParams = serviceParams->readFromRegistry(serviceName);
+	bool gotParams = (params != NULL);
 
-	if (!gotParams)
+	if (gotParams)
 	{
-		delete serviceParams;
-		serviceParams = NULL;
+		serviceParams = params; // save created instance for use globally
+	}
+	else
+	{
+		delete params;
+		params = NULL;
 	}
 
 	return gotParams;

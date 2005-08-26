@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -105,9 +105,21 @@ int InstallCommand::execute()
 
 bool InstallCommand::validateParameters(int servArgc, char* servArgv[])
 {
-	serviceParameters = new ServiceParameters();
+	ServiceParameters* params = ServiceParametersFactory::createFromArguments(servArgc, servArgv);
 
-	return serviceParameters->loadFromArguments(servArgc, servArgv);
+	bool gotParams = (params != NULL);
+
+	if (gotParams)
+	{
+		serviceParameters = params; // save the created object for this command
+	}
+	else
+	{
+		delete params;
+		params = NULL;
+	}
+
+	return gotParams;
 }
 
 

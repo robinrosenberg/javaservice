@@ -151,6 +151,10 @@ SOURCE=.\ServiceParameters.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ServiceParametersFactory.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StatusCommand.cpp
 # End Source File
 # Begin Source File
