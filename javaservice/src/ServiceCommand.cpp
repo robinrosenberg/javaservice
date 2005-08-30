@@ -46,7 +46,7 @@ void ServiceCommand::printErrorMessage(int errorCode)
 {
 	LPVOID lpMsgBuf;
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS, NULL, errorCode, MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL);
-	cerr << lpMsgBuf << endl;
+	cerr << ((const char*)lpMsgBuf) << endl;
 	LocalFree(lpMsgBuf);
 }
 
