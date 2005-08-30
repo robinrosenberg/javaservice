@@ -81,12 +81,12 @@ used around an parameters that contain spaces to avoid run-time failures.
 	  2 SDK, this is usually {JDK_HOME}\jre\bin\classic\jvm.dll or {JDK_HOME}\jre\bin\hotspot\jvm.dll.<br>
 	  <br>
 	</li>
-	<li><i>jvm_option</i>* (optional) - Optionally specify any necessary 
+	<li><i>jvm_option</i>* (optional) - To specify any  
 	  parameters to pass to the JVM upon invocation. These may include 
-	  thing such as &quot;-Djava.class.path=&quot; to specify a classpath 
+	  things such as &quot;-Djava.class.path=&quot; to specify a classpath 
 	  or &quot;-Xmx128m&quot; to specify a maximum heap size of 128MB. 
 	  Any parameters that you need to use when invoking the java.exe command 
-	  tool should be specified here. There is no limit to the number of 
+	  tool should be specified here. There is no fixed limit to the number of 
 	  parameters specified.<br>
 	  <br>
 	</li>
@@ -174,11 +174,13 @@ used around an parameters that contain spaces to avoid run-time failures.
 	</li>
 	<li>-user<i> user_name</i> (optional) - Specify the Windows domain username to be
 	used when running the service (also requires that the password parameter is specified).<br>
-	Note that this should generally be specified in Windows 2000 Active Directory style (i.e.&nbsp;johndoe@foobar.com)<br>
+	Local user accounts are specified as <i>.\user_name</i> whereas domain accounts may be
+	specified as either <i>domain\user_name</i> or <i>user_name@domain</i> (the latter form has
+	been required on some systems to avoid reports of 'I/O Operation in progress' errors).<br>
 	<br>
 	</li>
 	<li>-password<i> password</i> (optional) - Specify the Windows password associated with
-	the domain username specified for use when running the service (specify with user parameter).<br>
+	the domain username specified for use when running the service (required if the user parameter is specified).<br>
 	<br>
 	</li>
 	<li>-append <i>or</i> -overwrite - Optional parameter indicating whether output
