@@ -17,14 +17,64 @@
 <h2>JavaService - Release History</h2>
 
 <h3>Latest Release</h4>
-<h4>Version 2.0.4 - 21st August 2005</h4>
+<h4>Version 2.0.5 - 30th August 2005</h4>
 
 <p>
 This release of JavaService is based on the new Version 2 code base.
 <br>
+There has only been one reported problem from Version 2 code, but until further testing is
+completed this should still be viewed as <b>release candidate</b> code...
+</p>
+
+<h5>New Features</h5>
+
+<p>
+No new features included in this release - internal changes only.
+</p>
+
+<h5>Bug Fixes</h5>
+
+<p>
+<strong>Error Message Output</strong>
+<br>
+A problem was detected (not reported) with output of error messages when failing to install a service.
+This release fixes this problem so that the correct error message text is displayed on any failure.
+</p>
+
+<p>
+<strong>Overlapped I/O operation in progress</strong>
+<br>
+Some minor code changes have been incorporated towards finding and resolving the cause of this
+intermittent problem.
+</p>
+
+<h5>Known Problems</h5>
+
+<p>
+There has been a single report of a '<i>Overlapped I/O operation in progress</i>' error message when attempting
+to install the CruiseControl service. This does not appear in testing with the SampleService code and
+is being investigated further. Some changes have been included in this release to work towards a fix.
+</p>
+
+<h5>Compatibility</h5>
+
+<p>
+Backwards-compatible with V2.0.4 and V1.2.12 (and earlier) releases of JavaService.
+</p>
+
+
+<h4>Version 2.0.4 - 21st August 2005</h4>
+
+<p>
+This version of JavaService is the first official release to be based on the new Version 2 code base.
+<br>
 Hence it should initially be viewed as 'release candidate' status and not used for production software
 environment until suitable testing and verification has been performed.
 </p>
+
+
+<h5>New Features</h5>
+
 <p>
 This version incorporates refactored code and additional commands, whilst maintaining complete
 backwards compatibility with V1.2 commands and configuration entries. The benefits of the new
@@ -51,8 +101,26 @@ verify internal operation. The interface at the Windows Service level has been i
 maintaining the same Registry and Java JNI interfaces as used by previous releases of JavaService.
 </p>
 
+<h5>Bug Fixes</h5>
 
-<h3>Previous Release</h3>
+<p>
+There are no specific bug fixes included within this release.
+</p>
+
+<h5>Known Problems</h5>
+
+<p>
+There are no specific bug fixes included within this release.
+</p>
+
+<h5>Compatibility</h5>
+<p>
+Backwards-compatible with V1.2.12 (and earlier) releases of JavaService.
+</p>
+
+
+
+<h3>Previous Stable Release</h3>
 <h4>Version 1.2.12 - 1st August 2005</h4>
 
 <p>
