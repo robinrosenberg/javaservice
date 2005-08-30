@@ -61,6 +61,9 @@ ServiceParameters* ServiceParametersFactory::createFromRegistry(const char* serv
 
 	ServiceParameters* params = new ServiceParameters();
 
+	//TODO - may want some form of locking around access to the registry
+	// to prevent duplicate access (may lead to Overlapped I/O In Progress errors)
+
 	RegistryHandler* registryHandler = new RegistryHandler(serviceName);
 
 	bool populatedOk = registryHandler->readServiceParams(*params);
