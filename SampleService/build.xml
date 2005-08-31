@@ -8,7 +8,7 @@
 	can run the Java application as a Windows NT System Service.
 	</description>
 
-	<property name="version" value="2.0.3"/>
+	<property name="version" value="2.0.6"/>
 	<property name="srcdir" value="./src"/>
 	<property name="bindir" value="./bin"/>
 	<property name="tstdir" value="./test"/>
@@ -17,26 +17,29 @@
 	<property name="jarfile" value="${bindir}/SampleService.jar"/>
 	<property name="zipfile" value="./SampleService-${version}.zip"/>
 
-	<target name="usage" description="Provides information on Ant usage">
+	<target name="init">
+		<echo message="SampleService build script, Version ${version}" />
+	</target>
+	
+	<target name="usage" depends="init"
+		description="Provides information on Ant usage">
 
 		<echo>
-		
-	This build script can be invoked by ANT as follows:
+This build script can be invoked by ANT for the following targets:
 
-	ant build		(Compiles the Java application and creates JAR archive)
-	ant test		(Invokes unit tests against the Java application code)
-	ant clean		(Deletes earlier log, class, javadoc and zip files)
-	ant docs		(Generates JavaDoc files for the project)
-	ant dist		(Creates zip file containing project release files)
-	ant rebuild		(Performs clean and build steps in turn)
-	ant all			(Performs clean, build, test, docs and dist steps in turn)
-	ant usage		(Displays this help text)
-	ant -projecthelp	(Lists the available targets)
-
+build	(Compiles the Java application and creates JAR archive)
+test	(Invokes unit tests against the Java application code)
+clean	(Deletes earlier log, class, javadoc and zip files)
+docs	(Generates JavaDoc files for the project)
+dist	(Creates zip file containing project release files)
+rebuild	(Performs clean and build steps in turn)
+all		(Performs clean, build, test, docs and dist steps)
+usage	(Displays this help text)
 		</echo>
 	</target>
 
-	<target name="clean" description="Delete any previous build results and log files">
+	<target name="clean" depends="init"
+		description="Delete any previous build results and log files">
 
 		<delete includeEmptyDirs="true" quiet="true">
 			<fileset dir="${bindir}"
@@ -51,7 +54,8 @@
 
 	</target>
 
-	<target name="build" description="Generate class and jar files for sample service">
+	<target name="build" depends="init"
+		description="Generate class and jar files for sample service">
 
 		<javac srcdir="${srcdir}" destdir="${bindir}" debug="on" />
 
@@ -78,7 +82,8 @@
 	</target>
 
 
-	<target name="test" depends="build" description="Invoke unit tests against Java code">
+	<target name="test" depends="init, build"
+		description="Invoke unit tests against Java code">
 
 		<delete includeEmptyDirs="true" quiet="true">
 			<fileset dir="${logdir}/html" />
@@ -102,18 +107,22 @@
 			<report format="frames" todir="${logdir}/html"/>
 		</junitreport>
 
+
+		<echo message="HTML Unit test report generated in ${logdir}/html." />
+
 		<fail message="Unit tests failed for SampleService, see generated HTML report">
 			<condition>
 				<isset property="unit.tests.failed" />
 			</condition>
 		</fail>
 		
-		<echo message="Unit tests completed successfully for SampleService. HTML report generated." />
+		<echo message="Unit tests completed successfully for SampleService." />
 
 	</target>
 
 
-	<target name="docs" description="Generates JavaDoc html files from the source">
+	<target name="docs" depends="init"
+		description="Generates JavaDoc html files from the source">
 
 		<javadoc destdir="${docdir}/api"
 			 author="true"
@@ -134,7 +143,8 @@
 
 	</target>
 
-	<target name="dist" depends="build, docs" description="Creates zip file with Sample Service files for download, and md5 hash">
+	<target name="dist" depends="init, build, docs"
+		description="Creates zip file with Sample Service files for download, and md5 hash">
 
 		<zip destfile="${zipfile}"
 		     basedir="../"
@@ -147,12 +157,14 @@
 	</target>
 
 
-	<target name="rebuild" depends="clean, build" description="Deletes previous build results and regenerate class file(s)">
+	<target name="rebuild" depends="init, clean, build"
+		description="Deletes previous build results and regenerate class file(s)">
 
 	</target>
 
 
-	<target name="all" depends="clean, build, test, docs, dist" description="Deletes previous build results, builds class, javadoc and zip files">
+	<target name="all" depends="init, clean, build, test, docs, dist"
+		description="Deletes previous build results, builds class, javadoc and zip files">
 
 	</target>
 
