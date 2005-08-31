@@ -15,7 +15,8 @@ public class TestEntryPoints extends TestCase
 {
 	private static final String[] NO_ARGS = {};
 	private static final String[] BAD_ARGS = {"unknown"};
-	private static final String[] START_ARGS = {"start"};
+	private static final String[] START_ARGS_SIMPLE = {"start"};
+	private static final String[] START_ARGS_MEMORY = {"start", "memory"};
 	private static final String[] STOP_ARGS = {"stop"};
 
 	public TestEntryPoints()
@@ -40,6 +41,7 @@ public class TestEntryPoints extends TestCase
 		{
 			SampleService.main(NO_ARGS);
 			calledIt = true;
+			assertFalse("Main invoked with no arguments, not running", SampleService.getServiceInstance().isServiceExecuting());
 		}
 		catch (Throwable t)
 		{
@@ -56,6 +58,7 @@ public class TestEntryPoints extends TestCase
 		{
 			SampleService.main(BAD_ARGS);
 			calledIt = true;
+			assertFalse("Main invoked with bad arguments, not running", SampleService.getServiceInstance().isServiceExecuting());
 		}
 		catch (Throwable t)
 		{
@@ -72,6 +75,7 @@ public class TestEntryPoints extends TestCase
 		{
 			SampleService.main(STOP_ARGS);
 			calledIt = true;
+			assertFalse("Main invoked with stop argument, not running", SampleService.getServiceInstance().isServiceExecuting());
 		}
 		catch (Throwable t)
 		{
@@ -81,22 +85,40 @@ public class TestEntryPoints extends TestCase
 		assertTrue("Main entry point with stop argument - when not running", calledIt);
 	}
 
-	public void testMainStartArgs()
+	public void testMainStartArgsSimple()
 	{
 		boolean calledIt = false;
 		try
 		{
 			scheduleStop(3); // end the process that is started below
 
-			SampleService.main(START_ARGS);
+			SampleService.main(START_ARGS_SIMPLE); // returns when stopped
 			calledIt = true;
 		}
 		catch (Throwable t)
 		{
-			fail("Failed during processing of SampleService.main\n" + t);
+			fail("Failed during processing of SampleService.main (simple)\n" + t);
 		}
 
-		assertTrue("Main entry point with stop argument - when not running", calledIt);
+		assertTrue("Main entry point with start argument", calledIt);
+	}
+
+	public void testMainStartArgsMemory()
+	{
+		boolean calledIt = false;
+		try
+		{
+			scheduleStop(3); // end the process that is started below
+
+			SampleService.main(START_ARGS_MEMORY); // returns when stopped
+			calledIt = true;
+		}
+		catch (Throwable t)
+		{
+			fail("Failed during processing of SampleService.main (memory)\n" + t);
+		}
+
+		assertTrue("Main entry point with start+memory argument", calledIt);
 	}
 
 	public void testStartEntryPoint()
@@ -104,9 +126,9 @@ public class TestEntryPoints extends TestCase
 		boolean calledIt = false;
 		try
 		{
-			scheduleStop(3); // end the process that is started below
+			scheduleStop(5); // end the thread that gets started below
 
-			SampleService.serviceStart(START_ARGS);
+			SampleService.serviceStart(START_ARGS_SIMPLE); // returns when stopped
 			calledIt = true;
 		}
 		catch (Throwable t)
@@ -127,8 +149,10 @@ public class TestEntryPoints extends TestCase
 		boolean calledIt = false;
 		try
 		{
+			assertTrue("Stop to be invoked, should be running", SampleService.getServiceInstance().isServiceExecuting());
 			SampleService.serviceStop(STOP_ARGS);
 			calledIt = true;
+			assertFalse("Stop invoked, no longer running", SampleService.getServiceInstance().isServiceExecuting());
 		}
 		catch (Throwable t)
 		{
