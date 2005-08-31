@@ -61,18 +61,6 @@ public class SampleService
 		println(timestamp() + " " + str);
 	}
 
-	private void println(String str)
-	{
-		System.out.println(str);
-		System.out.flush();
-	}
-
-
-	private void trace(String str)
-	{
-		println(new Date() + " " + str);
-	}
-
 	/**
 	 * Default entry point if class is run as a standard application.
 	 * This outputs a brief informational message to track use of the function.
