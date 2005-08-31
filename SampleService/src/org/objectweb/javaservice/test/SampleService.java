@@ -39,6 +39,18 @@ package org.objectweb.javaservice.test;
 public class SampleService
 {
 
+	private void println(String str)
+	{
+		System.out.println(str);
+		System.out.flush();
+	}
+
+
+	private void trace(String str)
+	{
+		println(new Date() + " " + str);
+	}
+
 	/**
 	 * Default entry point if class is run as a standard application.
 	 * This outputs a brief informational message to track use of the function.
@@ -49,26 +61,27 @@ public class SampleService
 	 */
 	public static void main(String[] args)
 	{
-		System.out.println("SampleService application main entry point invoked...");
+		trace("SampleService application main entry point invoked...");
 		
 		if (args.length == 0)
 		{
-			System.out.println("Doing nothing, no command-line parameter(s) specified");
+			println("Doing nothing, no command-line parameter(s) specified");
 		}
 		else if ("start".equalsIgnoreCase(args[0]))
 		{
-			System.out.println("Start parameter specified");
+			println("Start parameter specified");
 			serviceStart(args);
 		}
 		else if ("stop".equalsIgnoreCase(args[0]))
 		{
-			System.out.println("Stop parameter specified");
+			println("Stop parameter specified");
 			serviceStop(args);
 		}
 		else
 		{
-			System.out.println("Command-line parameter '" + args[0] + "' not recognised, doing nothing");
+			println("Command-line parameter '" + args[0] + "' not recognised, doing nothing");
 		}
+		trace("SampleService application main entry point completed.");
 	}
 
 	/**
