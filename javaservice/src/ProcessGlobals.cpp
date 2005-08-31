@@ -31,6 +31,84 @@
 #include "ProcessGlobals.h"
 #include "EventLogger.h"
 #include "ServiceParameters.h"
+#include "ServiceLogger.h"
+
+
+
+
+//
+// [singleton] static process data declarations used in operation of the service
+//
+
+ProcessGlobals* ProcessGlobals::globalsInstance = NULL;
+
+//TODO - lock required around creator/accessor of this object instance
+
+
+// accessor for creation of process global data singleton, checks for duplicate initialisation
+ProcessGlobals* ProcessGlobals::createInstance(const char* serviceName, LPHANDLER_FUNCTION serviceHandlerFunction)
+{
+	if (globalsInstance != NULL)
+	{
+		ServiceLogger::write("Attempt to create and initialise duplicate instance of ProcessGlobals\n");
+		// could also check to see service name is the same (assert), will be the same - or null!
+	}
+	else
+	{
+		globalsInstance = new ProcessGlobals();
+
+		if (!globalsInstance->initialise(serviceName, serviceHandlerFunction))
+		{
+			ServiceLogger::write("Failed to initialise ProcessGlobals singleton instance\n");
+			delete globalsInstance;
+			globalsInstance = NULL; // application will fail with access violation next...
+		}
+	}
+
+	return globalsInstance;
+}
+
+
+// general accessor for use of process global data singleton, checks for prior initialisation
+ProcessGlobals* ProcessGlobals::getInstance()
+{
+	if (globalsInstance == NULL)
+	{
+		ServiceLogger::write("Attempt to use ProcessGlobals before initialisation performed\n");
+		// until locking implemented, this could return reference before values in object are set up
+	}
+
+	return globalsInstance; // expect application to crash with access violation next...
+}
+
+
+// release any event and event source handles and destroy the singleton
+
+void ProcessGlobals::destroyInstance()
+{
+	if (globalsInstance == NULL)
+	{
+		ServiceLogger::write("Invalid attempt to delete uninitialised ProcessGlobals instance (ignored)\n");
+	}
+	else
+	{
+		globalsInstance->cleanUp();
+		delete globalsInstance;
+		globalsInstance = NULL;
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*

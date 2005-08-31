@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -42,13 +42,17 @@ class ProcessGlobals
 {
 public:
 
-	ProcessGlobals();
 
-	bool initialise(const char* serviceName, LPHANDLER_FUNCTION serviceHandlerFunction);
+	// accessor for creation of process global data singleton, checks for duplicate initialisation
+	static ProcessGlobals* createInstance(const char* serviceName, LPHANDLER_FUNCTION serviceHandlerFunction);
 
-	void cleanUp();
+	// general accessor for use of process global data singleton, checks for prior initialisation
+	static ProcessGlobals* getInstance();
 
-	~ProcessGlobals();
+	// release any event and event source handles and destroy the singleton
+	static void destroyInstance();
+
+
 
 
 
@@ -93,6 +97,19 @@ public:
 
 private:
 
+	// [singleton] static process data declarations used in operation of the service
+	static ProcessGlobals* globalsInstance;
+
+
+	ProcessGlobals();
+
+	bool initialise(const char* serviceName, LPHANDLER_FUNCTION serviceHandlerFunction);
+
+	void cleanUp();
+
+	~ProcessGlobals();
+
+
 
 
 	HANDLE createEventHandle();
@@ -100,6 +117,7 @@ private:
 	void closeEventHandle(HANDLE* hEvent);
 
 	bool loadServiceParameters();
+
 
 
 	const char* serviceName;

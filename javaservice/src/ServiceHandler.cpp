@@ -113,79 +113,6 @@ bool ServiceHandler::invokeWindowsService()
 
 
 
-
-
-
-
-
-
-
-//
-// [singleton] static process data declarations used in operation of the service
-//
-
-static ProcessGlobals* globalsInstance = NULL;
-
-//TODO - lock required around creator/accessor of this object instance
-
-
-// accessor for creation and use of process global data, checks for duplicate initialisation
-static ProcessGlobals* getGlobalsInstance(const char* serviceName)
-{
-	if (globalsInstance != NULL)
-	{
-		ServiceLogger::write("Attempt to create and initialise duplicate instance of ProcessGlobals\n");
-		// could also check to see service name is the same (assert), will be the same - or null!
-	}
-	else
-	{
-		globalsInstance = new ProcessGlobals();
-
-		if (!globalsInstance->initialise(serviceName, ServiceControlHandler))
-		{
-			ServiceLogger::write("Failed to initialise ProcessGlobals singleton instance\n");
-			delete globalsInstance;
-			globalsInstance = NULL; // application will fail with access violation next...
-		}
-	}
-
-	return globalsInstance;
-}
-
-
-// general accessor for use of process global data, checks for prior initialisation
-static ProcessGlobals* getGlobalsInstance()
-{
-	if (globalsInstance == NULL)
-	{
-		ServiceLogger::write("Attempt to use ProcessGlobals before initialisation performed\n");
-		// until locking implemented, this could return reference before values in object are set up
-	}
-
-	return globalsInstance; // expect application to crash with access violation next...
-}
-
-
-	// release any event and event source handles
-
-static void deleteGlobalsInstance()
-{
-	if (globalsInstance == NULL)
-	{
-		ServiceLogger::write("Invalid attempt to delete uninitialised ProcessGlobals instane\n");
-	}
-	else
-	{
-		globalsInstance->cleanUp();
-		delete globalsInstance;
-		globalsInstance = NULL;
-	}
-
-}
-
-
-
-
 static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 {
 	const char* const serviceName = lpszArgv[0];
@@ -199,7 +126,7 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 	// service name provided as first argument when background process is run
 	// so supply that and the control handler function for initialisation
 
-	ProcessGlobals* processGlobals = getGlobalsInstance(serviceName);
+	ProcessGlobals* processGlobals = ProcessGlobals::createInstance(serviceName, ServiceControlHandler);
 
 	if (processGlobals == NULL)
 	{
@@ -270,9 +197,7 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 
 	// release any event and event source handles
 
-	processGlobals->cleanUp();
-	delete processGlobals;
-	processGlobals = NULL;
+	ProcessGlobals::destroyInstance();
 }
 
 
@@ -289,7 +214,7 @@ static void WINAPI ServiceControlHandler(DWORD opcode)
 		{
 			ServiceLogger::write("Service control stop/shutdown requested\n");
 
-			ProcessGlobals* processGlobals = getGlobalsInstance();
+			ProcessGlobals* processGlobals = ProcessGlobals::getInstance();
 			processGlobals->logServiceEvent(EVENT_SERVICE_STOPPING);
 
 			// Tell the service manager that stop is pending, and may take longer than the usual 20-sec shutdown
@@ -326,7 +251,7 @@ static void WINAPI ServiceControlHandler(DWORD opcode)
 	default:
 		{
 			ServiceLogger::write("Service control pause/continue/interrogate requested\n");
-			ProcessGlobals* processGlobals = getGlobalsInstance();
+			ProcessGlobals* processGlobals = ProcessGlobals::getInstance();
 			processGlobals->setServiceStatus();
 		}
 	}
@@ -348,7 +273,7 @@ static HANDLE createThread(LPTHREAD_START_ROUTINE threadFunction, const char* th
 	if (hThread == NULL)
 	{
 		ServiceLogger::write("Failed to create thread\n");
-		ProcessGlobals* processGlobals = getGlobalsInstance();
+		ProcessGlobals* processGlobals = ProcessGlobals::getInstance();
 		logFunctionError(processGlobals->getEventSource(), "CreateThread");
 	}
 
@@ -364,7 +289,7 @@ static DWORD WINAPI StartServiceThread(LPVOID lpParam)
 
 	// get service configuration parameters from registry
 
-	ProcessGlobals* processGlobals = getGlobalsInstance();
+	ProcessGlobals* processGlobals = ProcessGlobals::getInstance();
 	const ServiceParameters* serviceParams = processGlobals->getServiceParameters();
 
 	if (serviceParams == NULL)
@@ -450,7 +375,7 @@ static bool setExtendedPath(const char* pathExt)
 		return true; // do nothing, but treat as success
 	}
 
-	ProcessGlobals* processGlobals = getGlobalsInstance();
+	ProcessGlobals* processGlobals = ProcessGlobals::getInstance();
 
 	//Get the length of the current path.
 	const DWORD currentPathLength = GetEnvironmentVariable("PATH", NULL, 0);
@@ -504,7 +429,7 @@ static DWORD WINAPI StopServiceThread(LPVOID lpParam)
 
 	// get service configuration parameters from registry
 
-	ProcessGlobals* processGlobals = getGlobalsInstance();
+	ProcessGlobals* processGlobals = ProcessGlobals::getInstance();
 	const ServiceParameters* serviceParams = processGlobals->getServiceParameters();
 
 	if (serviceParams == NULL)
@@ -554,7 +479,7 @@ static DWORD WINAPI TimeoutStopThread(LPVOID lpParam)
 {
 	ServiceLogger::write("Timeout Stop Thread invoked\n");
 
-	ProcessGlobals* processGlobals = getGlobalsInstance();
+	ProcessGlobals* processGlobals = ProcessGlobals::getInstance();
 
 	//Sleep for required number of seconds.
 	Sleep(processGlobals->getServiceParameters()->getShutdownMsecs());
@@ -581,7 +506,7 @@ void ExitHandler(int code)
 {
 	ServiceLogger::write("Exit Handler invoked\n");
 
-	ProcessGlobals* processGlobals = getGlobalsInstance();
+	ProcessGlobals* processGlobals = ProcessGlobals::getInstance();
 
 	//TODO - use specific message formatting function, instead of sprintf
 
