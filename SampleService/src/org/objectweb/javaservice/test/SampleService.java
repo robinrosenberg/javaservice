@@ -31,6 +31,10 @@
  */
 package org.objectweb.javaservice.test;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * This class is provided as an example of how a Java application may be
  * run as a Windows System Service (aka daemon, in Unix-speak) using the
@@ -38,6 +42,24 @@ package org.objectweb.javaservice.test;
  */
 public class SampleService
 {
+	
+	private static DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy hh:mm:ss.SS");
+
+	private static void println(String str)
+	{
+		System.out.println(str);
+		System.out.flush();
+	}
+
+	private static String timestamp()
+	{
+		return dateFormat.format(new Date());
+}
+
+	private static void trace(String str)
+	{
+		println(timestamp() + " " + str);
+	}
 
 	private void println(String str)
 	{
@@ -89,12 +111,12 @@ public class SampleService
 	 */	
 	public static void outputJvmDetails()
 	{
-		System.out.println("JVM " + 
-							System.getProperty("java.vm.vendor", "{vm.vendor}")
-							+ " " +
-							System.getProperty("java.vm.name", "{vm.name}")
-							+ " " +
-							System.getProperty("java.vm.version", "{vm version}"));
+		println("JVM " + 
+				System.getProperty("java.vm.vendor", "{vm.vendor}")
+				+ " " +
+				System.getProperty("java.vm.name", "{vm.name}")
+				+ " " +
+				System.getProperty("java.vm.version", "{vm version}"));
 	}
 
 	/**
@@ -107,13 +129,13 @@ public class SampleService
 		final long freeBytes = rt.freeMemory();
 		rt = null;
 
-		System.out.println("Heap Size " +
-							kBytes(totalBytes)
-							+ " total, free "
-							+ kBytes(freeBytes)
-							+ " (used "
-							+ kBytes(totalBytes - freeBytes)
-							+ ")");    
+		trace("Heap Size " +
+				kBytes(totalBytes)
+				+ " total, free "
+				+ kBytes(freeBytes)
+				+ " (used "
+				+ kBytes(totalBytes - freeBytes)
+				+ ")");    
 	}
 
 	/**
@@ -145,7 +167,7 @@ public class SampleService
 	 */
 	public static void serviceStart(String[] args)
 	{
-		System.out.println("Service start function invoked...");
+		trace("Service start function invoked...");
 
 		outputJvmDetails();
 		outputHeapDetails();
@@ -162,7 +184,7 @@ public class SampleService
 	 */
 	public static void serviceStop(String[] args)
 	{
-		System.out.println("Service stop function invoked...");
+		trace("Service stop function invoked...");
 
 		getServiceInstance().abort();
 
@@ -174,10 +196,11 @@ public class SampleService
 	private static SampleService serviceInstance = null;
 
 	/** Accessor to get/create the singleton instance when required */	
-	private static synchronized SampleService getServiceInstance()
+	/* package */ static synchronized SampleService getServiceInstance()
 	{
 		if (serviceInstance == null)
 		{
+			trace("Creating singleton instance of SampleService object");
 			serviceInstance = new SampleService();
 		}
 		return serviceInstance;
@@ -210,7 +233,7 @@ public class SampleService
 	 * 
 	 * @return true or false value of the control flag at this point in time
 	 */	
-	private synchronized boolean isServiceExecuting()
+	/* package */ synchronized boolean isServiceExecuting()
 	{
 		return serviceExecuting;
 	}
@@ -228,10 +251,10 @@ public class SampleService
 	private void execute(String[] args)
 	{
 		final boolean useMemory = (args.length > 1);
-		System.out.println("Starting service execution");
+		trace("Starting service execution");
 		if (useMemory)
 		{
-			System.out.println("(Execution loop will exercise memory heap)");
+			println("(Execution loop will exercise memory heap)");
 		}
 
 		
@@ -247,7 +270,7 @@ public class SampleService
 			{
 			}
 		}
-		System.out.println("Ended service execution");
+		trace("Ended service execution");
 	}
 
 	/**
@@ -290,9 +313,9 @@ public class SampleService
 		{
 			outputHeapDetails();
 		}
-		else
+		else // output something, to show that service is still running
 		{
-			System.out.println("Service calculation = " + x);
+			trace("Service calculation = " + x);
 		}
 	}
 
@@ -302,7 +325,7 @@ public class SampleService
 	 */	
 	private void abort()
 	{
-		System.out.println("Aborting service execution");
+		trace("Aborting service execution");
 		setServiceExecuting(false);
 	}
 
