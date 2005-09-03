@@ -143,15 +143,17 @@ usage	(Displays this help text)
 
 	</target>
 
-	<target name="dist" depends="init, build, docs"
+	<target name="dist" depends="init, build, test, docs"
 		description="Creates zip file with Sample Service files for download, and md5 hash">
 
 		<zip destfile="${zipfile}"
 		     basedir="../"
 		     includes="SampleService/**"
-		     excludes="**/*.zip, **/*.log, **/CVS, **/Test*.class"
+		     excludes="**/*.zip, **/*.MD5, **/bin/*.log"
+		     defaultexcludes="yes"
 		     compress="true"
-		     update="false" />
+		     update="false"
+		     comment="Sample Java application code for use with JavaService utility" />
 
 		<checksum file="${zipfile}" />
 	</target>
