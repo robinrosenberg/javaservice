@@ -48,8 +48,15 @@ int VersionCommand::execute()
 void VersionCommand::printVersion()
 {
 	cout << endl
-		 << " JavaService Version " << STRPRODUCTVER << endl
-		 << " (c) 2005 Multiplan Consultants Ltd" << endl
-		 << " See http://javaservice.objectweb.org" << endl
-		 << endl << flush ;
+		 << " JavaService Version " << STRPRODUCTVER
+#ifdef _DEBUG
+		 << " (Debug Build)"
+#endif
+		 << endl
+		 << " (c) 2005 Multiplan Consultants Ltd"
+		 << endl
+		 << " See http://javaservice.objectweb.org"
+		 << endl
+		 << endl
+		 << flush ;
 }
