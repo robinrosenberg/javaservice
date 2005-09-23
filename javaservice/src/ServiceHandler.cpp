@@ -48,7 +48,7 @@
 static const long SERVICE_HINT_EXTRA_MSECS = 3000; // 3 seconds
 
 // Number of milliseconds delay after exit handler has been triggered
-// (no obvious use for this, as it the sleep occurs after the JVM has died)
+// (no obvious use for this, if the sleep occurs after the JVM has died)
 static const long EXIT_HANDLER_TIMEOUT_MSECS = 15000; // 15 seconds
 
 
@@ -115,11 +115,28 @@ bool ServiceHandler::invokeWindowsService()
 
 static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 {
-	const char* const serviceName = lpszArgv[0];
-
-	ServiceLogger::write("ServiceMain invoked (");
-	ServiceLogger::write(serviceName);
+	ServiceLogger::write("ServiceMain function invoked, with ");
+	if (dwArgc == 1)
+	{
+		ServiceLogger::write(" one argument, service name (");
+		ServiceLogger::write(lpszArgv[0]);
+	}
+	else
+	{
+		ServiceLogger::write(dwArgc);
+		ServiceLogger::write(" arguments (");
+		for (DWORD i = 0; i < dwArgc; i++)
+		{
+			if (i > 0)
+			{
+				ServiceLogger::write(", ");
+			}
+			ServiceLogger::write(lpszArgv[i]);
+		}
+	}
 	ServiceLogger::write(")\n");
+
+	const char* const serviceName = lpszArgv[0]; // service main always gets one parameter
 
 	cout << "ServiceMain invoked, with " << dwArgc << " parameters (service " << serviceName << ")" << endl;
 
