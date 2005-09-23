@@ -103,8 +103,11 @@ void logError(HANDLE hEventSource, const char* errText, const char* extraText)
 void logEventMessage(HANDLE hEventSource, const char* messageText, int messageType)
 {
 	
-	ServiceLogger::write("logEventMessage: ");
+	ServiceLogger::write("logEventMessage (type #");
+	ServiceLogger::write(messageType);
+	ServiceLogger::write(") : ");
 	ServiceLogger::write(messageText);
+	ServiceLogger::write(messageType);
 	ServiceLogger::write("\n");
 
 	if (hEventSource != NULL)
@@ -138,6 +141,8 @@ void logFunctionError(HANDLE hEventSource, const char* functionName)
 void logFunctionMessage(HANDLE hEventSource, const char* functionName, const char* messageText)
 {
 	ServiceLogger::write("logFunctionMessage: ");
+	ServiceLogger::write(functionName);
+	ServiceLogger::write(":");
 	ServiceLogger::write(messageText);
 	ServiceLogger::write("\n");
 
