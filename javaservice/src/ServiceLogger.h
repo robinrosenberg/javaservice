@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -43,6 +43,9 @@ public:
 
 	// output text string to the logger output file/device
 	static void write(const char* message);
+
+	// output number as string to the logger output file/device
+	static void write(const int number);
 
 	// specifically close the output log file
 	static void close();

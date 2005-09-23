@@ -78,6 +78,15 @@ void ServiceLogger::write(const char* message)
 }
 
 
+// output number as string to the logger output file/device
+void ServiceLogger::write(const int number)
+{
+	char numBuffer[50];
+	sprintf(numBuffer, "%d", number);
+	getInstance().writeLog(numBuffer);
+}
+
+
 // specifically close the output log file
 void ServiceLogger::close()
 {
