@@ -32,6 +32,7 @@
 #include <iostream.h>
 #include "ServiceParameters.h"
 #include "RegistryHandler.h"
+#include "ServiceLogger.h"
 
 
 //
@@ -74,6 +75,7 @@ ServiceParameters* ServiceParametersFactory::createFromRegistry(const char* serv
 	{
 		delete params;
 		params = NULL;
+		ServiceLogger::write("Failed to create service parameters instance from registry definitions");
 	}
 
 	return params;
@@ -95,6 +97,7 @@ ServiceParameters* ServiceParametersFactory::createFromArguments(int argc, char*
 	{
 		delete params;
 		params = NULL;
+		ServiceLogger::write("Failed to create service parameters instance from command line arguments");
 	}
 
 	return params;

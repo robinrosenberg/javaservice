@@ -63,6 +63,10 @@ ProcessGlobals* ProcessGlobals::createInstance(const char* serviceName, LPHANDLE
 			delete globalsInstance;
 			globalsInstance = NULL; // application will fail with access violation next...
 		}
+		else
+		{
+			ServiceLogger::write("Created ProcessGlobals singleton instance\n");
+		}
 	}
 
 	return globalsInstance;
@@ -74,7 +78,7 @@ ProcessGlobals* ProcessGlobals::getInstance()
 {
 	if (globalsInstance == NULL)
 	{
-		ServiceLogger::write("Attempt to use ProcessGlobals before initialisation performed\n");
+		ServiceLogger::write("Attempt to use un-initialised ProcessGlobals singleton instance\n");
 		// until locking implemented, this could return reference before values in object are set up
 	}
 
@@ -88,13 +92,14 @@ void ProcessGlobals::destroyInstance()
 {
 	if (globalsInstance == NULL)
 	{
-		ServiceLogger::write("Invalid attempt to delete uninitialised ProcessGlobals instance (ignored)\n");
+		ServiceLogger::write("Invalid attempt to delete un-initialised ProcessGlobals instance (ignored)\n");
 	}
 	else
 	{
 		globalsInstance->cleanUp();
 		delete globalsInstance;
 		globalsInstance = NULL;
+		ServiceLogger::write("Destroyed ProcessGlobals singleton instance\n");
 	}
 
 }
@@ -152,11 +157,6 @@ bool ProcessGlobals::initialise(const char* _serviceName, LPHANDLER_FUNCTION ser
 	// load service parameters from the registry
 
 	bool initOk = loadServiceParameters();
-
-	if (!initOk)
-	{
-		logFunctionError(hEventSource, "loadServiceParameters (RegQueryValueEx)");
-	}
 
 	// if configured, create the pair of event semaphores to wait on
 
@@ -237,6 +237,7 @@ bool ProcessGlobals::loadServiceParameters()
 	{
 		delete params;
 		params = NULL;
+		ServiceLogger::write("Failed to load service parameters from registry");
 	}
 
 	return gotParams;
