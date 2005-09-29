@@ -32,6 +32,7 @@
 #include "RegistryHandler.h"
 #include "ServiceParameters.h"
 #include "VersionNo.h"
+#include "ServiceLogger.h"
 
 //
 // Local function prototypes
@@ -110,15 +111,16 @@ bool RegistryHandler::writeServiceParams(const ServiceParameters& serviceParams)
 
 	// Create an entry in the registry for this service's parameters.
 
-	const char* serviceKeyName = createServiceKeyName(serviceName);
+	const char* serviceKeyName = createServiceKeyName(serviceName); // temp string
 
 	HKEY hKey = createRegKey(serviceKeyName);
 
-	deleteKeyName(serviceKeyName); // clean up asap
+	deleteKeyName(serviceKeyName); // clean up string asap
 
 	if (hKey == NULL)
 	{
 		written = false; // failed at the first step
+		ServiceLogger::write("Failed to create registry key to write service parameters\n");
 	}
 
 	// Store the software version number, for future interrogation if required
@@ -287,14 +289,15 @@ bool RegistryHandler::writeServiceParams(const ServiceParameters& serviceParams)
 
 bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 {
-	const char* regKeyName = createServiceKeyName(serviceName);
+	const char* regKeyName = createServiceKeyName(serviceName); // temp string
 
 	HKEY hKey = openRegKey(regKeyName);
 
-	deleteKeyName(regKeyName); // clean up asap
+	deleteKeyName(regKeyName); // clean up string asap
 
 	if (hKey == NULL)
 	{
+		ServiceLogger::write("Failed to open registry key to read service parameters\n");
 		return false; // failed at the first step
 	}
 
@@ -395,47 +398,44 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 		}
 	}
 
-	if (read && getRegValueString(hKey, REG_KEY_STOP_CLASS, &tempString))
-	{
-		serviceParams.setStopClass(tempString);
-		delete[] tempString;
-	}
-	else
-	{
-		read = false;
-	}
+	// stop class and method are optional, but param count must match entry list if present
 
-	if (read && getRegValueString(hKey, REG_KEY_STOP_METHOD, &tempString))
+	if (read)
 	{
-		serviceParams.setStopMethod(tempString);
-		delete[] tempString;
-	}
-	else
-	{
-		read = false;
-	}
+		bool stopClassSpecified = false;
 
-	if (read && getRegValueDword(hKey, REG_KEY_STOP_PARAM_COUNT, &tempNumber))
-	{
-		serviceParams.setStopParamCount(tempNumber);
-	}
-	else
-	{
-		read = false;
-	}
-
-	if (read && (tempNumber > 0))
-	{
-		for (int param = 0; read && (param < tempNumber); param++)
+		if (read && getRegValueString(hKey, REG_KEY_STOP_CLASS, &tempString))
 		{
-			char paramKeyName[256];
-			sprintf(paramKeyName, REG_KEY_STOP_PARAM_NO_FMT, param);
+			serviceParams.setStopClass(tempString);
+			delete[] tempString;
+			stopClassSpecified = true; // look for stop method and params too
+		}
 
-			read = getRegValueString(hKey, paramKeyName, &tempString);
-			if (read)
+		if (stopClassSpecified && getRegValueString(hKey, REG_KEY_STOP_METHOD, &tempString))
+		{
+			serviceParams.setStopMethod(tempString);
+			delete[] tempString;
+		}
+
+		if (stopClassSpecified && getRegValueDword(hKey, REG_KEY_STOP_PARAM_COUNT, &tempNumber))
+		{
+			serviceParams.setStopParamCount(tempNumber);
+		}
+
+		if (stopClassSpecified && (tempNumber > 0))
+		{
+			// set error flag if incorrect parameters specified
+			for (int param = 0; read && (param < tempNumber); param++)
 			{
-				serviceParams.setStopParam(param, tempString);
-				delete[] tempString;
+				char paramKeyName[256];
+				sprintf(paramKeyName, REG_KEY_STOP_PARAM_NO_FMT, param);
+
+				read = getRegValueString(hKey, paramKeyName, &tempString);
+				if (read)
+				{
+					serviceParams.setStopParam(param, tempString);
+					delete[] tempString;
+				}
 			}
 		}
 	}
