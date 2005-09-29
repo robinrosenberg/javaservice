@@ -496,19 +496,24 @@ static DWORD WINAPI TimeoutStopThread(LPVOID lpParam)
 {
 	ServiceLogger::write("Timeout Stop Thread invoked\n");
 
+	//TODO - instance may not be valid at the time this thread is run
+
 	ProcessGlobals* processGlobals = ProcessGlobals::getInstance();
 
-	//Sleep for required number of seconds.
-	Sleep(processGlobals->getServiceParameters()->getShutdownMsecs());
-
-	// if timeout thread completed before normal service shutdown, log the failure
-	if (!processGlobals->getServiceStoppedSuccessfully())
+	if (processGlobals != NULL)
 	{
-		processGlobals->logServiceEvent(EVENT_STOP_TIMEDOUT);
-	}
+		//Sleep for required number of seconds.
+		Sleep(processGlobals->getServiceParameters()->getShutdownMsecs());
 
-	// Ensure the main thread is notified that the service is no longer running.
-	processGlobals->setBothEvents();
+		// if timeout thread completed before normal service shutdown, log the failure
+		if (!processGlobals->getServiceStoppedSuccessfully())
+		{
+			processGlobals->logServiceEvent(EVENT_STOP_TIMEDOUT);
+		}
+
+		// Ensure the main thread is notified that the service is no longer running.
+		processGlobals->setBothEvents();
+	}
 
 	return 0;
 }
@@ -525,16 +530,19 @@ void ExitHandler(int code)
 
 	ProcessGlobals* processGlobals = ProcessGlobals::getInstance();
 
-	//TODO - use specific message formatting function, instead of sprintf
+	if (processGlobals != NULL) // singleton may have been destroyed already
+	{
+		//TODO - use specific message formatting function, instead of sprintf
 
-	//Log the code to the event log.
-	char exitMessage[256];
-	sprintf(exitMessage, "The Java Virtual Machine has exited with a code of %d, the service is being stopped.", code);
+		//Log the code to the event log.
+		char exitMessage[256];
+		sprintf(exitMessage, "The Java Virtual Machine has exited with a code of %d, the service is being stopped.", code);
 
-	logEventMessage(processGlobals->getEventSource(), exitMessage, (code == 0 ? EVENT_GENERIC_INFORMATION : EVENT_GENERIC_ERROR));
+		logEventMessage(processGlobals->getEventSource(), exitMessage, (code == 0 ? EVENT_GENERIC_INFORMATION : EVENT_GENERIC_ERROR));
 
-	//Tell the main thread that the service is no longer running.
-	processGlobals->setBothEvents();
+		//Tell the main thread that the service is no longer running.
+		processGlobals->setBothEvents();
+	}
 
 	Sleep(EXIT_HANDLER_TIMEOUT_MSECS); // wait around a while, but can't do anything else in Java-land, JVM is dead
 }
