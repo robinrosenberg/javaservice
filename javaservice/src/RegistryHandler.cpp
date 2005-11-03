@@ -50,6 +50,12 @@ static LONG RegQueryValueExAllocate(HKEY hKey, LPCTSTR lpValueName, LPDWORD lpRe
 static const char* const SERVICE_REG_KEY_PREFIX = "SYSTEM\\CurrentControlSet\\Services\\";
 static const char* const SERVICE_REG_KEY_SUFFIX = "\\Parameters";
 
+
+static const char* const JAVA_REG_KEY = "SOFTWARE\\JavaSoft\\Java Runtime Environment";
+static const char* const JAVA_VERSION_REG_KEY = "CurrentVersion";
+static const char* const JAVA_RUNTIME_REG_KEY = "RuntimeLib";
+
+
 static const char* const ANON_LOGGING_REG_KEY = "SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\JavaService";
 
 static const char* const SERV_LOGGING_REG_KEY_PREFIX = "SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\";
@@ -322,6 +328,11 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 		serviceParams.setJvmLibrary(tempString);
 		delete[] tempString;
 	}
+	else if (getJavaLibraryEntry(&tempString))
+	{
+		serviceParams.setJvmLibrary(tempString);
+		delete[] tempString;
+	}
 	else
 	{
 		read = false;
@@ -561,6 +572,47 @@ bool RegistryHandler::setupLoggingEntries(const char* regKeyName)
 	}
 
 	return setup;
+}
+
+
+
+bool RegistryHandler::getJavaLibraryEntry(char** jvmLibraryEntry)
+{
+	bool gotEntry = false;
+
+	HKEY javaRegKey = openRegKey(JAVA_REG_KEY);
+	if (javaRegKey != NULL)
+	{
+		char* jvmVersion = NULL;
+
+		if (getRegValueString(javaRegKey, JAVA_VERSION_REG_KEY, &jvmVersion))
+		{
+			// read the JVM library location
+             int jvmLibraryLen = strlen(JAVA_REG_KEY)
+							   + strlen(jvmVersion)
+							   + 2; // null terminator and one '\'
+
+			char *jvmLibraryBuff = new char[jvmLibraryLen];
+			memset(jvmLibraryBuff, 0, jvmLibraryLen);
+			strcpy(jvmLibraryBuff, JAVA_REG_KEY);
+			strcat(jvmLibraryBuff, "\\");
+			strcat(jvmLibraryBuff, jvmVersion);
+
+			delete[] jvmVersion;
+
+			HKEY libraryRegKey = openRegKey(jvmLibraryBuff);
+			if (libraryRegKey != NULL)
+			{
+				getRegValueString(libraryRegKey, JAVA_RUNTIME_REG_KEY, jvmLibraryEntry);
+				gotEntry = (jvmLibraryEntry != NULL);
+				RegCloseKey(libraryRegKey);
+			}
+		}
+
+		RegCloseKey(javaRegKey);
+	}
+
+	return gotEntry;
 }
 
 
