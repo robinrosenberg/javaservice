@@ -365,7 +365,7 @@ static DWORD WINAPI StartServiceThread(LPVOID lpParam)
 
 	processGlobals->setServiceStartedSuccessfully(startedSuccessfully);
 
-	delete serviceParams;
+	//DO NOT delete serviceParams; // (thread may still be using it)
 
 
 	//Tell the main thread that the service is no longer running.
