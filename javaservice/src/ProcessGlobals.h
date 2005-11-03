@@ -138,9 +138,10 @@ private:
 	bool serviceStoppedSuccessfully;
 
 
+	// copy ctor/operator functions defined but not implemented
 
-	ProcessGlobals(const ProcessGlobals& other) {}
-	ProcessGlobals& operator=(const ProcessGlobals& other) {}
+	ProcessGlobals(const ProcessGlobals& other);
+	ProcessGlobals& operator=(const ProcessGlobals& other);
 };
 
 #endif // __PROCESS_GLOBALS_H__
