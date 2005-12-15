@@ -31,7 +31,7 @@
 #ifndef __REGISTRY_HANDLER_H__
 #define __REGISTRY_HANDLER_H__
 
-#include <windows.h>
+#include <windows.h> // HKEY
 
 
 // forward class reference
@@ -77,6 +77,8 @@ protected:
 
 	bool getRegValueBoolean(HKEY hRegKey, const char* entryKey, bool* entryValue);
 
+private:
+
 	bool setupAnonymousLogging();
 
 	bool setupServiceLogging();
@@ -88,11 +90,16 @@ protected:
 private:
 
 	const char* serviceName;
+	const char* serviceKeyName;
+	const char* loggingKeyName;
+
+	void createServiceKeyName(); // called by ctor
+	void createLoggingKeyName(); // called by ctor
+	void deleteKeyName(const char*& keyNameRef);
 
 
-	RegistryHandler() {}
-
-	// declare but do not implement copy ctor and copy operator
+	// declare but do not implement default ctor, copy ctor and copy operator
+	RegistryHandler();
 	RegistryHandler(const RegistryHandler& other);
 	RegistryHandler operator=(const RegistryHandler& other);
 

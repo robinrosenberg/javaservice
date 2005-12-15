@@ -37,9 +37,6 @@
 //
 // Local function prototypes
 //
-static const char* createServiceKeyName(const char* serviceName);
-static void deleteKeyName(const char* regKeyName);
-static const char* createLoggingKeyName(const char* serviceName);
 
 static LONG RegQueryValueExAllocate(HKEY hKey, LPCTSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE *lplpData, LPDWORD lpcbData);
 
@@ -99,13 +96,62 @@ static const char* const REG_KEY_EVENT_TYPES_SUPPORTED = "TypesSupported";
 RegistryHandler::RegistryHandler(const char* _serviceName)
 : serviceName(_serviceName)
 {
+	// define registry key for parameters stored against this particular service
+	createServiceKeyName();
 
+	// define registry key to support logging messages using the service name.
+	createLoggingKeyName();
 }
 
+
+void RegistryHandler::createServiceKeyName()
+{
+	int keyNameLen = strlen(SERVICE_REG_KEY_PREFIX)
+				   + strlen(serviceName)
+				   + strlen(SERVICE_REG_KEY_SUFFIX)
+				   + 1; // null terminator
+
+	char* keyNameBuff = new char[keyNameLen];
+	memset(keyNameBuff, 0, keyNameLen);
+	strcpy(keyNameBuff, SERVICE_REG_KEY_PREFIX);
+	strcat(keyNameBuff, serviceName);
+	strcat(keyNameBuff, SERVICE_REG_KEY_SUFFIX);
+
+	serviceKeyName = keyNameBuff; // store as class member
+}
+
+
+void RegistryHandler::createLoggingKeyName()
+{
+
+	int keyNameLen = strlen(SERV_LOGGING_REG_KEY_PREFIX)
+				   + strlen(serviceName)
+				   + 1; // null terminator
+
+	char* keyNameBuff = new char[keyNameLen];
+	memset(keyNameBuff, 0, keyNameLen);
+	strcpy(keyNameBuff, SERV_LOGGING_REG_KEY_PREFIX);
+	strcat(keyNameBuff, serviceName);
+
+	loggingKeyName = keyNameBuff; // store as class member
+}
+
+
+void RegistryHandler::deleteKeyName(const char*& keyNameRef)
+{
+	if (keyNameRef != NULL)
+	{
+		delete[] (void*)keyNameRef;
+		keyNameRef = NULL; // redundant step, but no safer
+	}
+}
 
 
 RegistryHandler::~RegistryHandler()
 {
+	// clean up allocated strings
+	deleteKeyName(serviceKeyName);
+	deleteKeyName(loggingKeyName);
 }
 
 
@@ -117,11 +163,7 @@ bool RegistryHandler::writeServiceParams(const ServiceParameters& serviceParams)
 
 	// Create an entry in the registry for this service's parameters.
 
-	const char* serviceKeyName = createServiceKeyName(serviceName); // temp string
-
 	HKEY hKey = createRegKey(serviceKeyName);
-
-	deleteKeyName(serviceKeyName); // clean up string asap
 
 	if (hKey == NULL)
 	{
@@ -295,11 +337,7 @@ bool RegistryHandler::writeServiceParams(const ServiceParameters& serviceParams)
 
 bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 {
-	const char* regKeyName = createServiceKeyName(serviceName); // temp string
-
-	HKEY hKey = openRegKey(regKeyName);
-
-	deleteKeyName(regKeyName); // clean up string asap
+	HKEY hKey = openRegKey(serviceKeyName);
 
 	if (hKey == NULL)
 	{
@@ -502,28 +540,21 @@ bool RegistryHandler::readServiceParams(ServiceParameters& serviceParams)
 }
 
 
-
 bool RegistryHandler::deleteServiceParams()
 {
 
 	// attempt deletion of logging-related entries without checking the status
 
-	const char* loggingKeyName = createLoggingKeyName(serviceName);
 	deleteRegKey(loggingKeyName);
-	deleteKeyName(loggingKeyName); // clean up key name string
 
 	deleteRegKey(ANON_LOGGING_REG_KEY); // note, this might be [have been] shared with multiple instances
 
 	// now delete the service-related entry and return success/failure status
 
-	const char* serviceKeyName = createServiceKeyName(serviceName);
 	bool deleted = deleteRegKey(serviceKeyName);
-	deleteKeyName(serviceKeyName); // clean up key name string
 
 	return deleted;
 }
-
-
 
 
 bool RegistryHandler::setupAnonymousLogging()
@@ -538,15 +569,8 @@ bool RegistryHandler::setupAnonymousLogging()
 bool RegistryHandler::setupServiceLogging()
 {
 
-	// define registry key to support logging messages using the service name.
-
-	const char* loggingKeyName = createLoggingKeyName(serviceName);
-
-	bool setup = setupLoggingEntries(loggingKeyName);
+	return setupLoggingEntries(loggingKeyName);
 	
-	deleteKeyName(loggingKeyName);
-
-	return setup;
 }
 
 
@@ -623,14 +647,7 @@ HKEY RegistryHandler::createRegKey(const char* regKeyName)
 
 	LONG createStatus = RegCreateKeyEx(HKEY_LOCAL_MACHINE, regKeyName, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE, NULL, &hKey, NULL);
 	
-	if (createStatus == ERROR_SUCCESS)
-	{
-		return hKey;
-	}
-	else
-	{
-		return NULL;
-	}
+	return (createStatus == ERROR_SUCCESS) ? hKey : NULL;
 }
 
 
@@ -640,23 +657,16 @@ HKEY RegistryHandler::openRegKey(const char* regKeyName)
 
 	LONG openStatus = RegOpenKeyEx(HKEY_LOCAL_MACHINE, regKeyName, 0, KEY_QUERY_VALUE, &hKey);
 	
-	if (openStatus == ERROR_SUCCESS)
-	{
-		return hKey;
-	}
-	else
-	{
-		return NULL;
-	}
+	return (openStatus == ERROR_SUCCESS) ? hKey : NULL;
 }
 
 
 bool RegistryHandler::deleteRegKey(const char* regKeyName)
 {
 
-	LONG openStatus = RegDeleteKey(HKEY_LOCAL_MACHINE, regKeyName);
+	LONG deleteStatus = RegDeleteKey(HKEY_LOCAL_MACHINE, regKeyName);
 	
-	return (openStatus == ERROR_SUCCESS);
+	return (deleteStatus == ERROR_SUCCESS);
 }
 
 
@@ -823,45 +833,3 @@ static LONG RegQueryValueExAllocate(HKEY hKey, LPCTSTR lpValueName, LPDWORD lpRe
 	return ERROR_SUCCESS;
 }
 
-
-
-static const char* createServiceKeyName(const char* serviceName)
-{
-	int keyNameLen = strlen(SERVICE_REG_KEY_PREFIX)
-				   + strlen(serviceName)
-				   + strlen(SERVICE_REG_KEY_SUFFIX)
-				   + 1; // null terminator
-
-	char* keyNameBuff = new char[keyNameLen];
-	memset(keyNameBuff, 0, keyNameLen);
-	strcpy(keyNameBuff, SERVICE_REG_KEY_PREFIX);
-	strcat(keyNameBuff, serviceName);
-	strcat(keyNameBuff, SERVICE_REG_KEY_SUFFIX);
-
-	return keyNameBuff;
-
-}
-
-static const char* createLoggingKeyName(const char* serviceName)
-{
-
-	int keyNameLen = strlen(SERV_LOGGING_REG_KEY_PREFIX)
-				   + strlen(serviceName)
-				   + 1; // null terminator
-
-	char* keyNameBuff = new char[keyNameLen];
-	memset(keyNameBuff, 0, keyNameLen);
-	strcpy(keyNameBuff, SERV_LOGGING_REG_KEY_PREFIX);
-	strcat(keyNameBuff, serviceName);
-
-	return keyNameBuff;
-
-}
-
-static void deleteKeyName(const char* regKeyName)
-{
-	if (regKeyName != NULL)
-	{
-		delete[] (void*)regKeyName;
-	}
-}

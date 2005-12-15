@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -28,8 +28,7 @@
  *
  */
 
-#include <windows.h>
-#include "ServiceHandler.h"
+#include <stddef.h> // defines NULL, as does stdlib and stdio
 #include "CommandFactory.h"
 #include "CommandInterface.h"
 
@@ -46,7 +45,7 @@ int main(int argc, char* argv[])
 
 	// parse the command parameter list to determine the action to be performed
 
-	int mainStatus = -1; // default to error indication (if anyone cares to check it)
+	int mainStatus = COMMAND_FAILURE; // default to error indication
 
 	CommandInterface* command = CommandFactory::createCommand(argc, argv);
 

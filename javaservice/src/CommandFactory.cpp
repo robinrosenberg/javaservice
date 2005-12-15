@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2005 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -28,7 +28,6 @@
  *
  */
 
-#include <windows.h>
 #include <iostream.h>
 #include "CommandFactory.h"
 #include "CommandInterface.h"
@@ -41,6 +40,14 @@
 #include "UninstallCommand.h"
 #include "DaemonCommand.h"
 
+//
+// Local constant definitions
+//
+
+// command-line argument index values
+#define PROGRAM_NAME_ARG 0
+#define COMMAND_VERB_ARG 1
+#define COMMAND_PARAM_ARG 2
 
 /*
  * Given command-line input parameters, perform required level of parsing to
@@ -57,22 +64,24 @@ CommandInterface* CommandFactory::createCommand(int argc, char* argv[])
 	// the application has been invoked as a background 'daemon' service
 	// (there is no straightforward mechanism to find out otherwise)
 
-	if (argc <= 1)
+	if (argc <= 1) // no parameters, other than program name?
 	{
-		command = new DaemonCommand();
+		command = new DaemonCommand(); // assume being run as a service
 	}
 	else
 	{
-		// the command verb comes first in the argument list, which is the
-		// string that determines what processing is to be applied (could
-		// check up front that the verb is prefixed with the hyphen character)
+		// the command verb comes first in the argument list, after program name
 
-		int argIdx = 1;			// skip program name in array index zero
-		const char* commandVerb = argv[argIdx++];
+		const char* commandVerb = argv[COMMAND_VERB_ARG];
 
-		int paramCount = argc - 2;	// count of command parameters after the verb
+		int paramCount = argc - COMMAND_PARAM_ARG;	// count of command parameters after the verb
 
-		if (strcmp(commandVerb, "-version") == 0)
+		// check up front that the verb is prefixed with the hyphen character
+		if ((strlen(commandVerb) < 2) || (commandVerb[0] != '-'))
+		{
+			command = NULL; // error message and default help command handled below
+		}
+		else if (strcmp(commandVerb, "-version") == 0)
 		{
 			command = new VersionCommand();
 		}
@@ -89,7 +98,7 @@ CommandInterface* CommandFactory::createCommand(int argc, char* argv[])
 
 			if (paramCount > 0)
 			{
-				command = new HelpCommand(paramCount, &argv[argIdx]);
+				command = new HelpCommand(paramCount, &argv[COMMAND_PARAM_ARG]);
 			}
 			else
 			{
@@ -102,12 +111,12 @@ CommandInterface* CommandFactory::createCommand(int argc, char* argv[])
 			// so get that for use when creating any command objects and
 			// decrement the count of remaining command parameters
 
-			const char* serviceName = argv[argIdx++];
+			const char* serviceName = argv[COMMAND_PARAM_ARG];
 			paramCount--;
 
 			if (strcmp(commandVerb, "-install") == 0)
 			{
-				command = new InstallCommand(serviceName, paramCount, &argv[argIdx]);
+				command = new InstallCommand(serviceName, paramCount, &argv[COMMAND_PARAM_ARG + 1]);
 			}
 			else if (strcmp(commandVerb, "-uninstall") == 0)
 			{
@@ -122,7 +131,6 @@ CommandInterface* CommandFactory::createCommand(int argc, char* argv[])
 			{
 				command = new QueryCommand(serviceName);
 			}
-			//TODO add interactive option, to run configured process from command line
 		}
 
 	}
