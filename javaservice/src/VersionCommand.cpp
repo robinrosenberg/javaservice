@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2005 Multiplan Consultants Ltd.
+ * Copyright (C) 2006 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -53,7 +53,7 @@ void VersionCommand::printVersion()
 		 << " (Debug Build)"
 #endif
 		 << endl
-		 << " (c) 2005 Multiplan Consultants Ltd"
+		 << " (c) 2006 Multiplan Consultants Ltd"
 		 << endl
 		 << " See http://javaservice.objectweb.org"
 		 << endl
