@@ -3,7 +3,7 @@
 rem * JavaService installation script for JBoss Application Server
 rem *
 rem * JavaService - Windows NT Service Daemon for Java applications
-rem * Copyright (C) 2004 Multiplan Consultants Ltd. LGPL Licensing applies
+rem * Copyright (C) 2006 Multiplan Consultants Ltd. LGPL Licensing applies
 rem * Information about the JavaService software is available at the ObjectWeb
 rem * web site. Refer to http://javaservice.objectweb.org for more details.
 
@@ -18,41 +18,42 @@ if "%JAVA_HOME%" == "" goto no_java
 if not exist "%JAVA_HOME%\jre" goto no_java
 
 rem check for any of server, hotspot or client Java run-times
-SET jvmdll="%JAVA_HOME%\jre\bin\server\jvm.dll"
-if not exist "%jvmdll%" SET jvmdll="%JAVA_HOME%\jre\bin\hotspot\jvm.dll"
-if not exist "%jvmdll%" SET jvmdll="%JAVA_HOME%\jre\bin\client\jvm.dll"
+SET jvmdll=%JAVA_HOME%\jre\bin\server\jvm.dll
+if not exist "%jvmdll%" SET jvmdll=%JAVA_HOME%\jre\bin\hotspot\jvm.dll
+if not exist "%jvmdll%" SET jvmdll=%JAVA_HOME%\jre\bin\client\jvm.dll
 if not exist "%jvmdll%" goto no_java
-SET toolsjar="%JAVA_HOME%\lib\tools.jar"
+SET toolsjar=%JAVA_HOME%\lib\tools.jar
 if not exist "%toolsjar%" goto no_java
 
 
 rem check that JBoss exists and environment variable is set up
 if "%JBOSS_HOME%" == "" goto no_jboss
 if not exist "%JBOSS_HOME%\bin" goto no_jboss
-SET jbossjar="%JBOSS_HOME%\bin\run.jar"
+SET jbossjar=%JBOSS_HOME%\bin\run.jar
 if not exist "%jbossjar%" goto no_jboss
 
 
 rem determine which optional service parameters may have been specified
 SET svcmode=""
 SET dependson=""
-SET dependency=""
-if "%2 == "-manual" SET svcmode="-manual"
-if "%2 == "-auto" SET svcmode="-auto"
-if "%1 == "-manual" SET svcmode="-manual"
-if "%1 == "-auto" SET svcmode="-auto"
-if not "%svcmode%" == "" SET dependson="%1"
-if not "%dependson%" == "" SET dependency="-depends %dependson%"
+SET dependopt=""
+if "%2 == "-manual" SET svcmode=-manual
+if "%2 == "-auto" SET svcmode=-auto
+if "%1 == "-manual" SET svcmode=-manual
+if "%1 == "-auto" SET svcmode=-auto
+if not "%svcmode%" == "" SET dependson=%1
+if not "%dependson%" == "" SET dependopt=-depends %dependson%
 
 rem parameters and files seem ok, go ahead with the service installation
 
 @echo .
 
-SET jbossexe="%JBOSS_HOME%\bin\JBossService.exe"
 
+rem Copy executable to get informative process image name
+SET jbossexe=%JBOSS_HOME%\bin\JBossService.exe
 copy JavaService.exe "%jbossexe%" > nul
 
-"%jbossexe%" -install JBoss "%jvmdll%" -Djava.class.path="%jbossjar%;%toolsjar%" -start org.jboss.Main -stop org.jboss.Main -method systemExit -out "%JBOSS_HOME%\bin\out.log" -err "%JBOSS_HOME%\bin\err.log" -current "%JBOSS_HOME%\bin" %dependency% %svcmode% -overwrite -startup 6
+"%jbossexe%" -install JBoss "%jvmdll%" -Djava.class.path="%jbossjar%;%toolsjar%" -Xms64M -Xmx128M -start org.jboss.Main -stop org.jboss.Main -method systemExit -out "%JBOSS_HOME%\bin\out.log" -err "%JBOSS_HOME%\bin\err.log" -current "%JBOSS_HOME%\bin" %dependopt% %svcmode% -overwrite -startup 6
 
 if ERRORLEVEL 1 goto js_error
 

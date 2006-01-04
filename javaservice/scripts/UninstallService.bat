@@ -7,7 +7,7 @@ rem *
 rem * Usage: UninstallService exe_name service_name
 rem *
 rem * JavaService - Windows NT Service Daemon for Java applications
-rem * Copyright (C) 2005 Multiplan Consultants Ltd. LGPL Licensing applies
+rem * Copyright (C) 2006 Multiplan Consultants Ltd. LGPL Licensing applies
 rem * Information about the JavaService software is available at the ObjectWeb
 rem * web site. Refer to http://javaservice.objectweb.org for more details.
 
@@ -18,14 +18,14 @@ SETLOCAL
 rem check that copied JavaService executable is specified as a parameter
 if "%1" == "" goto no_p1
 rem verify that the specified JavaService exe file is available
-SET jsexe="%1"
+SET jsexe=%1
 rem allow for user entering filename without the .exe suffix
 if exist "%jsexe%.exe" SET jsexe=%jsexe%.exe
 if not exist "%jsexe%" goto no_jsexe
 
 rem check that installed service name is also specified as a parameter
 if "%2" == "" goto no_p2
-SET svcname="%2"
+SET svcname=%2
 
 rem parameters seem ok, go ahead with the service uninstall
 
