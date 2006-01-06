@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2006 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -36,7 +36,7 @@
 //
 
 static const char* const COPY_TEXT
-  = "\n (c) Copyright 2005 Multiplan Consultants Limited.\n";
+  = "\n (c) Copyright 2006 Multiplan Consultants Limited.\n";
 
 static const char* const LGPL_TEXT
   = "\n This library is free software; you can redistribute it and/or"
