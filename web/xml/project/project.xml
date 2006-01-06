@@ -12,7 +12,7 @@
   </description>
 
   <keywords>
-    JavaService, Java, Windows NT, 2000, XP, System Service, Service Manager, Net Start, Net Stop, Daemon, Automatic execution, Background process, Systems administration, Software development, ObjectWeb Forge, Open Source
+    JavaService, Java, Windows NT, 2000, XP, 2003, System Service, Service Manager, Net Start, Net Stop, Daemon, Automatic execution, Background process, Systems administration, Software development, ObjectWeb Forge, Open Source Software
   </keywords>
 
   <body>
@@ -23,7 +23,7 @@
       <menuitem><a href="http://forge.objectweb.org/project/showfiles.php?group_id=137">Download</a></menuitem>
       <menuitem><a href="js_doc_frame.html">Documentation</a></menuitem>
       <menuitem><a href="http://forge.objectweb.org/mail/?group_id=137">Mailing Lists</a></menuitem>
-      <menuitem><a href="licensing.html">Licence</a></menuitem>
+      <menuitem><a href="licensing.html">License</a></menuitem>
       <menuitem><a href="support.html">Support</a></menuitem>
       <menuitem><a href="history.html">History</a></menuitem>
     </menu>
@@ -41,7 +41,7 @@
       <legend>About</legend>
       <menuitem><a href="background.html">Background</a></menuitem>
       <menuitem><a href="JavaService Brochure.pdf">Brochure (pdf)</a></menuitem>
-      <menuitem><a href="licensing.html">Licence</a></menuitem>
+      <menuitem><a href="licensing.html">License</a></menuitem>
       <menuitem><a href="users.html">Users</a></menuitem>
     </menu>
 

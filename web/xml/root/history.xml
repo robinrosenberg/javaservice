@@ -13,6 +13,81 @@
   <body>
     <s1 name="History">
 
+
+<!--
+	<subtitle>Version: 2.0.8 (ObjectWeb/Multiplan) -
+        Released: January 6, 2006</subtitle>
+
+        <ul>
+          <li>Updated release with internal updates to Version 2 code base.</li>
+		  
+		  <li>Bug fix for install parameter parsing and use of CLASSPATH environment variable.</li>
+
+		  <li>Bug fix in supplied installation batch files for handling of quote characters.</li>
+
+		  <li>Compatible with earlier V1.2 and V2.0 releases.</li>
+        </ul>
+-->
+
+	<subtitle>Version: 2.0.7.64 (ObjectWeb/Multiplan) -
+        Released: January 6, 2006</subtitle>
+
+        <ul>
+          <li>Additional release for use on AMD or Intel 64-bit systems.</li>
+		  
+		  <li>Version built by TSelf from V2.0.7 release sources to run both JBoss and Tomcat on X64 servers.</li>
+
+		  <li>Temporarily available for download from http://www.daml.org/people/tself/javaservice64.html and subsequently
+		  made available from the ObjectWeb Forge.</li>
+		  
+		  <li>Source and binary downloads available for this version - note that source changes are not
+		  currently held within CVS for this release.</li>
+
+		  <li>The compiled X86 JavaService executable is now dependent on the latest C++ libraries from Microsoft.
+		  <br/>
+			The easiest way to get these dependencies is to install the .NET Framework 2.0,
+			which are available as a free download from Microsoft.
+		  <br/>
+			JavaService does not use .NET, but the framework still installs the latest C++ libraries.</li>
+        </ul>
+
+
+	<subtitle>Version: 2.0.7 (ObjectWeb/Multiplan) -
+        Released: November 3, 2005</subtitle>
+
+        <ul>
+          <li>Updated release with internal updates to Version 2 code base.</li>
+		  
+		  <li>Bug fix for handling of start/stop method interactions.</li>
+
+		  <li>Compatible with earlier V1.2 and V2.0 releases.</li>
+        </ul>
+
+
+	<subtitle>Version: 2.0.6 (ObjectWeb/Multiplan) -
+        Released: September 29, 2005</subtitle>
+
+        <ul>
+          <li>Updated release with internal updates to Version 2 code base.</li>
+		  
+		  <li>Code changes for handling of optional shutdown class parameter.</li>
+
+		  <li>Compatible with earlier V1.2 and V2.0 releases.</li>
+        </ul>
+
+
+	<subtitle>Version: 2.0.5 (ObjectWeb/Multiplan) -
+        Released: August 30, 2005</subtitle>
+
+        <ul>
+          <li>Updated release with internal updates to Version 2 code base.</li>
+		  
+		  <li>Fix to output of error message text on failure to install a service.</li>
+
+		  <li>Compatible with earlier V1.2 and V2.0 releases.</li>
+        </ul>
+
+
 	<subtitle>Version: 2.0.4 (ObjectWeb/Multiplan) -
         Released: August 21, 2005</subtitle>
 
@@ -29,7 +104,7 @@
 
 		  <li>JavaService <em>-help command</em> extensions to show structured help topics.</li>
 
-		  <li>Added <em>-licence</em> command to display the LGPL text applicable to JavaService.</li>
+		  <li>Added <em>-license</em> command to display the LGPL text applicable to JavaService.</li>
 
 		  <li>Improved internal code structure to reduce code duplication and to improve integration
 		  with the Windows Service Manager.</li>
