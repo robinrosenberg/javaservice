@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2005 Multiplan Consultants Ltd.
+ * Copyright (C) 2006 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -209,6 +209,10 @@ void ServiceParameters::setJvmOptions(const char** wotOptions)
 
 		if (classPathEnvVarIsSet)
 		{
+			// as this may cause unexpected behaviour, output info message
+			cout << "Service configuration being defined to use current CLASSPATH definition" << endl
+				 << "Value = " << classPathEnvVar << endl;
+
 			// add -Djava.class.path=envDefinition to list of jvm options
 
 			const int newOptionLen = DEF_CLASS_PATH_LEN + strlen(classPathEnvVar) + 1;
