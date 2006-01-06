@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2005 Multiplan Consultants Ltd.
+ * Copyright (C) 2006 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -159,13 +159,14 @@ bool loadFromArguments(ServiceParameters& params, int argc, char* argv[])
 
 	// following arguments are taken to be JVM options up until '-start' argument
 
-	params.setJvmOptionCount(countOptionalArgs(args, "-start", remaining));
-	// note, count set before corresponding array is set up
-	if (params.getJvmOptionCount() > 0)
+	const int jvmArgCnt = countOptionalArgs(args, "-start", remaining);
+	params.setJvmOptionCount(jvmArgCnt);
+	if (jvmArgCnt > 0)
 	{
-		params.setJvmOptions(getOptionalArgs(args, params.getJvmOptionCount()));
-		args += params.getJvmOptionCount();
-		remaining -= params.getJvmOptionCount();
+		// note that this function may add CLASSPATH to jvm option list
+		params.setJvmOptions(getOptionalArgs(args, jvmArgCnt));
+		args += jvmArgCnt;
+		remaining -= jvmArgCnt;
 	}
 
 	// next two arguments after jvm library and any jvm options must be '-start'
