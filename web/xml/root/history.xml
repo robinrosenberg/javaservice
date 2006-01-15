@@ -13,8 +13,6 @@
   <body>
     <s1 name="History">
 
-
-<!--
 	<subtitle>Version: 2.0.8 (ObjectWeb/Multiplan) -
         Released: January 6, 2006</subtitle>
 
@@ -27,7 +25,6 @@
 
 		  <li>Compatible with earlier V1.2 and V2.0 releases.</li>
         </ul>
--->
 
 	<subtitle>Version: 2.0.7.64 (ObjectWeb/Multiplan) -
         Released: January 6, 2006</subtitle>
@@ -35,7 +32,7 @@
         <ul>
           <li>Additional release for use on AMD or Intel 64-bit systems.</li>
 		  
-		  <li>Version built by TSelf from V2.0.7 release sources to run both JBoss and Tomcat on X64 servers.</li>
+		  <li>Version built by Troy Self from V2.0.7 release sources to run both JBoss and Tomcat on X64 servers.</li>
 
 		  <li>Temporarily available for download from http://www.daml.org/people/tself/javaservice64.html and subsequently
 		  made available from the ObjectWeb Forge.</li>
