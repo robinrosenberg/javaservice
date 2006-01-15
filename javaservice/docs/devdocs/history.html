@@ -17,6 +17,111 @@
 <h2>JavaService - Release History</h2>
 
 <h3>Latest Release</h4>
+<h4>Version 2.0.8 - 6th January 2006</h4>
+
+<h5>New Features</h5>
+
+<p>
+No new features included in this release - internal changes only.
+</p>
+
+<h5>Bug Fixes</h5>
+
+<p>
+<i>304292</i>
+<strong>Incorrect error message if -Djava.class.path= not supplied</strong>
+<br>
+An incorrect error message may be reported if an install command does not explictly define the classpath.
+This states that the mandatory <code>-start</code> parameter is not present, even when included in the command.
+The error occurs only when the CLASSPATH environment variable is defined and used by the install operation.
+<br>
+The software now handles this condition correctly in command-line parsing.
+<br>
+It also outputs an informational message whenever the CLASSPATH value is used by default for service configuration.
+</p>
+
+<p>
+<i>tba</i>
+<strong>Errors using supplied batch files for service installation</strong>
+<br>
+Invalid assignments in the DOS command files caused double quote characters to be included in the
+generate service install commands, which would then fail to execute correctly.
+<br>
+The batch files have been updated to remove erroneous instances of quote characters.
+</p>
+
+<h5>Known Problems</h5>
+
+<p>
+No further known problems with this release.
+</p>
+
+<h5>Compatibility</h5>
+
+<p>
+Backwards-compatible with V2.0 and V1.2 releases of JavaService.
+</p>
+
+
+
+<h4>Version 2.0.7.64 - 6th January 2006</h4>
+
+<p>
+Additional release for use on AMD or Intel 64-bit systems, built by Troy Self from V2.0.7 release sources to run both JBoss and Tomcat on X64 servers.
+</p>
+
+<p>
+Temporarily available for download from http://www.daml.org/people/tself/javaservice64.html and subsequently
+made available from the ObjectWeb Forge for continued availability.</li>
+
+<h5>New Features</h5>
+
+<p>
+No new features included in this release - rebuild for X86 platform only.
+</p>
+
+<p>
+Source and binary downloads are available for this version - note that these sources are not
+currently held within CVS for this release.
+</p>
+
+<h5>Bug Fixes</h5>
+
+<p>
+There are no specific bug fixes included within this release.
+</p>
+
+<h5>Known Problems</h5>
+
+<p>
+<i>304292</i>
+<strong>Incorrect error message if -Djava.class.path= not supplied</strong>
+<br>
+An incorrect error message may be reported if an install command does not explictly define the classpath.
+This states that the mandatory <code>-start</code> parameter is not present, even when included in the command.
+The error occurs only when the CLASSPATH environment variable is defined and used by the install operation.
+</p>
+
+<p>
+<i>tba</i>
+<strong>Errors using supplied batch files for service installation</strong>
+<br>
+Invalid assignments in the DOS command files caused double quote characters to be included in the
+generate service install commands, which would then fail to execute correctly.
+</p>
+
+<h5>Compatibility</h5>
+
+<p>
+This release is the only version so far available for the AMD or Intel X64 environment.
+<br>
+It requires the latest C++ run-time libraries, which are included in the .Net 2.0 Framework that can be
+downloaded from the Microsoft web site.
+</p>
+
+
+<h3>Preceding Releases</h4>
+
 <h4>Version 2.0.7 - 3rd November 2005</h4>
 
 <p>
@@ -53,9 +158,6 @@ No further known problems with this release.
 Backwards-compatible with V2.0 and V1.2 releases of JavaService.
 </p>
 
-
-
-<h3>Preceding Releases</h4>
 
 <h4>Version 2.0.6 - 29th September 2005</h4>
 
@@ -157,8 +259,8 @@ The following new commands are included in this release:-
 <dd>To view the configuration entries for the named Java service</dd>
 <dt>-status servicename</dt>
 <dd>To display the current execution status of the named Java service</dd>
-<dt>-licence</dt>
-<dd>To output the LGPL licence text from JavaService</dd>
+<dt>-license</dt>
+<dd>To output the LGPL licensing text from JavaService</dd>
 <dt>-help command</dt>
 <dd>Displaying further help details for the specified command</dd>
 </dl>
