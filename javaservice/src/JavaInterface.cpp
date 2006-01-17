@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2004 Multiplan Consultants Ltd.
+ * Copyright (C) 2006 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -38,6 +38,14 @@
 #include "Messages.h"
 #include "ServiceParameters.h"
 
+////
+//// Local constant definitions
+/////
+
+static const char* SYSTEM_CLASS = "java.lang.System";
+static const char* EXIT_METHOD = "exit";
+static const int EXIT_STATUS = 1;
+
 
 ////
 //// Local function prototypes
@@ -45,9 +53,11 @@
 
 static bool StartJavaService(HANDLE hEventSource, const char *jvmDllPath, int jvmOptionCount, const char* jvmOptions[], const char *startClass, const char *startMethod, int startParamCount, const char *startParams[], const char *outFile, const char *errFile, bool overwriteFiles);
 static bool StopJavaService(HANDLE hEventSource, const char *stopClass, const char *stopMethod, int stopParamCount, const char *stopParams[]);
+static bool StopJVM(HANDLE hEventSource, int exitStatusCode);
 
 
 static bool invokeClassMethod(HANDLE hEventSource, JNIEnv *env, const char* className, const char* methodName, int paramCount, const char** params);
+static bool invokeExitMethod(HANDLE hEventSource, JNIEnv *env, int exitStatusCode);
 
 static bool redirectSystemOut(HANDLE hEventSource, JNIEnv *env, const char *outFile, const bool overwriteMode);
 static bool redirectSystemErr(HANDLE hEventSource, JNIEnv *env, const char *errFile, const bool overwriteMode);
@@ -264,6 +274,47 @@ static bool StopJavaService(HANDLE hEventSource, const char *stopClass, const ch
 	if (!invokeClassMethod(hEventSource, env, stopClass, stopMethod, stopParamCount, stopParams))
 	{
 		logError(hEventSource, "Failed to invoke the service stop function.");
+		return false;
+	}
+
+	return true;
+}
+
+//
+// Global function used to stop java machine execution
+//
+bool StopJavaMachine(HANDLE hEventSource)
+{
+	ServiceLogger::write("StopJavaMachine()\n");
+	return StopJVM(hEventSource, EXIT_STATUS);
+}
+
+
+static bool StopJVM(HANDLE hEventSource, int exitStatusCode)
+{
+    JNIEnv *env;
+	JavaVMAttachArgs attach_args;
+
+	attach_args.version = JNI_VERSION_1_2;
+	attach_args.name = "Exit Thread";
+	attach_args.group = NULL;
+
+	jint ret = jvmInstance->AttachCurrentThread((void**)&env, (void*)&attach_args);
+	if (ret != 0)
+	{
+		logError(hEventSource, "Could not attach the exit thread to the Java Virtual Machine.");
+		return false;
+	}
+	if (exceptionRaised(env))
+	{
+		logError(hEventSource, "Exception after attaching to the Java Virtual Machine to exit.");
+		return false;
+	}
+
+	// Invoke the Java System.exit() method
+	if (!invokeExitMethod(hEventSource, env, exitStatusCode))
+	{
+		logError(hEventSource, "Failed to invoke the system exit function.");
 		return false;
 	}
 
@@ -498,6 +549,51 @@ static bool invokeClassMethod(HANDLE hEventSource, JNIEnv *env, const char* clas
 
 }
 
+
+static bool invokeExitMethod(HANDLE hEventSource, JNIEnv *env, int exitStatusCode)
+{
+
+	ServiceLogger::write("Will invoke System.exit method with success status code\n");
+
+	// find the java.lang.System class, using slash-delimited directory style name, not dot-delimited class
+
+	const char* classPath = getClassAsPath(SYSTEM_CLASS);
+    jclass systemClass = env->FindClass(classPath);
+	delete[] (void*)classPath;
+
+	if (exceptionRaised(env) || (systemClass == NULL))
+	{
+		logError(hEventSource, "Could not find the System class.");
+		return false;
+    }
+	ServiceLogger::write("Found System class\n");
+
+	// find the specified service method, with single-int parameter signature
+
+    jmethodID mid = env->GetStaticMethodID(systemClass, EXIT_METHOD, "(I)V");
+    if (exceptionRaised(env) || (mid == NULL))
+	{
+		logError(hEventSource, "Could not find the System.exit method.");
+		return false;
+    }
+	ServiceLogger::write("Found System.exit method\n");
+
+	// now call the exit method with it's single parameter
+
+	jint exitStatus = exitStatusCode;
+	ServiceLogger::write("Invoking static exit method now\n");
+	env->CallStaticVoidMethod(systemClass, mid, exitStatus); // invokes exit handler(s)
+	if (exceptionRaised(env))
+	{
+		logError(hEventSource, "Could not call the System.exit method.");
+		return false;
+	}
+
+	ServiceLogger::write("System.exit method completed ok\n");
+
+	return true; // successfully invoked the System.exit method, assume JVM dead/dying now (with exit handlers)
+
+}
 
 
 

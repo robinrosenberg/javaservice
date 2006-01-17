@@ -479,9 +479,11 @@ static DWORD WINAPI StopServiceThread(LPVOID lpParam)
 	}
 	else
 	{
-		ServiceLogger::write("Stop Service Thread not configured to stop via class function, setting exit flags now\n");
+		//There is no stop class, tell the JVM to stop.
+		ServiceLogger::write("Stop Service Thread not configured to stop via class function, invoking JVM System.exit() now\n");
 
-		//There is no stop class, tell the service to stop.
+		StopJavaMachine(processGlobals->getEventSource());
+
 		processGlobals->setServiceStoppedSuccessfully(true); // avoid timeout log
 		processGlobals->setBothEvents();
 	}

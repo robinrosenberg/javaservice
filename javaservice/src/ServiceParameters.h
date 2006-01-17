@@ -123,6 +123,10 @@ public:
 	void setServicePassword(const char* wotPassword) { updateStringValue(servicePassword, wotPassword); }
 	const char* getServicePassword() const { return servicePassword; }
 
+	void setDescription(const char* wotDescr) { updateStringValue(description, wotDescr); }
+	const char* getDescription() const { return description; }
+
+
 private:
 
 	const char* swVersion;			// Software version number, for reference only
@@ -158,6 +162,8 @@ private:
 
 	const char* serviceUser;		// service username
 	const char* servicePassword;	// service password
+
+	const char* description;		// service description text
 
 
 	void updateStringValue(const char*& stringRef, const char* newString);

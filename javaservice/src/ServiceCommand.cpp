@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2005 Multiplan Consultants Ltd.
+ * Copyright (C) 2006 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -31,10 +31,15 @@
 #include <iostream.h>
 #include "ServiceCommand.h"
 #include "ServiceParameters.h"
+#include <winbase.h>
 
 //
 // local function references
 //
+static bool isAtLeastNtVersion(unsigned int wotVersion);
+
+static void applyServiceDescription(SC_HANDLE hService, const char* serviceText);
+
 static const char* getDependencyString(const char* dependsOn);
 
 static void deleteDependencyString(const char* dependency);
@@ -224,6 +229,7 @@ bool ServiceCommand::createService(const ServiceParameters& serviceParams)
 		if (hService != NULL)
 		{
 			installedOk = true;
+			applyServiceDescription(hService, serviceParams.getDescription());
 			CloseServiceHandle(hService);
 		}
 
@@ -234,6 +240,43 @@ bool ServiceCommand::createService(const ServiceParameters& serviceParams)
 
 
 	return installedOk;
+}
+
+
+static bool isAtLeastNtVersion(unsigned int wotVersion)
+{
+	OSVERSIONINFO versionInfo;
+	versionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	BOOL gotVersion = GetVersionEx(&versionInfo);
+
+	return gotVersion &&
+			(versionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+			(versionInfo.dwMajorVersion >= wotVersion);
+
+}
+
+static void applyServiceDescription(SC_HANDLE hService, const char* serviceText)
+{
+
+	// this function requires Windows NT 5 or later to execute successfully
+
+	if (!isAtLeastNtVersion(5))
+	{
+		return; // do nothing, description not supported on older platforms
+	}
+
+	SERVICE_DESCRIPTION serviceDesc;
+	// note, maximum description string length is 1024 bytes (empty string deletes text)
+	serviceDesc.lpDescription = (LPTSTR)serviceText;
+
+	BOOL updated = ChangeServiceConfig2(hService, SERVICE_CONFIG_DESCRIPTION, &serviceDesc);
+
+	if (updated != TRUE)
+	{
+		// output error indication, but continue as service installed ok
+		//TODO - member function only printLastError();
+		cerr << "Failed to set service description text: " << serviceText << endl << flush;
+	}
 }
 
 

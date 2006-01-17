@@ -36,15 +36,6 @@
 
 
 //
-// Local constant definitions
-//
-
-// Option to be used when specifying Java class path for JVM invocation
-static const char *DEF_CLASS_PATH = "-Djava.class.path=";
-static const int DEF_CLASS_PATH_LEN = strlen(DEF_CLASS_PATH);
-
-
-//
 // Local function references
 //
 static bool loadFromArguments(ServiceParameters& params, int argc, char* argv[]);
@@ -136,6 +127,7 @@ ServiceParameters* ServiceParametersFactory::createFromArguments(int argc, char*
 //		[-user user@domain -password password]
 //		[-append | -overwrite]
 //		[-startup seconds]
+//		[-description "Service description text"]
 //
 bool loadFromArguments(ServiceParameters& params, int argc, char* argv[])
 {
@@ -198,7 +190,7 @@ bool loadFromArguments(ServiceParameters& params, int argc, char* argv[])
 	}
 
 	// list of arguments that will end options lists in calls below
-	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-path", "-depends", "-auto", "-manual", "-shutdown", "-user", "-password", "-append", "-overwrite", "-startup", NULL };
+	static const char* endingArgs[] = { "-stop", "-out", "-err", "-current", "-path", "-depends", "-auto", "-manual", "-shutdown", "-user", "-password", "-append", "-overwrite", "-startup", "-description", NULL };
 
 	// start method parameters
 
@@ -427,7 +419,18 @@ bool loadFromArguments(ServiceParameters& params, int argc, char* argv[])
 			cerr << "'-startup seconds' parameter not present on install command" << endl;
 			argsOk = false;
 		}
+	}
 
+	// see if optional '-description' service text specified
+
+	if (argsOk && (remaining > 1) && (strcmp(*args, "-description") == 0))
+	{
+		args++; // skip -description arg
+		remaining--;
+
+
+		params.setDescription(*args++); // service description text (may be empty)
+		remaining--;
 	}
 
 	// verify that there are no remaining, unrecognised parameters on the command

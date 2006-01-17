@@ -45,6 +45,8 @@ static const long DEFAULT_STARTUP_DELAY_MSECS = 0; // zero seconds
 // Number of milliseconds delay timeout when stopping the service, default value
 static const long DEFAULT_SHUTDOWN_TIMEOUT_MSECS = 30000; // 30 seconds
 
+static const char* DEFAULT_SERVICE_DESCRIPTION = "JavaService utility runs Java applications as services. See http://javaservice.objectweb.org";
+
 // Option to be used when specifying Java class path for JVM invocation
 static const char *DEF_CLASS_PATH = "-Djava.class.path=";
 static const int DEF_CLASS_PATH_LEN = strlen(DEF_CLASS_PATH);
@@ -83,10 +85,12 @@ ServiceParameters::ServiceParameters()
 , servicePassword(NULL)
 , fileOverwriteFlag(FALSE)
 , startupMsecs(DEFAULT_STARTUP_DELAY_MSECS)
+, description(NULL)
 {
 	setSwVersion(STRPRODUCTVER);
 	setStartMethod("main");
 	setStopMethod("main");
+	setDescription(DEFAULT_SERVICE_DESCRIPTION);
 }
 
 
@@ -107,6 +111,7 @@ ServiceParameters::~ServiceParameters()
 	if (currentDirectory != NULL) delete[] (void*)currentDirectory;
 	if (serviceUser != NULL) delete[] (void*)serviceUser;
 	if (servicePassword != NULL) delete[] (void*)servicePassword;
+	if (description != NULL) delete[] (void*)description;
 
 	deleteStringArray(jvmOptionCount, jvmOptions);
 	deleteStringArray(startParamCount, startParams);
@@ -407,6 +412,8 @@ ostream& operator<< (ostream& os, const ServiceParameters& serviceParams)
 	//ditto: outputConfigString(os, "Service User", serviceParams.getServiceUser());
 
 	//ditto: outputConfigString(os, "Service Password", serviceParams.getServicePassword());
+
+	//ditto: service description only used on installation
 
 	os << flush;
 
