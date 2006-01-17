@@ -13,6 +13,19 @@
   <body>
     <s1 name="History">
 
+	<subtitle>Version: 2.0.9 (ObjectWeb/Multiplan) -
+        Released: January 17, 2006</subtitle>
+
+        <ul>
+          <li>New release with minor additional functionality.</li>
+		  
+		  <li>Service description text now defined at installation time (Windows 2000 or later).</li>
+
+		  <li>Default service termination invokes Java System.exit() if no stop method defined.</li>
+
+		  <li>Compatible with earlier V1.2 and V2.0 releases.</li>
+        </ul>
+
 	<subtitle>Version: 2.0.8 (ObjectWeb/Multiplan) -
         Released: January 6, 2006</subtitle>
 
