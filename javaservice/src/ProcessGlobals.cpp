@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2005 Multiplan Consultants Ltd.
+ * Copyright (C) 2006 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -42,11 +42,9 @@
 
 ProcessGlobals* ProcessGlobals::globalsInstance = NULL;
 
-//TODO - lock required around creator/accessor of this object instance
-
 
 // accessor for creation of process global data singleton, checks for duplicate initialisation
-ProcessGlobals* ProcessGlobals::createInstance(const char* serviceName, LPHANDLER_FUNCTION serviceHandlerFunction)
+ProcessGlobals* ProcessGlobals::createInstance(const char* serviceName)
 {
 	if (globalsInstance != NULL)
 	{
@@ -57,7 +55,7 @@ ProcessGlobals* ProcessGlobals::createInstance(const char* serviceName, LPHANDLE
 	{
 		globalsInstance = new ProcessGlobals();
 
-		if (!globalsInstance->initialise(serviceName, serviceHandlerFunction))
+		if (!globalsInstance->initialise(serviceName))
 		{
 			ServiceLogger::write("Failed to initialise ProcessGlobals singleton instance\n");
 			delete globalsInstance;
@@ -134,21 +132,11 @@ ProcessGlobals::ProcessGlobals()
 /*
  * Set up process globals for the named service, to execute specified handler function
  */
-bool ProcessGlobals::initialise(const char* _serviceName, LPHANDLER_FUNCTION serviceHandlerFunction)
+bool ProcessGlobals::initialise(const char* _serviceName)
 {
 	// store the supplied service name
 
 	serviceName = _serviceName;
-
-	// set up initial values in service status structure
-
-	serviceStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
-	serviceStatus.dwCurrentState = SERVICE_STOPPED;
-	serviceStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN;
-	serviceStatus.dwWin32ExitCode = 0;
-	serviceStatus.dwServiceSpecificExitCode = 0;
-	serviceStatus.dwCheckPoint = 0;
-	serviceStatus.dwWaitHint = 0;
 
 	// create event source (event logger writes to stderr if this is null)
 
@@ -167,19 +155,6 @@ bool ProcessGlobals::initialise(const char* _serviceName, LPHANDLER_FUNCTION ser
 		hWaitForStop = createEventHandle();
 
 		initOk = ((hWaitForStart != NULL) && (hWaitForStop != NULL));
-	}
-
-	// if ok so far, register the specified control request handler
-
-	if (initOk)
-	{
-		hServiceStatus = RegisterServiceCtrlHandler(serviceName, serviceHandlerFunction);
-
-		if (hServiceStatus == NULL)
-		{
-			initOk = false;
-			logFunctionError(hEventSource, "RegisterServiceCtrlHandler");
-		}
 	}
 
 	// if initialisation was not successful, clean up now
@@ -246,34 +221,6 @@ bool ProcessGlobals::loadServiceParameters()
 
 
 
-void ProcessGlobals::setStatusWaitHint(int waitHint)
-{
-	serviceStatus.dwWaitHint = waitHint;
-}
-
-
-void ProcessGlobals::updateServiceStatus(int currentState)
-{
-	// set the specified status value and notify the service manager
-
-	serviceStatus.dwCurrentState = currentState;
-	setServiceStatus();
-}
-
-
-void ProcessGlobals::setServiceStatus()
-{
-	// notify the service manager of current service status
-	// (must be called for all service messages, even if status unchanged)
-
-	BOOL sts = SetServiceStatus(hServiceStatus, &serviceStatus);
-
-	if (!sts)
-	{
-		logFunctionError(hEventSource, "SetServiceStatus");
-	}
-
-}
 
 
 void ProcessGlobals::waitForBothEvents()

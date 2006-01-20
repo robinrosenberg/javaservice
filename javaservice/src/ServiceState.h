@@ -28,28 +28,42 @@
  *
  */
 
-#ifndef __SERVICE_HANDLER_H__
-#define __SERVICE_HANDLER_H__
+#ifndef __SERVICE_STATE_H__
+#define __SERVICE_STATE_H__
+
+#include <windows.h>
 
 //
-// Globally-accessed function used on shutdown
+// Class wrapper for maintenance and notification of service status
 //
-void ExitHandler(int code);
-
-
-//
-// Class
-class ServiceHandler
+class ServiceState
 {
 public:
 
-	static bool invokeWindowsService();
+	ServiceState();
+
+	bool registerHandler(const char* serviceName, LPHANDLER_FUNCTION serviceHandlerFunction);
+
+	~ServiceState();
+
+
+	void updateServiceStatus(int currentState, int waitHint);
+
+	void updateServiceStatus(int currentState);
+
+	void notifyServiceStatus();
 
 private:
 
-	ServiceHandler() {}
-	ServiceHandler(const ServiceHandler& other) {}
-	ServiceHandler& operator=(const ServiceHandler& other) {}
+	SERVICE_STATUS serviceStatus;
+
+	SERVICE_STATUS_HANDLE serviceHandle;
+
+
+	// copy ctor/operator functions defined but not implemented
+
+	ServiceState(const ServiceState& other);
+	ServiceState& operator=(const ServiceState& other);
 };
 
-#endif // #ifndef __SERVICE_HANDLER_H__
+#endif // __SERVICE_STATE_H__

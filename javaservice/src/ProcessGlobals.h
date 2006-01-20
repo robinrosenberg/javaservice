@@ -33,6 +33,7 @@
 
 #include <windows.h>
 
+
 class ServiceParameters; // forward reference
 
 
@@ -44,7 +45,7 @@ public:
 
 
 	// accessor for creation of process global data singleton, checks for duplicate initialisation
-	static ProcessGlobals* createInstance(const char* serviceName, LPHANDLER_FUNCTION serviceHandlerFunction);
+	static ProcessGlobals* createInstance(const char* serviceName);
 
 	// general accessor for use of process global data singleton, checks for prior initialisation
 	static ProcessGlobals* getInstance();
@@ -52,15 +53,6 @@ public:
 	// release any event and event source handles and destroy the singleton
 	static void destroyInstance();
 
-
-
-
-
-	void setStatusWaitHint(int waitHint);
-
-	void updateServiceStatus(int currentState);
-
-	void setServiceStatus();
 
 
 	void waitForBothEvents();
@@ -81,20 +73,12 @@ public:
 
 	const ServiceParameters* getServiceParameters() const { return serviceParams; }
 
-	//SERVICE_STATUS& getServiceStatus() { return serviceStatus; }
-
-
-	//SERVICE_STATUS_HANDLE getServiceStatusHandle() const { return hServiceStatus; }
-
 	bool getServiceStartedSuccessfully() const { return serviceStartedSuccessfully; }
 	void setServiceStartedSuccessfully(bool successful) { serviceStartedSuccessfully = successful; }
 
 	bool getServiceStoppedSuccessfully() const { return serviceStoppedSuccessfully; }
 	void setServiceStoppedSuccessfully(bool successful) { serviceStoppedSuccessfully = successful; }
 	
-
-
-
 private:
 
 	// [singleton] static process data declarations used in operation of the service
@@ -103,7 +87,7 @@ private:
 
 	ProcessGlobals();
 
-	bool initialise(const char* serviceName, LPHANDLER_FUNCTION serviceHandlerFunction);
+	bool initialise(const char* serviceName);
 
 	void cleanUp();
 
@@ -127,10 +111,6 @@ private:
 	ServiceParameters* serviceParams;
 
 	bool serviceStartedSuccessfully;
-
-	SERVICE_STATUS serviceStatus;
-
-	SERVICE_STATUS_HANDLE hServiceStatus;
 
 	HANDLE hWaitForStart;
 	HANDLE hWaitForStop;

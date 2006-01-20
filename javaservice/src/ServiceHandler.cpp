@@ -1,7 +1,7 @@
 /*
  * JavaService - Windows NT Service Daemon for Java applications
  *
- * Copyright (C) 2005 Multiplan Consultants Ltd.
+ * Copyright (C) 2006 Multiplan Consultants Ltd.
  *
  *
  * This library is free software; you can redistribute it and/or
@@ -38,6 +38,8 @@
 #include "ProcessGlobals.h"
 #include "ServiceLogger.h"
 #include "EventLogger.h"
+#include "ServiceState.h"
+
 
 
 ////
@@ -70,6 +72,13 @@ static void WINAPI ServiceControlHandler(DWORD opcode);
 static DWORD WINAPI StartServiceThread(LPVOID lpParam);
 static DWORD WINAPI StopServiceThread(LPVOID lpParam);
 static DWORD WINAPI TimeoutStopThread(LPVOID lpParam);
+
+
+//
+// Local data
+//
+static 	ServiceState serviceState;
+
 
 
 
@@ -143,7 +152,7 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 	// service name provided as first argument when background process is run
 	// so supply that and the control handler function for initialisation
 
-	ProcessGlobals* processGlobals = ProcessGlobals::createInstance(serviceName, ServiceControlHandler);
+	ProcessGlobals* processGlobals = ProcessGlobals::createInstance(serviceName);
 
 	if (processGlobals == NULL)
 	{
@@ -151,6 +160,7 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 		return; // give up now, failed to set up required data
 	}
 
+	serviceState.registerHandler(serviceName, ServiceControlHandler);
 
 	ServiceLogger::write("Logging service event start[ed] event (starting now)...\n");
 	//Log that we are starting - jvm may fail, thread may fail, class start may fail
@@ -160,8 +170,8 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 	// mark the service as pending startup, so service manager knows we are here
 	// specify hint value according to any configured delay
 	const long startupDelay = processGlobals->getServiceParameters()->getStartupMsecs();
-	processGlobals->setStatusWaitHint(startupDelay + SERVICE_HINT_EXTRA_MSECS);
-	processGlobals->updateServiceStatus(SERVICE_START_PENDING);
+	serviceState.updateServiceStatus(SERVICE_START_PENDING,
+									 startupDelay + SERVICE_HINT_EXTRA_MSECS);
 
 	// start the background service thread and wait until the service ends
 
@@ -179,8 +189,7 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 		}
 
 		// thread created, so now mark service status as running
-		processGlobals->setStatusWaitHint(0);
-		processGlobals->updateServiceStatus(SERVICE_RUNNING);
+		serviceState.updateServiceStatus(SERVICE_RUNNING, 0);
 
 		processGlobals->logServiceEvent(EVENT_SERVICE_STARTED);
 		ServiceLogger::write("Service Main waiting for event flags to be set\n");
@@ -207,8 +216,7 @@ static void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv)
 
 	// inform service manager that service has now stopped, as requested
 
-	processGlobals->setStatusWaitHint(0);
-	processGlobals->updateServiceStatus(SERVICE_STOPPED);
+	serviceState.updateServiceStatus(SERVICE_STOPPED, 0);
 
 	ServiceLogger::write("Service Main cleanup and end (service stopped)\n");
 
@@ -237,8 +245,7 @@ static void WINAPI ServiceControlHandler(DWORD opcode)
 			// Tell the service manager that stop is pending, and may take longer than the usual 20-sec shutdown
 
 			const long maxShutdownMsecs = processGlobals->getServiceParameters()->getShutdownMsecs() + SERVICE_HINT_EXTRA_MSECS;
-			processGlobals->setStatusWaitHint(maxShutdownMsecs);
-			processGlobals->updateServiceStatus(SERVICE_STOP_PENDING);
+			serviceState.updateServiceStatus(SERVICE_STOP_PENDING, maxShutdownMsecs);
 
 			// Invoke the stop method in another thread, at higher priority level
 			HANDLE hStopThread = createThread(StopServiceThread, "StopServiceThread");
@@ -268,8 +275,7 @@ static void WINAPI ServiceControlHandler(DWORD opcode)
 	default:
 		{
 			ServiceLogger::write("Service control pause/continue/interrogate requested\n");
-			ProcessGlobals* processGlobals = ProcessGlobals::getInstance();
-			processGlobals->setServiceStatus();
+			serviceState.notifyServiceStatus();
 		}
 	}
 }

@@ -155,6 +155,10 @@ SOURCE=.\ServiceParametersFactory.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ServiceState.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StatusCommand.cpp
 # End Source File
 # Begin Source File
@@ -232,6 +236,10 @@ SOURCE=.\ServiceLogger.h
 # Begin Source File
 
 SOURCE=.\ServiceParameters.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ServiceState.h
 # End Source File
 # Begin Source File
 
