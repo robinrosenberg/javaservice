@@ -36,8 +36,8 @@ Windows command prompt with the <code>JavaService -help</code> command.
 <dt>-version</dt>
 <dd>Outputs the built-in version number of the JavaService program</dd>
 
-<dt>-licence</dt>
-<dd>(or -license) Outputs the LGPL licence text covering the program</dd>
+<dt>-license</dt>
+<dd>(or -licence) Outputs the LGPL licensing text covering the program</dd>
 
 <dt>-install servicename</dt>
 <dd>Installs the named service with specified configuration options</dd>
@@ -186,6 +186,12 @@ used around an parameters that contain spaces to avoid run-time failures.
 	<li>-append <i>or</i> -overwrite - Optional parameter indicating whether output
 	and error log files are to be appended to, or overwritten, on each service startup.
 	If not specified, the default is to append to existing log files.<br>
+	<br>
+	</li>
+	<li>-description service_desc - Optional parameter indicating descriptive text
+	to be recorded against the service when installed. Use "quote characters" for
+	text that includes spaces. Note that this function is only supported when used
+	from Windows NT Version 5 or later (Windows 2000, Windows XP, etc).<br>
 	<br>
 	</li>
 </ul>
