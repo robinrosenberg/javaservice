@@ -17,6 +17,53 @@
 <h2>JavaService - Release History</h2>
 
 <h3>Latest Release</h4>
+<h4>Version 2.0.9 - 17th January 2006</h4>
+
+<h5>New Features</h5>
+
+<p>
+<i>303995</i>
+<strong>Include service description parameter</strong>
+<br>
+Service installation now supplies (optional) description text for display by Services snap-in.
+<br>
+This feature is only supported for use from Windows NT Version 5 or later (i.e. Windows 2000, Windows XP, etc).
+It is ignored if used on older versions of the Microsoft Windows NT platform (V3.5 or V4).
+</p>
+
+<p>
+<i>304293</i>
+<strong>Provide a simple way to use System.exit() to shutdown</strong>
+If service does not specify an explicit stop function, JavaService invokes the standard System.exit(1)
+function to terminate the JVM.
+<br>
+This results in any registered Exit Handler function(s) being invoked, which can perform clean-up of
+application software if implemented to detect this condition on process termination.
+</p>
+
+<h5>Bug Fixes</h5>
+
+<p>
+There are no specific bug fixes included within this release.
+</p>
+
+<h5>Known Problems</h5>
+
+<p>
+No further known problems with this release.
+</p>
+
+<h5>Compatibility</h5>
+
+<p>
+Backwards-compatible with V2.0 and V1.2 releases of JavaService.
+</p>
+
+
+
+
+
+
 <h4>Version 2.0.8 - 6th January 2006</h4>
 
 <h5>New Features</h5>
@@ -41,8 +88,8 @@ It also outputs an informational message whenever the CLASSPATH value is used by
 </p>
 
 <p>
-<i>tba</i>
-<strong>Errors using supplied batch files for service installation</strong>
+<i>304575</i>
+<strong>Invalid use of quote characters in sample batch files</strong>
 <br>
 Invalid assignments in the DOS command files caused double quote characters to be included in the
 generate service install commands, which would then fail to execute correctly.
@@ -77,7 +124,7 @@ made available from the ObjectWeb Forge for continued availability.</li>
 <h5>New Features</h5>
 
 <p>
-No new features included in this release - rebuild for X86 platform only.
+No new features included in this release - rebuild for X64 platform only.
 </p>
 
 <p>
@@ -103,8 +150,8 @@ The error occurs only when the CLASSPATH environment variable is defined and use
 </p>
 
 <p>
-<i>tba</i>
-<strong>Errors using supplied batch files for service installation</strong>
+<i>304575</i>
+<strong>Invalid use of quote characters in sample batch files</strong>
 <br>
 Invalid assignments in the DOS command files caused double quote characters to be included in the
 generate service install commands, which would then fail to execute correctly.
