@@ -23,7 +23,7 @@ set SSBINDIR=%JSBINDIR%
 @echo Installing sample service... Press Control-C to abort
 @pause
 @echo .
-%JSEXE% -install SampleService %JVMDIR%\jvm.dll -Djava.class.path=%SSBINDIR%\SampleService.jar -Xms16M -Xmx32M -start org.objectweb.javaservice.test.SampleService -params start memory -stop org.objectweb.javaservice.test.SampleService -method serviceStop -out %JSBINDIR%\stdout.log -err %JSBINDIR%\stderr.log -current %JSBINDIR% -manual
+%JSEXE% -install SampleService %JVMDIR%\jvm.dll -Djava.class.path=%SSBINDIR%\SampleService.jar -Xms16M -Xmx32M -start org.objectweb.javaservice.test.SampleService -params start memory -stop org.objectweb.javaservice.test.SampleService -method serviceStop -out %JSBINDIR%\stdout.log -err %JSBINDIR%\stderr.log -current %JSBINDIR% -manual -description "Sample Java Service"
 @echo .
 
 
