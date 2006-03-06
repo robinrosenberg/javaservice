@@ -40,10 +40,10 @@ rem determine which optional service parameters may have been specified
 SET svcmode=""
 SET dependson=""
 SET dependopt=""
-if "%5 == "-manual" SET svcmode=-manual
-if "%5 == "-auto" SET svcmode=-auto
-if "%4 == "-manual" SET svcmode=-manual
-if "%4 == "-auto" SET svcmode=-auto
+if "%5" == "-manual" SET svcmode=-manual
+if "%5" == "-auto" SET svcmode=-auto
+if "%4" == "-manual" SET svcmode=-manual
+if "%4" == "-auto" SET svcmode=-auto
 if not "%svcmode%" == "" SET dependson=%4
 if not "%dependson%" == "" SET dependopt=-depends %dependson%
 

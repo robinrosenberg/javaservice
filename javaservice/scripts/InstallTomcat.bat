@@ -78,8 +78,8 @@ goto versok
 :versok
 rem see if optional service mode parameter has been specified
 SET svcmode=
-if "%4 == "-manual" SET svcmode=-manual
-if "%4 == "-auto" SET svcmode=-auto
+if "%4" == "-manual" SET svcmode=-manual
+if "%4" == "-auto" SET svcmode=-auto
 
 rem parameters and files seem ok, go ahead with the service installation
 
